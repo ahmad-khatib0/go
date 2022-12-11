@@ -1,0 +1,2 @@
+go mod init project-name                # init the packages manager  
+
