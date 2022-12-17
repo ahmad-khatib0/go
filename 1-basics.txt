@@ -11,3 +11,4 @@ go mod edit -go 1.7                                  # change variety of things 
 go mod vendor                                        
 # git dependencies to a folder instead of from global go folder, this is like the node_modules , 
 # go run -mod=vendor main.go                         # run from the vendor folder directlly 
+# go run --race .                                    # check where you have race condetions 
