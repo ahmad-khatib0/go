@@ -2,6 +2,7 @@ tags
 
 node_modules
 .env
+books-library/db-data/*
 
 mod
 mongo
