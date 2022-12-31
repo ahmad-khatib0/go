@@ -2,8 +2,14 @@ package data
 
 import (
 	"context"
+	"crypto/rand"
+	"crypto/sha256"
 	"database/sql"
+	"encoding/base32"
 	"errors"
+	"fmt"
+	"net/http"
+	"strings"
 	"time"
 
 	"golang.org/x/crypto/bcrypt"
@@ -246,7 +252,6 @@ func (t *Token) GetByToken(plainText string) (*Token, error) {
 		&token.UpdatedAt,
 		&token.Expiry,
 	)
-
 	if err != nil {
 		return nil, err
 	}
@@ -255,7 +260,6 @@ func (t *Token) GetByToken(plainText string) (*Token, error) {
 }
 
 func (t *Token) GetUserForToken(token Token) (*User, error) {
-
 	ctx, cancel := context.WithTimeout(context.Background(), dbTimeout)
 	defer cancel()
 
@@ -277,5 +281,58 @@ func (t *Token) GetUserForToken(token Token) (*User, error) {
 	}
 
 	return &user, nil
+}
 
+// / ttl time to life
+func (t *Token) GenerateToken(userID int, ttl time.Duration) (*Token, error) {
+	token := &Token{
+		UserID: userID,
+		Expiry: time.Now().Add(ttl),
+	}
+
+	randomBytes := make([]byte, 16)
+	_, err := rand.Read(randomBytes)
+	if err != nil {
+		return nil, err
+	}
+
+	token.Token = base32.StdEncoding.WithPadding(base32.NoPadding).EncodeToString(randomBytes)
+	hash := sha256.Sum256([]byte(token.Token))
+	fmt.Println([]byte(token.Token))
+	token.TokenHash = hash[:] //
+
+	return token, nil
+}
+
+func (t *Token) AuthenticateToken(r *http.Request) (*User, error) {
+	authorizationHeader := r.Header.Get("Authorization")
+	if authorizationHeader == "" {
+		return nil, errors.New("No authorization header is sat!")
+	}
+
+	headerParts := strings.Split(authorizationHeader, " ")
+	if len(headerParts) != 2 || headerParts[0] != "Bearer" {
+		return nil, errors.New("No valid authorization has been sat")
+	}
+
+	token := headerParts[1]
+	if len(token) != 26 {
+		return nil, errors.New("Token wrong size")
+	}
+
+	tokenModel, err := t.GetByToken(token)
+	if err != nil {
+		return nil, errors.New("no matching token found!")
+	}
+
+	if tokenModel.Expiry.Before(time.Now()) {
+		return nil, errors.New("expired token!")
+	}
+
+	user, err := t.GetUserForToken(*tokenModel)
+	if err != nil {
+		return nil, errors.New("No matching user found")
+	}
+
+	return user, nil
 }
