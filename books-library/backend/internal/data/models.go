@@ -4,6 +4,8 @@ import (
 	"context"
 	"database/sql"
 	"time"
+
+	"golang.org/x/crypto/bcrypt"
 )
 
 const dbTimeout = time.Second * 3
@@ -71,7 +73,7 @@ func (u *User) GetByEmail(email string) (*User, error) {
 	ctx, cancel := context.WithTimeout(context.Background(), dbTimeout)
 	defer cancel()
 
-	query := `SELECT id, email, first_name, last_name, password, created_at, updated_at, FROM users WHERE email = $1`
+	query := `SELECT id, email, first_name, last_name, password, created_at, updated_at FROM users WHERE email = $1`
 
 	var user User
 	row := db.QueryRowContext(ctx, query, email)
@@ -95,7 +97,7 @@ func (u *User) GetOne(id int) (*User, error) {
 	ctx, cancel := context.WithTimeout(context.Background(), dbTimeout)
 	defer cancel()
 
-	query := `SELECT id, email, first_name, last_name, password, created_at, updated_at, FROM users WHERE id = $1`
+	query := `SELECT id, email, first_name, last_name, password, created_at, updated_at FROM users WHERE id = $1`
 
 	var user User
 	row := db.QueryRowContext(ctx, query, id)
@@ -123,7 +125,7 @@ func (u *User) Update() error {
     email = $1,
     first_name = $2,
     last_name = $3,
-    updated_at = $4,
+    updated_at = $4
     WHERE id = $5
   `
 	_, err := db.ExecContext(ctx, stmt,
@@ -150,6 +152,35 @@ func (u *User) Delete() error {
 		return err
 	}
 	return nil
+}
+
+func (u *User) Insert(user User) (int, error) {
+	ctx, cancel := context.WithTimeout(context.Background(), dbTimeout)
+	defer cancel()
+
+	hashedPassword, err := bcrypt.GenerateFromPassword([]byte, u.Password, 12)
+	if err != nil {
+		return 0, nil
+	}
+
+	var newID int
+	stmt := `INSERT INTO users (email, first_name, last_name, password, created_at, updated_at)
+       values ($1, $2, $3, $4, $5, $6) returning id
+  `
+	err = db.QueryRowContext(ctx, stmt,
+		user.Email,
+		user.FirstName,
+		user.LastName,
+		hashedPassword,
+		time.Now(),
+		time.Now(),
+	).Scan(&newID)
+
+	if err != nil {
+		return 0, err
+	}
+
+	return newID, nil
 }
 
 type Token struct {
