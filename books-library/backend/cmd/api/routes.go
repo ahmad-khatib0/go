@@ -3,6 +3,7 @@ package main
 import (
 	"backend/internal/data"
 	"net/http"
+	"time"
 
 	"github.com/go-chi/chi"
 	"github.com/go-chi/chi/middleware"
@@ -55,5 +56,27 @@ func (app *application) routes() http.Handler {
 		newUser, _ := app.models.User.GetOne(id)
 		app.writeJSON(w, http.StatusOK, newUser)
 	})
+
+	mux.Get("/test-generate-token", func(w http.ResponseWriter, r *http.Request) {
+		token, err := app.models.Token.GenerateToken(2, 60*time.Minute)
+		if err != nil {
+			app.errorLog.Println(err)
+			return
+		}
+
+		token.Email = "admin@example.com"
+		token.CreatedAt = time.Now()
+		token.UpdatedAt = time.Now()
+
+		payload := jsonResponse{
+			Error:   false,
+			Message: "success",
+			Data:    token,
+		}
+
+		app.writeJSON(w, http.StatusOK, payload)
+
+	})
+
 	return mux
 }
