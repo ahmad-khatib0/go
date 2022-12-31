@@ -3,6 +3,7 @@ tags
 node_modules
 .env
 books-library/db-data/*
+books-library/backend/vueapi
 
 mod
 mongo

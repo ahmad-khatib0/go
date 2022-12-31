@@ -26,7 +26,9 @@ func main() {
 	infoLog := log.New(os.Stdout, "INFO\t", log.Ldate|log.Ltime)
 	errorLog := log.New(os.Stdout, "ERROR\t", log.Ldate|log.Ltime|log.Lshortfile)
 
-	dsn := "host=localhost port=5432 user=postgres password=password dbname=vueapi sslmode=disable timezone=UTC connect_timeout=5"
+	dsn := os.Getenv("DSN") // this will be sat by: env DSN="the env string" go run ./cmd/api
+	// this is the first way, second way is using the makefile (make start)
+
 	db, err := driver.ConnectPostrges(dsn)
 	if err != nil {
 		log.Fatal("Can not connect to database")
