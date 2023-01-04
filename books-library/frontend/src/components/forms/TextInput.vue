@@ -8,16 +8,16 @@
       :required="required"
       :min="min"
       :max="max"
-      :value="value"
+      :value="modelValue"
+      @input="$emit('update:modelValue', $event.target.value)"
       :autocomplete="name + '-new'"
-      class="form-control"
-    />
+      class="form-control" />
   </div>
 </template>
 
 <script>
 export default {
-  name: "TextInput",
+  name: 'TextInput',
   props: {
     name: String,
     type: String,
@@ -26,7 +26,7 @@ export default {
     required: String,
     min: String,
     max: String,
-    value: String,
+    modelValue: String,
   },
-};
+}
 </script>

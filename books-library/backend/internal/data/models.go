@@ -2,12 +2,11 @@ package data
 
 import (
 	"context"
-	"crypto/rand"
 	"crypto/sha256"
 	"database/sql"
 	"encoding/base32"
 	"errors"
-	"fmt"
+	"math/rand"
 	"net/http"
 	"strings"
 	"time"
@@ -19,19 +18,27 @@ const dbTimeout = time.Second * 3
 
 var db *sql.DB
 
+// New is the function used to create an instance of the data package. It returns the type
+// Model, which embeds all of the types we want to be available to our application.
 func New(dbPool *sql.DB) Models {
 	db = dbPool
+
 	return Models{
 		User:  User{},
 		Token: Token{},
 	}
 }
 
+// Models is the type for this package. Note that any model that is included as a member
+// in this type is available to us throughout the application, anywhere that the
+// app variable is used, provided that the model is also added in the New function.
 type Models struct {
 	User  User
 	Token Token
 }
 
+// User is the stucture which holds one user from the database. Note
+// that it embeds a token type.
 type User struct {
 	ID        int       `json:"id"`
 	Email     string    `json:"email"`
@@ -43,17 +50,19 @@ type User struct {
 	Token     Token     `json:"token"`
 }
 
+// GetAll returns a slice of all users, sorted by last name
 func (u *User) GetAll() ([]*User, error) {
 	ctx, cancel := context.WithTimeout(context.Background(), dbTimeout)
 	defer cancel()
 
-	query := `SELECT id, email, first_name, last_name, password, created_at, updated_at FROM users ORDER BY last_name`
+	query := `select id, email, first_name, last_name, password, created_at, updated_at from users order by last_name`
+
 	rows, err := db.QueryContext(ctx, query)
 	if err != nil {
 		return nil, err
 	}
-
 	defer rows.Close()
+
 	var users []*User
 
 	for rows.Next() {
@@ -70,20 +79,23 @@ func (u *User) GetAll() ([]*User, error) {
 		if err != nil {
 			return nil, err
 		}
+
 		users = append(users, &user)
 	}
 
 	return users, nil
 }
 
+// GetByEmail returns one user by email
 func (u *User) GetByEmail(email string) (*User, error) {
 	ctx, cancel := context.WithTimeout(context.Background(), dbTimeout)
 	defer cancel()
 
-	query := `SELECT id, email, first_name, last_name, password, created_at, updated_at FROM users WHERE email = $1`
+	query := `select id, email, first_name, last_name, password, created_at, updated_at from users where email = $1`
 
 	var user User
 	row := db.QueryRowContext(ctx, query, email)
+
 	err := row.Scan(
 		&user.ID,
 		&user.Email,
@@ -93,6 +105,7 @@ func (u *User) GetByEmail(email string) (*User, error) {
 		&user.CreatedAt,
 		&user.UpdatedAt,
 	)
+
 	if err != nil {
 		return nil, err
 	}
@@ -100,14 +113,16 @@ func (u *User) GetByEmail(email string) (*User, error) {
 	return &user, nil
 }
 
+// GetOne returns one user by id
 func (u *User) GetOne(id int) (*User, error) {
 	ctx, cancel := context.WithTimeout(context.Background(), dbTimeout)
 	defer cancel()
 
-	query := `SELECT id, email, first_name, last_name, password, created_at, updated_at FROM users WHERE id = $1`
+	query := `select id, email, first_name, last_name, password, created_at, updated_at from users where id = $1`
 
 	var user User
 	row := db.QueryRowContext(ctx, query, id)
+
 	err := row.Scan(
 		&user.ID,
 		&user.Email,
@@ -117,6 +132,7 @@ func (u *User) GetOne(id int) (*User, error) {
 		&user.CreatedAt,
 		&user.UpdatedAt,
 	)
+
 	if err != nil {
 		return nil, err
 	}
@@ -124,17 +140,20 @@ func (u *User) GetOne(id int) (*User, error) {
 	return &user, nil
 }
 
+// Update updates one user in the database, using the information
+// stored in the receiver u
 func (u *User) Update() error {
 	ctx, cancel := context.WithTimeout(context.Background(), dbTimeout)
 	defer cancel()
 
-	stmt := `UPDATE users SET 
-    email = $1,
-    first_name = $2,
-    last_name = $3,
-    updated_at = $4
-    WHERE id = $5
-  `
+	stmt := `update users set
+		email = $1,
+		first_name = $2,
+		last_name = $3,
+		updated_at = $4
+		where id = $5
+	`
+
 	_, err := db.ExecContext(ctx, stmt,
 		u.Email,
 		u.FirstName,
@@ -142,6 +161,7 @@ func (u *User) Update() error {
 		time.Now(),
 		u.ID,
 	)
+
 	if err != nil {
 		return err
 	}
@@ -149,31 +169,35 @@ func (u *User) Update() error {
 	return nil
 }
 
+// Delete deletes one user from the datbase, by ID
 func (u *User) Delete() error {
 	ctx, cancel := context.WithTimeout(context.Background(), dbTimeout)
 	defer cancel()
 
-	stmt := `DELETE FROM users WHERE id = $1`
+	stmt := `delete from users where id = $1`
+
 	_, err := db.ExecContext(ctx, stmt, u.ID)
 	if err != nil {
 		return err
 	}
+
 	return nil
 }
 
+// Insert inserts a new user into the datbase, and returns the ID of the newly inserted row
 func (u *User) Insert(user User) (int, error) {
 	ctx, cancel := context.WithTimeout(context.Background(), dbTimeout)
 	defer cancel()
 
-	hashedPassword, err := bcrypt.GenerateFromPassword([]byte(u.Password), 12)
+	hashedPassword, err := bcrypt.GenerateFromPassword([]byte(user.Password), 12)
 	if err != nil {
-		return 0, nil
+		return 0, err
 	}
 
 	var newID int
-	stmt := `INSERT INTO users (email, first_name, last_name, password, created_at, updated_at)
-       values ($1, $2, $3, $4, $5, $6) returning id
-  `
+	stmt := `insert into users (email, first_name, last_name, password, created_at, updated_at)
+		values ($1, $2, $3, $4, $5, $6) returning id`
+
 	err = db.QueryRowContext(ctx, stmt,
 		user.Email,
 		user.FirstName,
@@ -190,6 +214,7 @@ func (u *User) Insert(user User) (int, error) {
 	return newID, nil
 }
 
+// ResetPassword is the method we will use to change a user's password.
 func (u *User) ResetPassword(password string) error {
 	ctx, cancel := context.WithTimeout(context.Background(), dbTimeout)
 	defer cancel()
@@ -199,27 +224,36 @@ func (u *User) ResetPassword(password string) error {
 		return err
 	}
 
-	stmt := `UPDATE users SET password = $1 WHERE id = $2`
+	stmt := `update users set password = $1 where id = $2`
 	_, err = db.ExecContext(ctx, stmt, hashedPassword, u.ID)
 	if err != nil {
 		return err
 	}
+
 	return nil
 }
 
-func (u *User) PasswordMatches(plainPassword string) (bool, error) {
-	err := bcrypt.CompareHashAndPassword([]byte(u.Password), []byte(plainPassword))
+// PasswordMatches uses Go's bcrypt package to compare a user supplied password
+// with the hash we have stored for a given user in the database. If the password
+// and hash match, we return true; otherwise, we return false.
+func (u *User) PasswordMatches(plainText string) (bool, error) {
+	err := bcrypt.CompareHashAndPassword([]byte(u.Password), []byte(plainText))
+
 	if err != nil {
 		switch {
-		case errors.Is(err, bcrypt.ErrMismatchedHashAndPassword): // invalid password
+		case errors.Is(err, bcrypt.ErrMismatchedHashAndPassword):
+			// invalid password
 			return false, nil
 		default:
-			return false, nil
+			return false, err
 		}
 	}
+
 	return true, nil
 }
 
+// Token is the data structure for any token in the database. Note that
+// we do not send the TokenHash (a slice of bytes) in any exported JSON.
 type Token struct {
 	ID        int       `json:"id"`
 	UserID    int       `json:"user_id"`
@@ -231,17 +265,18 @@ type Token struct {
 	Expiry    time.Time `json:"expiry"`
 }
 
+// GetByToken takes a plain text token string, and looks up the full token from
+// the database. It returns a pointer to the Token model.
 func (t *Token) GetByToken(plainText string) (*Token, error) {
 	ctx, cancel := context.WithTimeout(context.Background(), dbTimeout)
 	defer cancel()
 
-	query := `SELECT id, user_id, email, token, token_hash, created_at, updated_at, expiry
-    FROM tokens WHERE token = $1 
-  `
+	query := `select id, user_id, email, token, token_hash, created_at, updated_at, expiry
+			from tokens where token = $1`
 
 	var token Token
-	row := db.QueryRowContext(ctx, query, plainText)
 
+	row := db.QueryRowContext(ctx, query, plainText)
 	err := row.Scan(
 		&token.ID,
 		&token.UserID,
@@ -252,6 +287,7 @@ func (t *Token) GetByToken(plainText string) (*Token, error) {
 		&token.UpdatedAt,
 		&token.Expiry,
 	)
+
 	if err != nil {
 		return nil, err
 	}
@@ -259,14 +295,17 @@ func (t *Token) GetByToken(plainText string) (*Token, error) {
 	return &token, nil
 }
 
+// GetUserForToken takes a token parameter, and uses the UserID field from that parameter
+// to look a user up by id. It returns a pointer to the user model.
 func (t *Token) GetUserForToken(token Token) (*User, error) {
 	ctx, cancel := context.WithTimeout(context.Background(), dbTimeout)
 	defer cancel()
 
-	query := `SELECT id, email, first_name, last_name, password, created_at, updated_at FROM users WHERE id = $1`
+	query := `select id, email, first_name, last_name, password, created_at, updated_at from users where id = $1`
 
 	var user User
 	row := db.QueryRowContext(ctx, query, token.UserID)
+
 	err := row.Scan(
 		&user.ID,
 		&user.Email,
@@ -276,6 +315,7 @@ func (t *Token) GetUserForToken(token Token) (*User, error) {
 		&user.CreatedAt,
 		&user.UpdatedAt,
 	)
+
 	if err != nil {
 		return nil, err
 	}
@@ -283,7 +323,7 @@ func (t *Token) GetUserForToken(token Token) (*User, error) {
 	return &user, nil
 }
 
-// / ttl time to life
+// GenerateToken generates a secure token of exactly 26 characters in length and returns it
 func (t *Token) GenerateToken(userID int, ttl time.Duration) (*Token, error) {
 	token := &Token{
 		UserID: userID,
@@ -298,83 +338,99 @@ func (t *Token) GenerateToken(userID int, ttl time.Duration) (*Token, error) {
 
 	token.Token = base32.StdEncoding.WithPadding(base32.NoPadding).EncodeToString(randomBytes)
 	hash := sha256.Sum256([]byte(token.Token))
-	fmt.Println([]byte(token.Token))
-	token.TokenHash = hash[:] //
+	token.TokenHash = hash[:]
 
 	return token, nil
 }
 
+// AuthenticateToken takes the full http request, extracts the authorization header,
+// takes the plain text token from that header and looks up the associated token entry
+// in the database, and then finds the user associated with that token. If the token
+// is valid and a user is found, the user is returned; otherwise, it returns an error.
 func (t *Token) AuthenticateToken(r *http.Request) (*User, error) {
+	// get the authorization header
 	authorizationHeader := r.Header.Get("Authorization")
 	if authorizationHeader == "" {
-		return nil, errors.New("No authorization header is sat!")
+		return nil, errors.New("no authorization header received")
 	}
 
+	// get the plain text token from the header
 	headerParts := strings.Split(authorizationHeader, " ")
 	if len(headerParts) != 2 || headerParts[0] != "Bearer" {
-		return nil, errors.New("No valid authorization has been sat")
+		return nil, errors.New("no valid authorization header received")
 	}
 
 	token := headerParts[1]
+
+	// make sure the token is of the correct length
 	if len(token) != 26 {
-		return nil, errors.New("Token wrong size")
+		return nil, errors.New("token wrong size")
 	}
 
-	tokenModel, err := t.GetByToken(token)
+	// get the token from the database, using the plain text token to find it
+	tkn, err := t.GetByToken(token)
 	if err != nil {
-		return nil, errors.New("no matching token found!")
+		return nil, errors.New("no matching token found")
 	}
 
-	if tokenModel.Expiry.Before(time.Now()) {
-		return nil, errors.New("expired token!")
+	// make sure the token has not expired
+	if tkn.Expiry.Before(time.Now()) {
+		return nil, errors.New("expired token")
 	}
 
-	user, err := t.GetUserForToken(*tokenModel)
+	// get the user associated with the token
+	user, err := t.GetUserForToken(*tkn)
 	if err != nil {
-		return nil, errors.New("No matching user found")
+		return nil, errors.New("no matching user found")
 	}
 
 	return user, nil
 }
 
+// Insert inserts a token into the database
 func (t *Token) Insert(token Token, u User) error {
-
 	ctx, cancel := context.WithTimeout(context.Background(), dbTimeout)
 	defer cancel()
 
-	stmt := `DELETE FROM tokens WHERE user_id = $1`
+	// delete any existing tokens
+	stmt := `delete from tokens where user_id = $1`
 	_, err := db.ExecContext(ctx, stmt, token.UserID)
 	if err != nil {
 		return err
 	}
 
+	// we assign the email value, just to be safe, in case it was
+	// not done in the handler that calls this function
 	token.Email = u.Email
-	stmt = `INSERT INTO tokens (user_id, email , token, token_hash, created_at, updated_at, expiry) 
-     values ($1 ,$2, $3, $4 , $5, $6, $7)`
+
+	// insert the new token
+	stmt = `insert into tokens (user_id, email, token, token_hash, created_at, updated_at, expiry)
+		values ($1, $2, $3, $4, $5, $6, $7)`
 
 	_, err = db.ExecContext(ctx, stmt,
 		token.UserID,
 		token.Email,
 		token.Token,
 		token.TokenHash,
-		token.CreatedAt,
-		token.UpdatedAt,
+		time.Now(),
+		time.Now(),
 		token.Expiry,
 	)
 	if err != nil {
 		return err
 	}
+
 	return nil
 }
 
+// DeleteByToken deletes a token, by plain text token
 func (t *Token) DeleteByToken(plainText string) error {
-
 	ctx, cancel := context.WithTimeout(context.Background(), dbTimeout)
 	defer cancel()
 
-	stmt := `DELETE FROM tokens WHERE token = $1`
-	_, err := db.ExecContext(ctx, stmt, plainText)
+	stmt := `delete from tokens where token = $1`
 
+	_, err := db.ExecContext(ctx, stmt, plainText)
 	if err != nil {
 		return err
 	}
@@ -382,22 +438,23 @@ func (t *Token) DeleteByToken(plainText string) error {
 	return nil
 }
 
+// ValidToken makes certain that a given token is valid; in order to be valid,
+// the token must exist in the database, the associated user must exist in the database,
+// and the token must not have expired.
 func (t *Token) ValidToken(plainText string) (bool, error) {
 	token, err := t.GetByToken(plainText)
-
 	if err != nil {
-		return false, errors.New("No matching token found")
+		return false, errors.New("no matching token found")
 	}
 
 	_, err = t.GetUserForToken(*token)
 	if err != nil {
-		return false, errors.New("No matching user found")
+		return false, errors.New("no matching user found")
 	}
 
 	if token.Expiry.Before(time.Now()) {
-		return false, errors.New("Expired token!")
+		return false, errors.New("expired token")
 	}
 
 	return true, nil
-
 }

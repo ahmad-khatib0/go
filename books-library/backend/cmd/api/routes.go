@@ -43,7 +43,7 @@ func (app *application) routes() http.Handler {
 	})
 
 	mux.Get("/users/add", func(w http.ResponseWriter, r *http.Request) {
-		var u = data.User{
+		u := data.User{
 			Email:     "you@there.com",
 			FirstName: "you",
 			LastName:  "there",
@@ -70,7 +70,7 @@ func (app *application) routes() http.Handler {
 			return
 		}
 
-		token.Email = "admin@example.com"
+		token.Email = "you@there.com"
 		token.CreatedAt = time.Now()
 		token.UpdatedAt = time.Now()
 
@@ -81,17 +81,16 @@ func (app *application) routes() http.Handler {
 		}
 
 		app.writeJSON(w, http.StatusOK, payload)
-
 	})
 
 	mux.Get("/test-save-token", func(w http.ResponseWriter, r *http.Request) {
-		token, err := app.models.Token.GenerateToken(2, 60*time.Minute)
+		token, err := app.models.Token.GenerateToken(7, 60*time.Minute)
 		if err != nil {
 			app.errorLog.Println(err)
 			return
 		}
 
-		user, err := app.models.User.GetOne(2)
+		user, err := app.models.User.GetOne(7)
 
 		token.UserID = user.ID
 		token.CreatedAt = time.Now()
@@ -110,7 +109,6 @@ func (app *application) routes() http.Handler {
 		}
 
 		app.writeJSON(w, http.StatusOK, payload)
-
 	})
 
 	mux.Get("/test-validate-token", func(w http.ResponseWriter, r *http.Request) {
