@@ -13,7 +13,7 @@
         <span class="navbar-toggler-icon"></span>
       </button>
       <div class="collapse navbar-collapse" id="navbarNav">
-        <ul class="navbar-nav">
+        <ul class="navbar-nav me-auto mb-2 mb-lg-0">
           <li class="nav-item">
             <router-link class="nav-link active" aria-current="page" to="/">Home</router-link>
           </li>
@@ -22,6 +22,10 @@
             <a href="javascript:void(0);" v-else class="nav-link" @click="logout">Logout</a>
           </li>
         </ul>
+
+        <span class="navbar-text">
+          {{ store.user.first_name ?? '' }}
+        </span>
       </div>
     </div>
   </nav>
@@ -48,6 +52,10 @@ export default {
             console.log(response.message)
           } else {
             store.token = ''
+            store.user = {}
+
+            document.cookie =
+              '_site_data=; Path=/; SameSite=Strict; Secure; ' + 'Expires=Thu, 01 Jan 1970 00:00:01 GMT;'
             router.push('/login')
           }
         })
