@@ -18,8 +18,8 @@
             <router-link class="nav-link active" aria-current="page" to="/">Home</router-link>
           </li>
           <li class="nav-item">
-            <router-link v-if="store.token != ''" class="nav-link" to="/logout">Logout</router-link>
-            <a v-else href="javascript:void(0)" class="nav-link" @click="logout">Login</a>
+            <router-link v-if="store.token == ''" class="nav-link" to="/login">Login</router-link>
+            <a href="javascript:void(0);" v-else class="nav-link" @click="logout">Logout</a>
           </li>
         </ul>
       </div>
@@ -38,8 +38,19 @@ export default {
   },
   methods: {
     logout() {
-      store.token = ''
-      router.push('/login')
+      const payload = { token: store.token }
+      const requestOptions = { method: 'POST', body: JSON.stringify(payload) }
+
+      fetch('http://localhost:8081/users/logout', requestOptions)
+        .then((response) => response.json())
+        .then((response) => {
+          if (response.error) {
+            console.log(response.message)
+          } else {
+            store.token = ''
+            router.push('/login')
+          }
+        })
     },
   },
 }
