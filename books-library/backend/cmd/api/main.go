@@ -14,10 +14,11 @@ type config struct {
 }
 
 type application struct {
-	config   config
-	infoLog  *log.Logger
-	errorLog *log.Logger
-	models   data.Models
+	config      config
+	infoLog     *log.Logger
+	errorLog    *log.Logger
+	models      data.Models
+	environment string
 }
 
 func main() {
@@ -29,6 +30,7 @@ func main() {
 
 	dsn := os.Getenv("DSN") // this will be sat by: env DSN="the env string" go run ./cmd/api
 	// this is the first way, second way is using the makefile (make start)
+	environment := os.Getenv("ENV")
 
 	db, err := driver.ConnectPostrges(dsn)
 	if err != nil {
@@ -37,10 +39,11 @@ func main() {
 
 	defer db.SQL.Close()
 	app := &application{
-		config:   cfg,
-		infoLog:  infoLog,
-		errorLog: errorLog,
-		models:   data.New(db.SQL),
+		config:      cfg,
+		infoLog:     infoLog,
+		errorLog:    errorLog,
+		models:      data.New(db.SQL),
+		environment: environment,
 	}
 
 	err = app.serve()
