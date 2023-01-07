@@ -24,6 +24,7 @@ import TextInput from './forms/TextInput.vue'
 import { store } from '../store/'
 import router from '../router/'
 import notie from 'notie'
+import Security from '../security/security'
 
 export default {
   name: 'login',
@@ -47,12 +48,12 @@ export default {
         password: this.password,
       }
 
-      const requestOptions = {
-        method: 'POST',
-        body: JSON.stringify(payload),
-      }
+      // const requestOptions = {
+      //   method: 'POST',
+      //   body: JSON.stringify(payload),
+      // }
 
-      fetch(process.env.VUE_APP_API_URL + '/users/login', requestOptions)
+      fetch(process.env.VUE_APP_API_URL + '/users/login', Security.requestOptions(payload))
         .then((response) => response.json())
         .then((response) => {
           if (response.error) {
