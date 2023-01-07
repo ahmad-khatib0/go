@@ -9,7 +9,12 @@
 </template>
 
 <script>
-export default {}
-</script>
+import Secority from '../security/security'
 
+export default {
+  beforeMount() {
+    Secority.requireAuth()
+  },
+}
+</script>
 <style></style>

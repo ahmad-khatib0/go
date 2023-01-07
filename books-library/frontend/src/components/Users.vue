@@ -7,3 +7,13 @@
     </div>
   </div>
 </template>
+
+<script>
+import Secority from '../security/security'
+
+export default {
+  beforeMount() {
+    Secority.requireAuth()
+  },
+}
+</script>
