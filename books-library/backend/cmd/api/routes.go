@@ -32,6 +32,7 @@ func (app *application) routes() http.Handler {
 
 		mux.Post("/authors/all", app.AuthorsAll)
 		mux.Post("/books/save", app.EditBook)
+		mux.Post("/books/{id}", app.BookById)
 	})
 
 	mux.Post("/users/login", app.Login)
