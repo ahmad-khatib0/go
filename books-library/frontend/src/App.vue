@@ -1,12 +1,18 @@
 <template>
   <Header />
   <div>
+    <!-- keey-alive when a component is loaded, remember it. In other words, cash that component -->
     <router-view
+      v-slot="{ Component }"
       :key="componentKey"
       @success="success"
       @error="error"
       @warning="warning"
-      @forceUpdate="forceUpdate" />
+      @forceUpdate="forceUpdate">
+      <keep-alive>
+        <component :is="Component"> </component>
+      </keep-alive>
+    </router-view>
   </div>
   <Footer />
 </template>
