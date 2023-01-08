@@ -47,6 +47,23 @@
             name="password"></text-input>
 
           <hr />
+          <div class="float-start">
+            <input type="submit" class="btn btn-primary me-2" value="Save" />
+            <router-link to="/admin/users" class="btn btn-outline-secondary">Cancel</router-link>
+          </div>
+          <div class="float-end">
+            <a
+              v-if="
+                this.$route.params.userId > 0 &&
+                parseInt(String(this.$route.params.userId), 10) !== store.user.id
+              "
+              class="btn btn-danger"
+              href="javascript:void(0);"
+              @click="confirmDelete(this.user.id)"
+              >Delete</a
+            >
+          </div>
+          <div class="clearfix"></div>
         </form-tag>
       </div>
     </div>
@@ -54,14 +71,16 @@
 </template>
 
 <script>
-import Secority from '../security/security'
+import Security from '../security/security'
 import FormTag from './forms/FormTag.vue'
 import TextInput from './forms/TextInput.vue'
-// import notie from 'notie'
+import notie from 'notie'
+// import router from '../router'
+import { store } from '../store'
 
 export default {
   beforeMount() {
-    Secority.requireAuth()
+    Security.requireAuth()
 
     if (parseInt(String(this.$route.params.userId), 10) > 0) {
       // editing an existing user
@@ -71,6 +90,7 @@ export default {
 
   data() {
     return {
+      store,
       user: {
         id: 0,
         first_name: '',
@@ -85,7 +105,38 @@ export default {
     'text-input': TextInput,
   },
   methods: {
-    submitHandler() {},
+    submitHandler() {
+      const payload = {
+        id: parseInt(String(this.$route.params.userId), 10),
+        first_name: this.user.first_name,
+        last_name: this.user.last_name,
+        email: this.user.email,
+        password: this.user.password,
+      }
+
+      fetch(`${process.env.VUE_APP_API_URL}/admin/users/save`, Security.requestOptions(payload))
+        .then((response) => response.json())
+        .then((data) => {
+          if (data.error) {
+            notie.alert({
+              type: 'error',
+              text: data.message,
+            })
+          } else {
+            notie.alert({
+              type: 'success',
+              text: 'Changes saved!',
+            })
+          }
+        })
+        .catch((error) => {
+          notie.alert({
+            type: 'error',
+            text: error,
+          })
+        })
+    },
+    confirmDelete() {},
   },
 }
 </script>

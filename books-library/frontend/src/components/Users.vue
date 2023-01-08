@@ -14,7 +14,7 @@
           </tr>
         </thead>
         <tbody>
-          <tr v-for="u in this.users" v-bind:key="u.id">
+          <tr v-for="u in users" v-bind:key="u.id">
             <td>
               <router-link :to="`/admin/users/${u.id}`">{{ u.last_name }}, {{ u.first_name }}</router-link>
             </td>
@@ -31,6 +31,11 @@ import Security from '../security/security'
 import notie from 'notie'
 
 export default {
+  data() {
+    return {
+      users: [],
+    }
+  },
   beforeMount() {
     Security.requireAuth()
 
