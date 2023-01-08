@@ -300,3 +300,33 @@ func (app *application) OneBook(w http.ResponseWriter, r *http.Request) {
 
 	app.writeJSON(w, http.StatusOK, payload)
 }
+
+func (app *application) AuthorsAll(w http.ResponseWriter, r *http.Request) {
+	all, err := app.models.Author.All()
+	if err != nil {
+		app.errorJSON(w, err)
+		return
+
+	}
+
+	type selectData struct {
+		Value int    `json:"value"`
+		Text  string `json:"text"`
+	}
+
+	var result []selectData
+	for _, x := range all {
+		author := selectData{
+			Value: x.ID,
+			Text:  x.AuthorName,
+		}
+		result = append(result, author)
+	}
+
+	payload := jsonResponse{
+		Error: false,
+		Data:  result,
+	}
+
+	app.writeJSON(w, http.StatusOK, payload)
+}
