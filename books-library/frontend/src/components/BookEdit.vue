@@ -6,7 +6,7 @@
         <hr />
 
         <form-tag @bookEditEvent="submitHandler" name="bookForm" event="bookEditEvent">
-          <div v-if="this.book.slug != ''" class="mb-3">
+          <div v-if="this.book.slug !== ''" class="mb-3">
             <img
               :src="`${this.imgPath}/covers/${this.book.slug}.jpg`"
               class="img-fluid img-thumbnail book-cover"
@@ -98,6 +98,7 @@
               Delete
             </a>
           </div>
+          <div class="clearfix"></div>
         </form-tag>
       </div>
     </div>
