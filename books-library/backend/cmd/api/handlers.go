@@ -2,13 +2,19 @@ package main
 
 import (
 	"backend/internal/data"
+	"encoding/base64"
 	"errors"
+	"fmt"
 	"net/http"
+	"os"
 	"strconv"
 	"time"
 
 	"github.com/go-chi/chi"
+	"github.com/mozillazg/go-slugify"
 )
+
+var staticPath = "./static/"
 
 type jsonResponse struct {
 	Error   bool        `json:"error"`
@@ -329,4 +335,66 @@ func (app *application) AuthorsAll(w http.ResponseWriter, r *http.Request) {
 	}
 
 	app.writeJSON(w, http.StatusOK, payload)
+}
+
+func (app *application) EditBook(w http.ResponseWriter, r *http.Request) {
+	var requestPayload struct {
+		ID              int    `json:"id"`
+		Title           string `json:"title"`
+		AuthorID        int    `json:"author_id"`
+		PublicationYear int    `json:"publication_year"`
+		Description     string `json:"description"`
+		CoverBase64     string `json:"cover"`
+		GenreIDs        []int  `json:"genre_ids"`
+	}
+
+	err := app.readJSON(w, r, requestPayload)
+	if err != nil {
+		app.errorJSON(w, err)
+		return
+	}
+
+	book := data.Book{
+		ID:              requestPayload.ID,
+		Title:           requestPayload.Title,
+		AuthorID:        requestPayload.AuthorID,
+		PublicationYear: requestPayload.PublicationYear,
+		Description:     requestPayload.Description,
+		Slug:            slugify.Slugify(requestPayload.Title),
+		GenreIDs:        requestPayload.GenreIDs,
+	}
+
+	if len(requestPayload.CoverBase64) > 0 {
+		decoded, err := base64.StdEncoding.DecodeString(requestPayload.CoverBase64)
+		if err != nil {
+			app.errorJSON(w, err)
+			return
+		}
+
+		if err := os.WriteFile(fmt.Sprintf("%s/covers/%s.jpg", staticPath, book.Slug), decoded, 0666); err != nil {
+			app.errorJSON(w, err)
+			return
+		}
+
+		if book.ID == 0 {
+			_, err := app.models.Book.Insert(book)
+			if err != nil {
+				app.errorJSON(w, err)
+				return
+			}
+		} else {
+			err := book.Update()
+			if err != nil {
+				app.errorJSON(w, err)
+				return
+			}
+		}
+	}
+
+	payload := jsonResponse{
+		Error:   false,
+		Message: "changes Saved ",
+	}
+
+	app.writeJSON(w, http.StatusAccepted, payload)
 }
