@@ -122,5 +122,9 @@ func (app *application) routes() http.Handler {
 	// 	app.writeJSON(w, http.StatusOK, payload)
 	// })
 
+	// static files
+	fileServer := http.FileServer(http.Dir("./static/"))
+	mux.Handle("/static/*", http.StripPrefix("/static", fileServer))
+
 	return mux
 }
