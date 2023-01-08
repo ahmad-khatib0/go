@@ -11,7 +11,7 @@ let Security = {
   requestOptions: function (payload) {
     const headers = new Headers()
     headers.append('Content-Type', 'application/json')
-    headers.append('Authorization', 'Beare ' + store.token)
+    headers.append('Authorization', 'Bearer ' + store.token)
 
     return {
       method: 'POST',
