@@ -30,13 +30,14 @@
 import Security from '../security/security'
 
 export default {
+  name: 'BooksAdmin',
   data() {
     return {
       books: {},
       ready: false,
     }
   },
-  activated() {
+  mounted() {
     Security.requireAuth()
 
     fetch(process.env.VUE_APP_API_URL + '/books')
@@ -49,9 +50,6 @@ export default {
           this.ready = true
         }
       })
-  },
-  deactivated() {
-    this.ready = false
   },
 }
 </script>

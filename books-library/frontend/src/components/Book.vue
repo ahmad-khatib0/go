@@ -28,6 +28,7 @@
 
 <script>
 export default {
+  name: 'Book',
   data() {
     return {
       book: {},
@@ -35,7 +36,7 @@ export default {
       ready: false,
     }
   },
-  activated() {
+  mounted() {
     // activated is fired anytime a cached component is redisplayed, and anytime mounted called
     fetch(process.env.VUE_APP_API_URL + '/books/' + this.$route.params.bookName)
       .then((response) => response.json())
@@ -48,9 +49,6 @@ export default {
           console.log('Title is', this.book.title)
         }
       })
-  },
-  deactivated() {
-    this.ready = false
   },
 }
 </script>
