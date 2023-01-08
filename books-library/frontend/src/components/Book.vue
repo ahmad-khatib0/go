@@ -49,6 +49,8 @@ export default {
         }
       })
   },
-  deactivated() {},
+  deactivated() {
+    this.ready = false
+  },
 }
 </script>
