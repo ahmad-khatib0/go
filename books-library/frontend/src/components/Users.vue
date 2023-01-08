@@ -30,7 +30,9 @@
             </td>
 
             <td v-if="u.token.id > 0">
-              <span class="badge bg-success" @click="logUserOut(u.id)">Logged in</span>
+              <a href="javascript:void(0);">
+                <span class="badge bg-success" @click="logUserOut(u.id)">Logged in</span>
+              </a>
             </td>
             <td v-else>
               <span class="badge bg-danger">Not logged in</span>
