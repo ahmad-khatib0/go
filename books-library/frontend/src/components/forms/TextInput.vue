@@ -12,6 +12,7 @@
       @input="$emit('update:modelValue', $event.target.value)"
       :autocomplete="name + '-new'"
       class="form-control" />
+    <div class="format-text">{{ help }}</div>
   </div>
 </template>
 
@@ -27,6 +28,7 @@ export default {
     min: String,
     max: String,
     modelValue: String,
+    help: String,
   },
 }
 </script>

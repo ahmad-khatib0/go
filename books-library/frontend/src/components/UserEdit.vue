@@ -43,6 +43,7 @@
             v-model="user.password"
             type="password"
             label="Password"
+            help="Leave it empty to keep old password"
             :value="user.password"
             name="password"></text-input>
 
@@ -153,7 +154,35 @@ export default {
           })
         })
     },
-    confirmDelete() {},
+    confirmDelete(id) {
+      notie.confirm({
+        text: 'Are you sure you want to delete this user?',
+        submitText: 'Delete',
+        submitCallback: function () {
+          console.log('will delete', id)
+
+          let payload = {
+            id: id,
+          }
+
+          fetch(process.env.VUE_APP_API_URL + '/admin/users/delete', Security.requestOptions(payload))
+            .then((response) => response.json())
+            .then((data) => {
+              if (data.error) {
+                notie.alert({
+                  type: 'error',
+                  text: data.message,
+                })
+              } else {
+                notie.alert({
+                  type: 'success',
+                  text: 'User deleted',
+                })
+              }
+            })
+        },
+      })
+    },
   },
 }
 </script>
