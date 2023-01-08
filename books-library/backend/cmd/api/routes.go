@@ -22,9 +22,6 @@ func (app *application) routes() http.Handler {
 		MaxAge:           300,
 	}))
 
-	mux.Post("/users/login", app.Login)
-	mux.Post("/users/logout", app.Logout)
-
 	mux.Route("/admin", func(mux chi.Router) {
 		mux.Use(app.AuthTokenMiddleware)
 		mux.Post("/users", app.AllUsers)
@@ -33,6 +30,10 @@ func (app *application) routes() http.Handler {
 		mux.Post("/users/delete", app.DeleteUser)
 		mux.Post("/log-user-out/{id}", app.LogUserOutAndSetInactive)
 	})
+
+	mux.Post("/users/login", app.Login)
+	mux.Post("/users/logout", app.Logout)
+	mux.Post("/validate-token", app.ValidateToken)
 
 	// mux.Get("/users/add", func(w http.ResponseWriter, r *http.Request) {
 	// 	u := data.User{
