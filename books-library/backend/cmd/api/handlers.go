@@ -348,7 +348,7 @@ func (app *application) EditBook(w http.ResponseWriter, r *http.Request) {
 		GenreIDs        []int  `json:"genre_ids"`
 	}
 
-	err := app.readJSON(w, r, requestPayload)
+	err := app.readJSON(w, r, &requestPayload)
 	if err != nil {
 		app.errorJSON(w, err)
 		return
@@ -365,24 +365,28 @@ func (app *application) EditBook(w http.ResponseWriter, r *http.Request) {
 	}
 
 	if len(requestPayload.CoverBase64) > 0 {
+		// we have a cover
 		decoded, err := base64.StdEncoding.DecodeString(requestPayload.CoverBase64)
 		if err != nil {
 			app.errorJSON(w, err)
 			return
 		}
 
+		// write image to /static/covers
 		if err := os.WriteFile(fmt.Sprintf("%s/covers/%s.jpg", staticPath, book.Slug), decoded, 0666); err != nil {
 			app.errorJSON(w, err)
 			return
 		}
 
 		if book.ID == 0 {
+			// adding a book
 			_, err := app.models.Book.Insert(book)
 			if err != nil {
 				app.errorJSON(w, err)
 				return
 			}
 		} else {
+			// updating a book
 			err := book.Update()
 			if err != nil {
 				app.errorJSON(w, err)
@@ -393,7 +397,7 @@ func (app *application) EditBook(w http.ResponseWriter, r *http.Request) {
 
 	payload := jsonResponse{
 		Error:   false,
-		Message: "changes Saved ",
+		Message: "Changes saved",
 	}
 
 	app.writeJSON(w, http.StatusAccepted, payload)

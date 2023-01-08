@@ -51,7 +51,7 @@
 
           <text-input
             v-model="book.publication_year"
-            type="text"
+            type="number"
             required="true"
             label="Publication Year"
             :value="book.publication_year"
@@ -116,10 +116,27 @@ export default {
   name: 'BookEdit',
   beforeMount() {
     Security.requireAuth()
+
+    // get book for edit if id > 0
     if (this.$route.params.bookId > 0) {
       // editing a book
-    } else {
-      // adding a book
+      fetch(
+        process.env.VUE_APP_API_URL + '/admin/books/' + this.$route.params.bookId,
+        Security.requestOptions(''),
+      )
+        .then((response) => response.json())
+        .then((data) => {
+          if (data.error) {
+            this.$emit('error', data.message)
+          } else {
+            this.book = data.data
+            let genreArray = []
+            for (let i = 0; i < this.book.genres.length; i++) {
+              genreArray.push(this.book.genres[i].id)
+            }
+            this.book.genre_ids = genreArray
+          }
+        })
     }
 
     // get list of authors for drop down
@@ -144,7 +161,7 @@ export default {
         id: 0,
         title: '',
         author_id: 0,
-        publication_year: 0,
+        publication_year: null,
         description: '',
         cover: '',
         slug: '',
@@ -170,12 +187,14 @@ export default {
         id: this.book.id,
         title: this.book.title,
         author_id: parseInt(this.book.author_id, 10),
-        publication_year: this.book.publication_year,
+        publication_year: parseInt(this.book.publication_year, 10),
         description: this.book.description,
         cover: this.book.cover,
         slug: this.book.slug,
         genre_ids: this.book.genre_ids,
       }
+
+      // console.log(payload);
 
       fetch(`${process.env.VUE_APP_API_URL}/admin/books/save`, Security.requestOptions(payload))
         .then((response) => response.json())
@@ -229,3 +248,9 @@ export default {
   },
 }
 </script>
+
+<style scoped>
+.book-cover {
+  max-width: 10em;
+}
+</style>
