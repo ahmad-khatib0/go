@@ -35,6 +35,9 @@ func (app *application) routes() http.Handler {
 	mux.Post("/users/logout", app.Logout)
 	mux.Post("/validate-token", app.ValidateToken)
 
+	mux.Post("/books", app.AllBooks)
+	mux.Get("/books", app.AllBooks)
+
 	// mux.Get("/users/add", func(w http.ResponseWriter, r *http.Request) {
 	// 	u := data.User{
 	// 		Email:     "you@there.com",
