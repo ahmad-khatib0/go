@@ -1,0 +1,14 @@
+version: "3"
+
+services:
+
+  #  start caddy
+  caddy:
+    image: "caddy:2.4.6-alpine"
+    ports:
+      - "80:80"
+    restart: always
+    volumes:
+      - ./dist:/dist
+      - ./Caddyfile:/etc/caddy/Caddyfile
+

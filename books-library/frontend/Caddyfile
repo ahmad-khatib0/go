@@ -1,0 +1,5 @@
+http://localhost:80 {
+    file_server
+    root * /dist
+    try_files {path} /index.html
+}
