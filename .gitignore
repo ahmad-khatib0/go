@@ -7,3 +7,5 @@ books-library/backend/vueapi
 
 mod
 mongo
+
+dist/
