@@ -1,2 +1,13 @@
 migrate create -ext sql -dir db/migration -seq init_schema
+sqlc init 
+sqlc generate
 
+ ╭──────────────────────────────────────────────────────────────────────────────╮
+ │                         -- name: CreateAccount :one                          │
+ │     This comment will instruct sqlc how to generate the Golang function      │
+ │                           signature for this query                           │
+ ╰──────────────────────────────────────────────────────────────────────────────╯
+ ╭──────────────────────────────────────────────────────────────────────────────╮
+ │                        -- name: DeleteAccount :exec                          |
+ | exec this means that this auto generated func dosen't return anything        │
+ ╰──────────────────────────────────────────────────────────────────────────────╯
