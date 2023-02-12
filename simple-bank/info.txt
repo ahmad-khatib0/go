@@ -2,12 +2,31 @@ migrate create -ext sql -dir db/migration -seq init_schema
 sqlc init 
 sqlc generate
 
- ╭──────────────────────────────────────────────────────────────────────────────╮
- │                         -- name: CreateAccount :one                          │
- │     This comment will instruct sqlc how to generate the Golang function      │
- │                           signature for this query                           │
- ╰──────────────────────────────────────────────────────────────────────────────╯
- ╭──────────────────────────────────────────────────────────────────────────────╮
- │                        -- name: DeleteAccount :exec                          |
- | exec this means that this auto generated func dosen't return anything        │
- ╰──────────────────────────────────────────────────────────────────────────────╯
+╭──────────────────────────────────────────────────────────────────────────────╮
+│                         -- name: CreateAccount :one                          │
+│     This comment will instruct sqlc how to generate the Golang function      │
+│                           signature for this query                           │
+╰──────────────────────────────────────────────────────────────────────────────╯
+╭──────────────────────────────────────────────────────────────────────────────╮
+│                        -- name: DeleteAccount :exec                          |
+| exec this means that this auto generated func dosen't return anything        │
+╰──────────────────────────────────────────────────────────────────────────────╯
+      ──────────────────────────────── mysql ────────────────────────────
+    ╭─────────────────────────────────────────────────────────────── ------╮
+    │ select @@transaction_isolation   # mysql show isolation level        │
+    │ select @@global.transaction_isolation   # mysql show isolation level │
+    ╰───────────────────────────────────────────────────────────────-------╯
+          ╭──────────────────────────────────────────────────────────╮
+          │ set session transaction isolation level read uncommitted │
+          ╰──────────────────────────────────────────────────────────╯
+ 
+     ──────────────────────────────── postgres ────────────────────────────
+                      ╭──────────────────────────────────╮
+                      │ show transaction isolation level │
+                      ╰──────────────────────────────────╯
+               ╭────────────────────────────────────────────────╮
+               │ set transaction isolation level repetable read │
+               ╰────────────────────────────────────────────────╯
+
+Postgres uses a dependencies checking mechanism to detect potential read phenomena and stop them 
+by throwing out an error. MySQL, on the other hand, chooses to use locking mechanism to achieve similar result.
