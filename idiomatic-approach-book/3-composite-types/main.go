@@ -131,8 +131,50 @@ func fullSliceExpression() {
 	fmt.Println("y:", y) // y: [1 2 30 40 50]
 	fmt.Println("z:", z) // z: [3 4 70]
 
-	// Because we limited the capacity of the subslices to their lengths, appending additional elements 
+	// Because we limited the capacity of the subslices to their lengths, appending additional elements
 	// onto y and z created new slices that didn’t interact with the other slices. After this code runs
+}
+
+func convertArraysToSlices() {
+	//  that taking a slice from an array has the same memory-sharing properties as taking a slice from a slice
+	x := [4]int{5, 6, 7, 8}
+	y := x[:2]
+	z := x[2:]
+	x[0] = 10
+	fmt.Println("x:", x) // x: [10 6 7 8]
+	fmt.Println("y:", y) // y: [10 6]   => slice overwritting
+	fmt.Println("z:", z) // z: [7 8]
+}
+
+func copySlice() {
+	// If you need to create a slice that’s independent of the original
+	x := []int{1, 2, 3, 4}
+	y := make([]int, 4)
+	num := copy(y, x)   // destination , source
+	fmt.Println(y, num) // [1 2 3 4] 4
+
+	y = make([]int, 2)
+	num = copy(y, x)    // copies the first two elements of a four element slice
+	fmt.Println(y, num) // [1 2 ] 2
+
+	copy(y, x[2:]) // copy from the middle of the source slice
+	// Also note that we don’t assign the output of copy to a variable. If you don’t
+	// need the number of elements copied, you don’t need to assign it
+
+	// The copy function allows you to copy between two slices that cover overlapping sections of an underlying slice:
+	x = []int{1, 2, 3, 4}
+	num = copy(x[:3], x[1:])
+	fmt.Println(x, num) // [2 3 4 4] 3
+
+	// You can use copy with arrays by taking a slice of the array.
+	// You can make the array either the source or the destination of the copy
+	x = []int{1, 2, 3, 4}
+	d := [4]int{5, 6, 7, 8}
+	y = make([]int, 2)
+	copy(y, d[:])
+	fmt.Println(y) // [5 6]
+	copy(d[:], x)
+	fmt.Println(d) // [1 2 3 4]   => overwrote all the d elements with the x ones
 }
 
 func main() {
