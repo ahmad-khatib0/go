@@ -1,9 +1,9 @@
 For example, if you are currently running version 1.15.2 and wanted to try out 
 version 1.15.6 of Go, you would use the following commands: 
- ╭────────────────────────────────╮
- │ go get golang.org/dl/go.1.15.6 │
- │ go1.15.6 download              │
- ╰────────────────────────────────╯
+                       ╭────────────────────────────────╮
+                       │ go get golang.org/dl/go.1.15.6 │
+                       │ go1.15.6 download              │
+                       ╰────────────────────────────────╯
 and then as normal:               go1.15.6 build 
 Once you have validated that your code works on this versoin of go, if you wanna delete it: 
              ╭───────────────────────────────────────────────────────╮
@@ -19,3 +19,47 @@ Once you have validated that your code works on this versoin of go, if you wanna
              │ rm -rf /usr/local/old-go                           │
              ╰────────────────────────────────────────────────────╯
 
+
+
+2-primitive-types-and-declarations
+
+********************************* Integers ********************************* 
+the zero value for all of the integer types is 0
+          ╭────────────────────────────────────────────────────────────╮
+          │ type name value range                                      │
+          │ int8           -128 to 127                                 │
+          │ int16          -32768 to 32767                             │
+          │ int32          -2147483648 to 2147483647                   │
+          │ int64          -9223372036854775808 to 9223372036854775807 │
+          │ uint8           0 to 255                                   │
+          │ uint16          0 to 65536                                 │
+          │ uint32          0 to 4294967295                            │
+          │ uint64          0 to 18446744073709551615                  │
+          │                                                            │
+          ╰────────────────────────────────────────────────────────────╯
+          
+the zero value for the floating point types is 0
+type name    largest absolute value                         smallest (non-zero) absolute value
+float32      3.40282346638528859811704183484516925440e+38    1.401298464324817070923729583289916131280e-45
+float64      1.797693134862315708145274237317043567981e+308  4.940656458412465441765687928682213723651e-324
+
+dividing a non-zero floating-point variable by 0 returns +Inf or -Inf (positive ornegative infinity),
+depending on the sign of the number. Dividing a floating-point variable set to 0 by 0 returns NaN 
+
+Go store floating point numbers using a specification called IEEE 754
+For example, if you store the number -3.1415 in a float64, the 64-bit representation in memory looks like:
+1100000000001001001000011100101011000000100000110001001001101111
+which is exactly equal to: -3.14150000000000018118839761883.
+
+
+********************************* Strings ********************************* 
+Strings in Go are immutable; you can reassign the value of a string variable, but
+you cannot change the value of the string that is assigned to it.
+
+********************************* Variables declaration ********************************* 
+There are some situations within functions where you should avoid :=:
+1- When initializing a variable to its zero value, use varmakes it clear that the zero value is intended.
+2- While it is legal to use a type conversion to specify the type of the value and use := to
+write x := byte(20), it is idiomatic to write var x byte = 20
+3- Because := allows you to assign to both new and existing variables, it sometimes creates
+new variables when you think you are re-using existing ones
