@@ -73,3 +73,40 @@ constants in Go are calculated at compile time and cannot have any side-effects.
 them easy to eliminate; if a constant isn’t used, it is simply not included in the compiled binary
 
 // Any Unicode character that is considered a letter or digit is allowed
+
+
+********************************* Arrays ********************************* 
+arrays in Go are rarely used explicitly. This is because they come with an unusual limitation: 
+Go considers the size of the array to be part of the type of the array. This makes an array that’s declared 
+to be [3]int a different type from an array that’s declared to be [4]int. This also means that you cannot 
+use a variable to specify the size of an array, because types must be resolved at compile time, not at runtime
+
+********************************* Slices ********************************* 
+a slice is a sequence of values. Each element in a slice is assigned to consecutive memory locations, 
+which makes it quick to read or write these values,  Every slice has a capacity, which is the number of 
+consecutive memory locations reserved. This can be larger than the length. Each time you append to a slice,
+one or more values is added to the end of the slice. Each value added increases the length by one. When the 
+length reaches the capacity, there’s no more room to put values. If you try to add additional values when the length
+equals the capacity, the append function uses the Go runtime to allocate a new slice with a larger capacity.
+The values in the original slice are copied to the new slice, the new values are added to the end,
+and the new slice is returned
+Whenever you take a slice from another slice, the subslice’s capacity is set to the capacity of the 
+original slice, minus the offset of the subslice within the original slice. This means that any 
+unused capacity in the original slice is also shared with any subslices.
+
+
+                                 THE GO RUNTIME
+Every high-level language relies on a set of libraries to enable programs written in those languages to run,
+and Go is no exception. The Go runtime provides services like memory allocation and garbage collection,
+concurrency support, networking, and implementations of built-in types and functions. The Go runtime is 
+compiled into every Go binary. This is different from languages that use a virtual machine, which must be 
+installed separately to allow programs written in those languages to function. Including the runtime in the
+binary makes it easier to distribute Go programs and avoids worries about compatibility issues between 
+the runtime and the program.
+When a slice grows via append, it takes time for the Go runtime to allocate new memory and copy the existing 
+data from the old memory to the new. The old memory also needs to be garbage collected. For this reason, The Go
+runtime usually increases a slice by more than one each time it runs out of capacity. The rules as of Go
+1.14 are to double the size of the slice when the capacity is less than 1024,
+and then grow by at least 25% afterwards.
+
+
