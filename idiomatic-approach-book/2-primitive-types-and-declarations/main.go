@@ -26,7 +26,7 @@ func main() {
 	// variables declarations ways
 	var e int             // if you want to declare a variable and assign it the zero value
 	var f, g int = 10, 20 //  declare multiple variables at once with var
-	var h, i = 10, "hello"
+	h, i := 10, "hello"
 	fmt.Println(e, f, g, h, i)
 
 	var (
@@ -43,5 +43,23 @@ func main() {
 	q := 10
 	q, s := 30, "hello"
 	fmt.Println(q, s)
+}
 
+func constants() {
+	// untyped constant declaration
+	const x = 10 // All of the following assignments are legal:
+	var y int = x
+	var z float64 = x
+	var d byte = x
+
+	const typedX int = 10 // typed constant declaration
+	fmt.Println(y, z, d)
+}
+
+func unusedVariables() {
+	x := 10
+	x = 20
+	fmt.Println(x)
+	x = 30
+	// While the compiler and go vet do not catch the unused assignments of 10 and 30 to x, golangci-lint, detects them
 }

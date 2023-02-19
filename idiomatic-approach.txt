@@ -63,3 +63,13 @@ There are some situations within functions where you should avoid :=:
 write x := byte(20), it is idiomatic to write var x byte = 20
 3- Because := allows you to assign to both new and existing variables, it sometimes creates
 new variables when you think you are re-using existing ones
+
+********************************* Constants and immutablity ********************************* 
+const in Go is very limited. Constants in Go are a way to give names to literals. They can only
+hold values that the compiler can figure out at compile-time. This means that they can be assigned
+Go doesn’t provide a way to specify that a value calculated at runtime is immutable there are no 
+immutable arrays, slices, maps, or structs, and there’s no way to declare that a field in a struct is immutable
+constants in Go are calculated at compile time and cannot have any side-effects. This makes 
+them easy to eliminate; if a constant isn’t used, it is simply not included in the compiled binary
+
+// Any Unicode character that is considered a letter or digit is allowed
