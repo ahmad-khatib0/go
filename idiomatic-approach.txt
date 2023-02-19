@@ -1,0 +1,21 @@
+For example, if you are currently running version 1.15.2 and wanted to try out 
+version 1.15.6 of Go, you would use the following commands: 
+ ╭────────────────────────────────╮
+ │ go get golang.org/dl/go.1.15.6 │
+ │ go1.15.6 download              │
+ ╰────────────────────────────────╯
+and then as normal:               go1.15.6 build 
+Once you have validated that your code works on this versoin of go, if you wanna delete it: 
+             ╭───────────────────────────────────────────────────────╮
+             │ go1.15.6 env GOROOT     => /Users/gobook/sdk/go1.15.6 │
+             │ rm -rf $(go1.15.6 env GOROOT)                         │
+             │ rm $(go env GOPATH)/bin/go1.15.6                      │
+             ╰───────────────────────────────────────────────────────╯
+
+                       to update go version  on linux 
+             ╭────────────────────────────────────────────────────╮
+             │ mv /usr/local/go /usr/local/old-go     #backup     │
+             │ tar -C /usr/local -xzf go1.15.2.linux-amd64.tar.gz │
+             │ rm -rf /usr/local/old-go                           │
+             ╰────────────────────────────────────────────────────╯
+
