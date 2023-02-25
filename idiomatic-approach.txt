@@ -53,8 +53,12 @@ which is exactly equal to: -3.14150000000000018118839761883.
 
 
 ********************************* Strings ********************************* 
-Strings in Go are immutable; you can reassign the value of a string variable, but
+1- Strings in Go are immutable; you can reassign the value of a string variable, but
 you cannot change the value of the string that is assigned to it.
+2- String in Go is made out of runes, but that’s not the case. Under the covers, Go uses a sequence of
+bytes to represent a string. These bytes don’t have to be in any particular character encoding, 
+but several Go library functions (and the for-range loop ) assume that
+a string is composed of a sequence of UTF-8-encoded code points
 
 ********************************* Variables declaration ********************************* 
 There are some situations within functions where you should avoid :=:
