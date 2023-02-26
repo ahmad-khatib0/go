@@ -60,19 +60,42 @@ bytes to represent a string. These bytes don’t have to be in any particular ch
 but several Go library functions (and the for-range loop ) assume that
 a string is composed of a sequence of UTF-8-encoded code points
 
+WARNING
+Even though Go allows you to use slicing and indexing syntax with strings, you should only
+use it when you know that your string only contains characters that take up one byte.
+
+UTF-8  
+UTF-8 is the most commonly used encoding for Unicode. Unicode uses 4 bytes (32-bits) to represent each code 
+point, the technical name for each character and modifier. Given this, the simplest way to represent Unicode
+code points is to store 4 bytes for each code point. This is called UTF-32. It is mostly unused because it wastes 
+so much space. Due to Unicode implementation details, 11 of the 32 bits are always zero. Another common encoding 
+is UTF-16, which uses one or two 16-bit (two byte) sequences to represent each code point. This is also wasteful; 
+much of the content in the world is written using code points that fit into a single byte. And that’s where 
+UTF-8 comes in.  UTF-8 is very clever. It lets you use a single byte to represent the Unicode
+characters whose values are below 128 (which includes all of the letters, numbers, and punctuation commonly
+used in English), but expands to a maximum of 4 bytes to represent Unicode code points with larger values.
+The result is that the worst case for UTF-8 is the same as using UTF-32.  UTF-8 has some other nice properties.
+Unlike UTF-32 and UTF-16, you don’t have to worry about little-endian vs. big-endian. It also allows you to
+look at any byte in a sequence and tell if you are at the start of a UTF-8 sequence, or somewhere in the middle.
+That means you can’t accidentally read a character incorrectly.  The only downside is that you cannot randomly 
+access a string encoded with UTF-8, While you can detect if you are in the middle of a character, you
+can’t tell how many characters in you are. You need to start at the beginning of the string and count. Go 
+doesn’t require a string to be written in UTF-8, but it strongly encourages it. We’ll see how to work with 
+UTF-8 strings in upcoming chapters. UTF-8 was invented in 1992 by Ken Thompson and Rob Pike, two of the creators of Go.
+
 ********************************* Variables declaration ********************************* 
 There are some situations within functions where you should avoid :=:
-1- When initializing a variable to its zero value, use varmakes it clear that the zero value is intended.
+1- When initializing a variable to its zero value, use var makes it clear that the zero value is intended.
 2- While it is legal to use a type conversion to specify the type of the value and use := to
 write x := byte(20), it is idiomatic to write var x byte = 20
 3- Because := allows you to assign to both new and existing variables, it sometimes creates
 new variables when you think you are re-using existing ones
 
-********************************* Constants and immutablity ********************************* 
+********************************* Constants and immutability ********************************* 
 const in Go is very limited. Constants in Go are a way to give names to literals. They can only
 hold values that the compiler can figure out at compile-time. This means that they can be assigned
 Go doesn’t provide a way to specify that a value calculated at runtime is immutable there are no 
-immutable arrays, slices, maps, or structs, and there’s no way to declare that a field in a struct is immutable
+immutable arrays, slices, maps, or struts, and there’s no way to declare that a field in a struck is immutable
 constants in Go are calculated at compile time and cannot have any side-effects. This makes 
 them easy to eliminate; if a constant isn’t used, it is simply not included in the compiled binary
 

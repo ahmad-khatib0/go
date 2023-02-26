@@ -177,9 +177,40 @@ func copySlice() {
 	fmt.Println(d) // [1 2 3 4]   => overwrote all the d elements with the x ones
 }
 
+func slicingStrings() {
+	var s string = "Hello there"
+	var s2 string = s[4:7]
+	var s3 string = s[:5]
+	var s4 string = s[6:]
+	fmt.Println(s2, s3, s4) // o t Hello there
+
+	s = "Hello "
+	s2 = s[4:7]
+	s3 = s[:5] // s3 is not set to “o ”. Instead, you get “o �” That’s because
+	// we only copied the first byte of the sun emoji’s code point
+	s4 = s[6:]
+
+	s = "Hello "
+	fmt.Println(len(s))
+	// This code prints out 10, not 7, because it takes 4 bytes to represent the sun with smiling face emoji in UTF-8.
+
+	var a rune = 'x'
+	s = string(a) // A single rune or byte can be converted to a string:
+	var b byte = 'y'
+	s2 = string(b)
+
+	s = "Hello, "
+	var bs []byte = []byte(s)
+	var rs []rune = []rune(s)
+	fmt.Println(bs, rs) // [72 101 108 108 111 44 32 240 159 140 158] [72 101 108 108 111 44 32 127774]
+
+}
+
 func main() {
 	// arrays()
 	// slices()
 	// capacity()
 	makesAndSlices()
+	copySlice()
+	slicingStrings()
 }
