@@ -118,7 +118,7 @@ func makesAndSlices() {
 }
 
 func fullSliceExpression() {
-	// The full slice expression protects against append overwritting (as the last tow examples in makesAndSlices )
+	// The full slice expression protects against append overwriting (as the last tow examples in makesAndSlices )
 	x := make([]int, 0, 5)
 	x = append(x, 1, 2, 3, 4)
 	y := x[:2:2]
@@ -142,7 +142,7 @@ func convertArraysToSlices() {
 	z := x[2:]
 	x[0] = 10
 	fmt.Println("x:", x) // x: [10 6 7 8]
-	fmt.Println("y:", y) // y: [10 6]   => slice overwritting
+	fmt.Println("y:", y) // y: [10 6]   => slice overwriting
 	fmt.Println("z:", z) // z: [7 8]
 }
 
@@ -206,11 +206,44 @@ func slicingStrings() {
 
 }
 
+func maps() {
+	var nilMap map[string]int      // read on zero is allowed , but writing is not
+	literalMap := map[string]int{} // read and write to zero is allowed
+
+	nonEmptyLiteral := map[string][]string{
+		"Orcas":   {"Fred", "Ralph", "Bijou"},
+		"Lions":   {"Sarah", "Peter", "Billie"},
+		"Kittens": {"Waldo", "Raul", "Ze"},
+	}
+	ages := make(map[int][]string, 10)
+	fmt.Println(nilMap, literalMap, nonEmptyLiteral, ages)
+
+	totalWins := map[string]int{}
+	totalWins["Orcas"] = 1
+	totalWins["Lions"] = 2
+	fmt.Println(totalWins["Orcas"], totalWins["Kittens"]) // 1 0
+	totalWins["Kittens"]++
+	totalWins["Lions"] = 3
+	fmt.Println(totalWins["Lions"], totalWins["Kittens"]) //  1  3
+
+	// Go provides the comma ok idiom to tell the difference between a key that’s associated with a zero value
+	// and a key that’s not in the map, The comma ok idiom is used in Go when we want to differentiate between
+	// reading a value and getting back the zero value.
+	m := map[string]int{"hello": 5, "world": 0}
+	v, ok := m["hello"]  // 5 true
+	v, ok = m["world"]   // 0 true
+	v, ok = m["goodbye"] //0 false
+	fmt.Println(v, ok)
+
+	delete(m, "hello")
+}
+
 func main() {
 	// arrays()
 	// slices()
 	// capacity()
-	makesAndSlices()
-	copySlice()
-	slicingStrings()
+	// makesAndSlices()
+	// copySlice()
+	// slicingStrings()
+	maps()
 }
