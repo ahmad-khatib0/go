@@ -5,9 +5,9 @@ version 1.15.6 of Go, you would use the following commands:
                        │ go1.15.6 download              │
                        ╰────────────────────────────────╯
 and then as normal:               go1.15.6 build 
-Once you have validated that your code works on this versoin of go, if you wanna delete it: 
+Once you have validated that your code works on this version of go, if you wanna delete it: 
              ╭───────────────────────────────────────────────────────╮
-             │ go1.15.6 env GOROOT     => /Users/gobook/sdk/go1.15.6 │
+             │ go1.15.6 env GOROOT     => /Users/john/sdk/go1.15.6 │
              │ rm -rf $(go1.15.6 env GOROOT)                         │
              │ rm $(go env GOPATH)/bin/go1.15.6                      │
              ╰───────────────────────────────────────────────────────╯
@@ -21,9 +21,11 @@ Once you have validated that your code works on this versoin of go, if you wanna
 
 
 
-2-primitive-types-and-declarations
+                       primitive types and declarations
 
+************************************************************************ 
 ********************************* Integers ********************************* 
+************************************************************************ 
 the zero value for all of the integer types is 0
           ╭────────────────────────────────────────────────────────────╮
           │ type name value range                                      │
@@ -43,7 +45,7 @@ type name    largest absolute value                         smallest (non-zero) 
 float32      3.40282346638528859811704183484516925440e+38    1.401298464324817070923729583289916131280e-45
 float64      1.797693134862315708145274237317043567981e+308  4.940656458412465441765687928682213723651e-324
 
-dividing a non-zero floating-point variable by 0 returns +Inf or -Inf (positive ornegative infinity),
+dividing a non-zero floating-point variable by 0 returns +Inf or -Inf (positive or negative infinity),
 depending on the sign of the number. Dividing a floating-point variable set to 0 by 0 returns NaN 
 
 Go store floating point numbers using a specification called IEEE 754
@@ -51,8 +53,10 @@ For example, if you store the number -3.1415 in a float64, the 64-bit representa
 1100000000001001001000011100101011000000100000110001001001101111
 which is exactly equal to: -3.14150000000000018118839761883.
 
-
+************************************************************************ 
 ********************************* Strings ********************************* 
+************************************************************************ 
+
 1- Strings in Go are immutable; you can reassign the value of a string variable, but
 you cannot change the value of the string that is assigned to it.
 2- String in Go is made out of runes, but that’s not the case. Under the covers, Go uses a sequence of
@@ -83,7 +87,10 @@ can’t tell how many characters in you are. You need to start at the beginning 
 doesn’t require a string to be written in UTF-8, but it strongly encourages it. We’ll see how to work with 
 UTF-8 strings in upcoming chapters. UTF-8 was invented in 1992 by Ken Thompson and Rob Pike, two of the creators of Go.
 
-********************************* Variables declaration ********************************* 
+************************************************************************ 
+*********************************  Variables declaration ********************************* 
+************************************************************************ 
+
 There are some situations within functions where you should avoid :=:
 1- When initializing a variable to its zero value, use var makes it clear that the zero value is intended.
 2- While it is legal to use a type conversion to specify the type of the value and use := to
@@ -91,7 +98,11 @@ write x := byte(20), it is idiomatic to write var x byte = 20
 3- Because := allows you to assign to both new and existing variables, it sometimes creates
 new variables when you think you are re-using existing ones
 
-********************************* Constants and immutability ********************************* 
+
+************************************************************************ 
+********************************* Constants and immutability ************ 
+************************************************************************ 
+
 const in Go is very limited. Constants in Go are a way to give names to literals. They can only
 hold values that the compiler can figure out at compile-time. This means that they can be assigned
 Go doesn’t provide a way to specify that a value calculated at runtime is immutable there are no 
@@ -102,13 +113,19 @@ them easy to eliminate; if a constant isn’t used, it is simply not included in
 // Any Unicode character that is considered a letter or digit is allowed
 
 
+************************************************************************ 
 ********************************* Arrays ********************************* 
+************************************************************************ 
+
 arrays in Go are rarely used explicitly. This is because they come with an unusual limitation: 
 Go considers the size of the array to be part of the type of the array. This makes an array that’s declared 
 to be [3]int a different type from an array that’s declared to be [4]int. This also means that you cannot 
 use a variable to specify the size of an array, because types must be resolved at compile time, not at runtime
 
+************************************************************************ 
 ********************************* Slices ********************************* 
+************************************************************************ 
+
 a slice is a sequence of values. Each element in a slice is assigned to consecutive memory locations, 
 which makes it quick to read or write these values,  Every slice has a capacity, which is the number of 
 consecutive memory locations reserved. This can be larger than the length. Each time you append to a slice,
@@ -121,7 +138,10 @@ Whenever you take a slice from another slice, the subslice’s capacity is set t
 original slice, minus the offset of the subslice within the original slice. This means that any 
 unused capacity in the original slice is also shared with any subslices.
 
-********************************* maps ********************************* 
+************************************************************************ 
+********************************* Maps ********************************* 
+************************************************************************ 
+
 Maps are like slices in several ways:
 1- Maps automatically grow as you add key-value pairs to them.
 2- if you know how many key/value pairs you plan to insert into a map, you can 
@@ -148,6 +168,20 @@ bucket to find the one that you want. Clever hash algorithms are designed to kee
 If enough elements are added, hash maps resize to rebalance the buckets and allow more entries.  Go doesn’t require 
 (or even allow) you to define your own hash algorithm or equality definition. Instead, the Go runtime that’s compiled 
 into every Go program has code that implements hash algorithms for all types that are allowed to be keys.
+
+
+
+************************************************************************ 
+********************************* Sets ********************************* 
+************************************************************************ 
+
+Some people prefer to use struct{} for the value when a map is being used to implement a set.
+-The advantage is that an empty struct uses zero bytes, while a boolean uses one byte.
+-The disadvantage is that using a struct{} makes your code more clumsy. You have a less
+obvious assignment and you need to use the comma ok idiom to check if a value is in the set:
+Unless you have very large sets, it is unlikely that the difference in memory usage is significant
+enough to outweigh the disadvantages.
+
 
                                  THE GO RUNTIME
 Every high-level language relies on a set of libraries to enable programs written in those languages to run,

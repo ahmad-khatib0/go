@@ -238,6 +238,27 @@ func maps() {
 	delete(m, "hello")
 }
 
+func usingMapsAsSets() {
+	intSet := map[int]bool{}
+	vals := []int{5, 10, 2, 5, 8, 7, 3, 9, 1, 2, 10}
+	for _, v := range vals {
+		intSet[v] = true // this will ensure the uniqueness
+	}
+	fmt.Println(len(vals), len(intSet)) // 11 8
+	fmt.Println(intSet[5], intSet[500]) // true false
+	if intSet[500] {
+		fmt.Println("item is in set")
+	}
+
+	intSetStruct := map[int]struct{}{}
+	for _, v := range vals {
+		intSetStruct[v] = struct{}{}
+	}
+	if _, ok := intSet[5]; ok {
+		fmt.Println("5 is in the set")
+	}
+}
+
 func main() {
 	// arrays()
 	// slices()
@@ -245,5 +266,6 @@ func main() {
 	// makesAndSlices()
 	// copySlice()
 	// slicingStrings()
-	maps()
+	// maps()
+	usingMapsAsSets()
 }
