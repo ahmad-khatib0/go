@@ -183,6 +183,18 @@ Unless you have very large sets, it is unlikely that the difference in memory us
 enough to outweigh the disadvantages.
 
 
+
+************************************************************************ 
+********************************* Structs ********************************* 
+************************************************************************ 
+we can't convert instances of structs in these cases: 
+	1- we can’t use == to compare an instance of one to another, if they are different types
+	2- we can’t convert an instance of one to another, if the fields are in a different order
+	3- we can’t convert an instance of one to another, if the field names don’t match
+	4- we can’t convert an instance of one to another, if there’s an additional field
+
+
+
                                  THE GO RUNTIME
 Every high-level language relies on a set of libraries to enable programs written in those languages to run,
 and Go is no exception. The Go runtime provides services like memory allocation and garbage collection,

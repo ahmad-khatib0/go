@@ -259,6 +259,57 @@ func usingMapsAsSets() {
 	}
 }
 
+func structs() {
+	type person struct {
+		name string
+		age  int
+		pet  string
+	}
+	var fred person
+	bob := person{}
+	fmt.Println(fred, bob) // { 0 } { 0 }
+
+	julia := person{"Julia", 40, "cat"} // or
+	beth := person{age: 30, name: "Beth"}
+	fmt.Println(julia, beth.pet) // NOTE: You cannot mix the two struct literal styles
+
+	// Anonymous Structs
+	var personAnonymous struct {
+		name string
+		age  int
+		pet  string
+	}
+	personAnonymous.name = "ahmad"
+
+	pet := struct {
+		name string
+		kind string
+	}{name: "fido", kind: "dog"}
+	fmt.Println(pet)
+
+	// Comparing and Converting Structs
+	// We can use a type conversion to convert an instance of firstPerson to secondPerson
+	type firstPerson struct {
+		name string
+		age  int
+	}
+	type secondPerson struct {
+		name string
+		age  int
+	}
+	// fmt.Println(firstPerson == secondPerson ) // not allowed
+
+	// Anonymous structs add a small twist to this:
+	f := firstPerson{name: "Bob", age: 50}
+	var g struct {
+		name string
+		age  int
+	}
+	g = f
+	fmt.Println(f == g) // allowed
+
+}
+
 func main() {
 	// arrays()
 	// slices()
@@ -267,5 +318,6 @@ func main() {
 	// copySlice()
 	// slicingStrings()
 	// maps()
-	usingMapsAsSets()
+	// usingMapsAsSets()
+	structs()
 }
