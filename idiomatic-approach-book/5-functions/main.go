@@ -4,6 +4,7 @@ import (
 	"errors"
 	"fmt"
 	"os"
+	"strconv"
 )
 
 func main() {
@@ -35,6 +36,8 @@ func main() {
 	// were never assigned to the named return parameters
 
 	fmt.Println(blankReturns(5, 2)) // 2 1 <nil>
+
+	functionsAreValues()
 }
 
 func div(nominator, denominator int) int {
@@ -97,4 +100,47 @@ func blankReturns(numerator, denominator int) (result int, remainder int, err er
 	}
 	result, remainder = numerator/denominator, numerator%denominator
 	return // the last line will be returned, but blank return is a bad idea
+}
+
+// functions are values
+func add(i int, j int) int    { return i + j }
+func sub(i int, j int) int    { return i - j }
+func mul(i int, j int) int    { return i * j }
+func divide(i int, j int) int { return i / j }
+
+func functionsAreValues() {
+	var opMap = map[string]func(int, int) int{"+": add, "-": sub, "*": mul, "/": div}
+	expressions := [][]string{
+		{"2", "+", "3"},
+		{"2", "-", "3"},
+		{"2", "*", "3"},
+		{"2", "/", "3"},
+		{"2", "%", "3"},
+		{"two", "+", "three"},
+		{"5"},
+	}
+	for _, expression := range expressions {
+		if len(expression) != 3 {
+			fmt.Println("invalid expression:", expression)
+			continue
+		}
+		p1, err := strconv.Atoi(expression[0])
+		if err != nil {
+			fmt.Println(err)
+			continue
+		}
+		op := expression[1]
+		opFunc, ok := opMap[op]
+		if !ok {
+			fmt.Println("unsupported operator:", op)
+			continue
+		}
+		p2, err := strconv.Atoi(expression[2])
+		if err != nil {
+			fmt.Println(err)
+			continue
+		}
+		result := opFunc(p1, p2)
+		fmt.Println(result)
+	}
 }
