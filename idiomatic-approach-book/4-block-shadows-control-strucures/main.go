@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"math/rand"
 )
 
 func shadowingVariables() {
@@ -29,6 +30,19 @@ func shadowingVariables() {
 
 }
 
+func ifBlock() {
+	// Go adds is the ability to declare variables that are scoped to the condition and to
+	// both the if and else blocks. here Once the series of if/else statements ends, n is undefined.
+	if n := rand.Intn(10); n == 0 {
+		fmt.Println("That's too low")
+	} else if n > 5 {
+		fmt.Println("That's too big:", n)
+	} else {
+		fmt.Println("That's a good number:", n)
+	}
+}
+
 func main() {
-	shadowingVariables()
+	// shadowingVariables()
+	ifBlock()
 }

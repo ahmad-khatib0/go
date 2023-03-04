@@ -8,6 +8,14 @@ For as long as the shadowing variable exists, you cannot access a shadowed varia
 making it impossible to use the fmt package for the rest of the main function
 
 
+*************************************************************************************** 
+********************************* If Block ******************************************** 
+*************************************************************************************** 
+- Be aware that just like any other block, a variable declared as part of an if statement will
+shadow variables with the same name that are declared in containing blocks
+
+
+
                                THE UNIVERSE BLOCK
 There’s actually one more block which is a little weird: the universe block. Go is a small language with 
 (ONLY 25 KEYWORDS). What’s interesting is that the built-in types (like int and string), constants 
