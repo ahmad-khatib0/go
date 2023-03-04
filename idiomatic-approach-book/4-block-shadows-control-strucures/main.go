@@ -156,9 +156,25 @@ loop:
 	}
 }
 
+func gotoStatement() {
+	a := rand.Intn(10)
+	for a < 100 {
+		fmt.Println(a)
+		if a%5 == 0 {
+			goto done
+		}
+		a = a*2 + 1
+	}
+	fmt.Println("do something when the loop completes normally")
+done:
+	fmt.Println("do complicated stuff no matter why we left the loop")
+	fmt.Println(a)
+}
+
 func main() {
 	// shadowingVariables()
 	// ifBlock()
 	// loops()
-	switchs()
+	// switchs()
+	gotoStatement()
 }
