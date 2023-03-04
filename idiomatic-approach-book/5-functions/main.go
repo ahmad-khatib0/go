@@ -33,6 +33,8 @@ func main() {
 	fmt.Println(shadowing(5, 2)) // 2 1 nil
 	// The values from the return statement were returned even though they
 	// were never assigned to the named return parameters
+
+	fmt.Println(blankReturns(5, 2)) // 2 1 <nil>
 }
 
 func div(nominator, denominator int) int {
@@ -85,4 +87,14 @@ func shadowing(numerator, denominator int) (result int, remainder int, err error
 		return 0, 0, errors.New("cannot divide by zero")
 	}
 	return numerator / denominator, numerator % denominator, nil
+}
+
+func blankReturns(numerator, denominator int) (result int, remainder int, err error) {
+	// NEVER USE THESE!
+	if denominator == 0 {
+		err = errors.New("cannot divide by zero")
+		return
+	}
+	result, remainder = numerator/denominator, numerator%denominator
+	return // the last line will be returned, but blank return is a bad idea
 }
