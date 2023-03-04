@@ -1,0 +1,18 @@
+*************************************************************************************** 
+********************************* Shadowing Variables ********************************* 
+*************************************************************************************** 
+
+- A shadowing variable is a variable that has the same name as a variable in a containing block. 
+For as long as the shadowing variable exists, you cannot access a shadowed variable 
+- Once the local variable fmt is declared, it shadows the package named fmt in (THE FILE BLOCK),
+making it impossible to use the fmt package for the rest of the main function
+
+
+                               THE UNIVERSE BLOCK
+There’s actually one more block which is a little weird: the universe block. Go is a small language with 
+(ONLY 25 KEYWORDS). What’s interesting is that the built-in types (like int and string), constants 
+(like true and false), and functions (like make or close) aren’t included in that list. Neither is nil. 
+So, where are they?  Rather than make them keywords, Go considers these predeclared identifiers and defines 
+them in the universe block, which is the block that contains all other blocks.  Because these names 
+are declared in the universe block, it means that they can be shadowed in other scope
+for example like!!: true := 10
