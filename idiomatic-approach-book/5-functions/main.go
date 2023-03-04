@@ -1,6 +1,10 @@
 package main
 
-import "fmt"
+import (
+	"errors"
+	"fmt"
+	"os"
+)
 
 func main() {
 	result := div(7, 4)
@@ -9,8 +13,17 @@ func main() {
 	// Simulating Named and Optional Parameters (go doesn't have named or optional params)
 	namedAndOptionalParams(MyFuncOpts{LastName: "Noor", Age: 44})
 
+	// variadic params
 	fmt.Println(variadicParameters(3, 2, 4, 6, 8))              // [5 7 9 11]
 	fmt.Println(variadicParameters(3, []int{1, 2, 3, 4, 5}...)) // [4 5 6 7 8]
+
+	// Multiple Return Values
+	res, reminder, err := divAndRemainder(5, 2)
+	if err != nil {
+		fmt.Println(err)
+		os.Exit(1)
+	}
+	fmt.Println(res, reminder) // 2 1
 }
 
 func div(nominator, denominator int) int {
@@ -38,4 +51,11 @@ func variadicParameters(base int, vals ...int) []int {
 		out = append(out, base+v)
 	}
 	return out
+}
+
+func divAndRemainder(numerator int, denominator int) (int, int, error) {
+	if denominator == 0 {
+		return 0, 0, errors.New("cannot divide by zero")
+	}
+	return numerator / denominator, numerator % denominator, nil
 }

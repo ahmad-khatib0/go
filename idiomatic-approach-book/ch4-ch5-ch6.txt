@@ -39,6 +39,15 @@ These two changes make it far harder to implement a Hash DoS attack.
 
 
 
+*************************************************************************************** 
+********************************* Ignoring returned values **************************** 
+*************************************************************************************** 
+Surprisingly, Go does let you implicitly ignore all of the return values for a function. You can write 
+divAndRemainder(5,2) and the returned values are dropped. We have actually been doing this since our 
+earliest examples: fmt.Println returns two values, but it is idiomatic to ignore them. In almost
+all other cases, you should make it explicit that you are ignoring return values by using underscores.
+
+
                                THE UNIVERSE BLOCK
 There’s actually one more block which is a little weird: the universe block. Go is a small language with 
 (ONLY 25 KEYWORDS). What’s interesting is that the built-in types (like int and string), constants 
