@@ -47,6 +47,15 @@ divAndRemainder(5,2) and the returned values are dropped. We have actually been 
 earliest examples: fmt.Println returns two values, but it is idiomatic to ignore them. In almost
 all other cases, you should make it explicit that you are ignoring return values by using underscores.
 
+*************************************************************************************** 
+************************************* Defers ****************************************** 
+*************************************************************************************** 
+1- you can defer multiple closures in a Go function. They run in last-in-first-out order; the
+last defer registered runs first.
+2- The code within defer closures runs after the return statement, you can supply a function with input 
+parameters to a defer. Just as defer doesn’t run immediately, any variables passed into a deferred 
+closure aren’t evaluated until the closure runs.
+
 
                                THE UNIVERSE BLOCK
 There’s actually one more block which is a little weird: the universe block. Go is a small language with 
