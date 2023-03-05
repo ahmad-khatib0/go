@@ -75,3 +75,25 @@ So, where are they?  Rather than make them keywords, Go considers these predecla
 them in the universe block, which is the block that contains all other blocks.  Because these names 
 are declared in the universe block, it means that they can be shadowed in other scope
 for example like!!: true := 10
+
+
+*************************************************************************************** 
+************************************** Pointers *************************************** 
+*************************************************************************************** 
+-- you only need a bit to represent true or false, but the smallest amount of 
+   memory that can be independently addressed is a byte
+-- While different types of variables can take up different numbers of memory
+   locations, every pointer, no matter what type it is pointing to, is always the same size
+-- The & is the address operator. It precedes a value type and returns the address of
+   the memory location where the value is stored
+-- The * is the indirection operator. It precedes a variable of pointer type and
+   returns the pointed-to value. This is called dereferencing.
+-- Before dereferencing a pointer, you must make sure that the pointer is non-nil.
+   Your program will panic if you attempt to dereference a nil pointer.
+-- The built-in function new creates a pointer variable. It returns a pointer to a
+   zero-value instance of the provided type.
+-- The new function is rarely used. For structs, use an & before a struct literal to create a pointer instance.
+   You can’t use an & before a primitive literal (numbers, booleans, and strings) or a constant because they don’t 
+   have a memory address; they only exist at compile time. When you need a pointer to a primitive type, 
+   declare a variable and point to it
+--  If you have a struct with a field of a pointer to a primitive type, you can’t assign a literal directly to the field
