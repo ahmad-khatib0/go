@@ -57,6 +57,16 @@ parameters to a defer. Just as defer doesn’t run immediately, any variables pa
 closure aren’t evaluated until the closure runs.
 
 
+*************************************************************************************** 
+************************************* Call By Value *********************************** 
+*************************************************************************************** 
+-- any changes made to a map parameter are reflected in the variable passed in to the function. For a slice, it’s
+more complicated. You can modify any element in the slice, but you can’t lengthen the slice. This is true for 
+maps and slices that are passed directly into function as well as map and slice fields in structs.
+-- why do maps and slices behave differently than other types? It’s because maps and slices 
+are both implemented with pointers
+
+
                                THE UNIVERSE BLOCK
 There’s actually one more block which is a little weird: the universe block. Go is a small language with 
 (ONLY 25 KEYWORDS). What’s interesting is that the built-in types (like int and string), constants 
