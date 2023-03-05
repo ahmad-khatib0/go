@@ -38,6 +38,8 @@ func main() {
 	fmt.Println(blankReturns(5, 2)) // 2 1 <nil>
 
 	functionsAreValues()
+
+	anonymousFunctions()
 }
 
 func div(nominator, denominator int) int {
@@ -108,8 +110,10 @@ func sub(i int, j int) int    { return i - j }
 func mul(i int, j int) int    { return i * j }
 func divide(i int, j int) int { return i / j }
 
+type opFuncType func(int, int) int
+
 func functionsAreValues() {
-	var opMap = map[string]func(int, int) int{"+": add, "-": sub, "*": mul, "/": div}
+	var opMap = map[string]opFuncType{"+": add, "-": sub, "*": mul, "/": div}
 	expressions := [][]string{
 		{"2", "+", "3"},
 		{"2", "-", "3"},
@@ -142,5 +146,13 @@ func functionsAreValues() {
 		}
 		result := opFunc(p1, p2)
 		fmt.Println(result)
+	}
+}
+
+func anonymousFunctions() {
+	for i := 0; i < 5; i++ {
+		func(j int) {
+			fmt.Println("printing", j, "from inside of an anonymous function")
+		}(i)
 	}
 }
