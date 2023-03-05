@@ -4,6 +4,7 @@ import (
 	"errors"
 	"fmt"
 	"os"
+	"sort"
 	"strconv"
 )
 
@@ -40,6 +41,8 @@ func main() {
 	functionsAreValues()
 
 	anonymousFunctions()
+
+	closures()
 }
 
 func div(nominator, denominator int) int {
@@ -154,5 +157,34 @@ func anonymousFunctions() {
 		func(j int) {
 			fmt.Println("printing", j, "from inside of an anonymous function")
 		}(i)
+	}
+}
+
+func closures() {
+	type Person struct {
+		FirstName string
+		LastName  string
+		Age       int
+	}
+	people := []Person{
+		{"Pat", "Patterson", 37},
+		{"Tracy", "Bobbert", 23},
+		{"Fred", "Fredson", 18},
+	}
+	sort.Slice(people, func(i int, j int) bool {
+		return people[i].Age < people[j].Age
+	})
+	fmt.Println(people)
+
+	twoBase := makeMult(2)
+	threeBase := makeMult(3)
+	for i := 0; i < 3; i++ {
+		fmt.Println(twoBase(i), threeBase(i))
+	}
+}
+
+func makeMult(base int) func(int) int {
+	return func(factor int) int {
+		return base * factor
 	}
 }
