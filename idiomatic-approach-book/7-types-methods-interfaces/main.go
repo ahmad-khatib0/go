@@ -141,3 +141,50 @@ func iotaIsForEnumerations() {
 	// line. This means that it assigns 0 to the first constant (UnCategorized), 1 to the second constant (Personal)
 	// and so on. When a new const block is created, iota is set back to 0
 }
+
+// *********************************  Use Embedding for Composition *********************************
+type Employee struct {
+	Name string
+	ID   string
+}
+
+func (e Employee) Description() string {
+	return fmt.Sprintf("%s (%s)", e.Name, e.ID)
+}
+
+type Manager struct {
+	Employee // but no name is assigned to that field. This makes Employee an embedded field
+	Reports  []Employee
+}
+
+func (m Manager) FindNewEmployees() []Employee {
+	// do business logic
+	return nil
+}
+
+type Inner struct{ X int }
+type Outer struct {
+	Inner
+	X int // the same name of an embedded type
+}
+
+func embeddingForComposition() {
+	m := Manager{
+		// Any fields or methods declared on an embedded field are promoted to
+		// The containing struct and can be invoked directly on it:
+		Employee: Employee{
+			Name: "Bob Bobson",
+			ID:   "12345",
+		},
+		Reports: []Employee{},
+	}
+	fmt.Println(m.ID)            // prints 12345                      (so directly accessed)
+	fmt.Println(m.Description()) // prints Bob Bobson (12345)         (so directly accessed)
+
+	o := Outer{
+		Inner: Inner{X: 10},
+		X:     20,
+	}
+	fmt.Println(o.X)       // prints 20
+	fmt.Println(o.Inner.X) // prints 10        (o.Type.something  to resolve this naming conflict)
+}
