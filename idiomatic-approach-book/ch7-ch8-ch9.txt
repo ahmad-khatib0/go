@@ -24,3 +24,6 @@ fmt.Println(c.String()) // String is a pointer receiver!!? => total: 0, last upd
    Go automatically converts it to a pointer type. In this case, c.String() is converted to (&c).String()..
    NOTE: be aware that the rules for passing values to functions still apply. If you pass a value type to a
    function, and call a pointer receiver method on the passed value, you are invoking the method on a copy
+-- if you change the copy of the pointer, you haven’t changed the original. This means => you can’t write a pointer
+   receiver method that handles nil and makes the original pointer non-nil. If your method has a pointer receiver 
+   and won’t work for a nil receiver, check for nil and return an error
