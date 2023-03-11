@@ -125,3 +125,34 @@ for example like!!: true := 10
    passing a map around, use a struct, maps are a bad choice because they say nothing about what values are contained within
    - A slice is implemented as a struct with three fields: an int field for
    length, an int field for capacity, and a pointer to a block of memory
+
+
+*************************************************************************************** 
+******************** Reducing the Garbage Collector’s Workload ************************ 
+*************************************************************************************** 
+
+-- In order to store something on the stack, you have to know exactly how big it is at compile time. When you 
+   look at the value types in Go (primitive values, arrays, and structs), they all have one thing in common: 
+   we know exactly how much memory they take at compile time. This is why the size is considered part of the type 
+   for an array. Because their sizes are known, they can be allocated on the stack instead of the heap. The size of 
+   a pointer type is also known, and it is also stored on the stack Go will allocate the data the pointer points to 
+   on the stack as long as two things are true: the size is known at compile time and the pointer is not returned.
+   If the size isn’t known, you can’t make space for it by simply moving the stack pointer. If the pointer variable 
+   is returned, the memory that the pointer points to will no longer be valid when the function exits. When the compiler
+   determines that the data can’t be stored on the stack, we say that the data the pointer points to escapes the
+   stack and the compiler stores the data on the heap.
+-- A common source of bugs in C programs is returning a pointer to a local variable. In C, this
+   results in a pointer pointing to invalid memory. The Go compiler is smarter. When it sees that a
+   pointer to a local variable is returned, the local variable’s value is stored on the heap.
+-- Many garbage collection algorithms have been written,
+   and they can be placed into two rough categories: those that are designed for higher throughput (find the most
+   garbage possible in a single scan) or lower latency (finish the garbage scan as quickly as possible). Jeff Dean,
+   the genius behind many of Google’s engineering successes, co-wrote a paper in 2013 called The Tail at Scale. It 
+   argues that systems should be optimized for latency, in order to keep response times low. The garbage collector used 
+   by the Go runtime favors low latency. Each garbage collection cycle is designed to take less than 500 microseconds.
+-- objects in Java are implemented as pointers. That means for every object variable instance, only the pointer to it 
+   is allocated on the stack; the data within the object is allocated on the heap. Only primitive values
+   (numbers, booleans, and chars) are stored entirely on the stack. This means that the garbage collector 
+   in Java has to do a great deal of work. It also means that things like Lists in Java are actually a pointer to an
+   array of pointers. Even though it looks like a linear data structure, reading it actually involved bouncing through
+   memory, which is highly inefficient. There are similar behaviors in Python, Ruby, and JavaScrip
