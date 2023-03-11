@@ -1,6 +1,9 @@
 package main
 
-import "fmt"
+import (
+	"fmt"
+	"time"
+)
 
 func main() {
 	// you can use any primitive type or compound type literal to define a concrete type
@@ -14,6 +17,11 @@ func main() {
 	}
 	output := p.String()
 	fmt.Println(output) // John Doe, age 33
+
+	var c Counter
+	fmt.Println(c.String()) // total: 0, last updated: 0001-01-01 00:00:00 +0000 UTC
+	c.Increment()
+	fmt.Println(c.String()) // total: 1, last updated: 2009-11-10 23:00:00 +0000 UTC m=+0.000000001
 }
 
 func primitiveTypes() {
@@ -22,7 +30,7 @@ func primitiveTypes() {
 	type TeamScores map[string]Score
 }
 
-// Methods
+// *******************************  Methods   ****************************************
 type Person struct {
 	FirstName string
 	LastName  string
@@ -32,4 +40,18 @@ type Person struct {
 // Method declarations
 func (p Person) String() string {
 	return fmt.Sprintf("%s %s, age %d", p.FirstName, p.LastName, p.Age)
+}
+
+// Pointer Receivers and Value Receivers
+type Counter struct {
+	total       int
+	lastUpdated time.Time
+}
+
+func (c *Counter) Increment() {
+	c.total++
+	c.lastUpdated = time.Now()
+}
+func (c *Counter) String() string {
+	return fmt.Sprintf("total: %d last updated %v", c.total, c.lastUpdated)
 }
