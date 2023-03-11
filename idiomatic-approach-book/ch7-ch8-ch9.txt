@@ -28,6 +28,11 @@ fmt.Println(c.String()) // String is a pointer receiver!!? => total: 0, last upd
    receiver method that handles nil and makes the original pointer non-nil. If your method has a pointer receiver 
    and won’t work for a nil receiver, check for nil and return an error
 
+
+************************************************************************* 
+************************** Composition & Inheritance ********************
+*************************************************************************
+
 - Type Declarations Aren’t Inheritance: 
     In languages with inheritance, a child instance can be used anywhere the parent instance is used. 
     The child instance also has all of the methods and data structures of the parent instance. That’s not the 
@@ -39,3 +44,8 @@ fmt.Println(c.String()) // String is a pointer receiver!!? => total: 0, last upd
     Programming Language”). APL is famous for being so reliant on its own custom notation that
     it required computers with a special keyboard. For example, (~R∊R∘.×R)/R←1↓ιR is an APL
     program to find all the prime numbers up to the value of the variable R.
+
+-- Furthermore, there is no dynamic dispatch for concrete types in Go. The methods on the embedded field have 
+    no idea they are embedded. If you have a method on an embedded field that calls another method on the 
+    embedded field, and the containing struct has a method of the same name, the method on the
+    embedded field will not invoke the method on containing struct. 

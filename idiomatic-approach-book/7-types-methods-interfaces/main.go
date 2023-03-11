@@ -188,3 +188,30 @@ func embeddingForComposition() {
 	fmt.Println(o.X)       // prints 20
 	fmt.Println(o.Inner.X) // prints 10        (o.Type.something  to resolve this naming conflict)
 }
+
+// no dynamic dispatch for concrete types in Go
+type Inner1 struct{ A int }
+
+func (i Inner1) IntPrinter(val int) string {
+	return fmt.Sprintf("Inner: %d", val)
+}
+func (i Inner1) Double() string {
+	return i.IntPrinter(i.A * 2)
+}
+
+type Outer1 struct {
+	Inner1
+	S string
+}
+
+func (o Outer1) IntPrinter(val int) string {
+	return fmt.Sprintf("Outer: %d", val)
+}
+
+func noDynamicDispatch() {
+	o := Outer1{
+		Inner1: Inner1{A: 10},
+		S:      "Hello",
+	}
+	fmt.Println(o.Double())
+}
