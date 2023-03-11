@@ -125,3 +125,19 @@ func methodsAreFunctions() {
 	f2 := Adder.AddTo            // You can also create a function from the type itself. This is called a method expression
 	fmt.Println(f2(myAdder, 15)) // prints 25
 }
+
+func iotaIsForEnumerations() {
+	type MailCategory int
+	const (
+		UnCategorized MailCategory = iota
+		Personal
+		Spam
+		Social
+		Advertisements
+	)
+	// The first constant in the const block has the type specified and its value is set to iota. Every subsequent
+	// line has neither the type nor a value assigned to it. When the Go compiler sees this, it repeats the type
+	// and the assignment to all of the subsequent constants in the block, and increments the value of iota on each
+	// line. This means that it assigns 0 to the first constant (UnCategorized), 1 to the second constant (Personal)
+	// and so on. When a new const block is created, iota is set back to 0
+}

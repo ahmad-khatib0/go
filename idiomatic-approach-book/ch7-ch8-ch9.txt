@@ -27,3 +27,15 @@ fmt.Println(c.String()) // String is a pointer receiver!!? => total: 0, last upd
 -- if you change the copy of the pointer, you haven’t changed the original. This means => you can’t write a pointer
    receiver method that handles nil and makes the original pointer non-nil. If your method has a pointer receiver 
    and won’t work for a nil receiver, check for nil and return an error
+
+- Type Declarations Aren’t Inheritance: 
+    In languages with inheritance, a child instance can be used anywhere the parent instance is used. 
+    The child instance also has all of the methods and data structures of the parent instance. That’s not the 
+    case in Go. You cannot assign an instance of type HighScore to a variable of type Score or vice versa without 
+    a type conversion, nor can you assign either of them to a variable of type int without a type conversion. 
+    Furthermore, any methods defined on Score aren’t defined on HighScore
+
+- The concept of iota comes from the programming language APL (which stood for “A
+    Programming Language”). APL is famous for being so reliant on its own custom notation that
+    it required computers with a special keyboard. For example, (~R∊R∘.×R)/R←1↓ιR is an APL
+    program to find all the prime numbers up to the value of the variable R.
