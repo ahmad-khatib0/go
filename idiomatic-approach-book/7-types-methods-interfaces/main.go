@@ -24,6 +24,8 @@ func main() {
 	fmt.Println(c.String()) // total: 1, last updated: 2009-11-10 23:00:00 +0000 UTC m=+0.000000001
 
 	methodsForNilInstances()
+
+	methodsAreFunctions()
 }
 
 func primitiveTypes() {
@@ -101,4 +103,25 @@ func methodsForNilInstances() {
 	fmt.Println(it.Contains(2))  // true
 	fmt.Println(it.Contains(12)) // false
 
+}
+
+// Methods Are Functions Too
+type Adder struct {
+	start int
+}
+
+func (a Adder) AddTo(val int) int {
+	return a.start + val
+}
+
+func methodsAreFunctions() {
+	myAdder := Adder{start: 10}
+	fmt.Println(myAdder.AddTo(5)) // prints 15
+
+	f1 := myAdder.AddTo // We can also assign the method to a variable or pass it to
+	// a parameter of type func(int)int. This is called a method value:
+	fmt.Println(f1(10)) // prints 20
+
+	f2 := Adder.AddTo            // You can also create a function from the type itself. This is called a method expression
+	fmt.Println(f2(myAdder, 15)) // prints 25
 }
