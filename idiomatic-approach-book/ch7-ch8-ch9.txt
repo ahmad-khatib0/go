@@ -1,0 +1,5 @@
+********************************* Terms ********************************* 
+-An abstract type is one that specifies what a type should do, but not how it is done. 
+-A concrete type specifies how and what. This means that it has a specified way to store its data and provides an
+  implementation of any methods declared on the type. While all types in Go are either abstract or concrete, 
+  some languages allow hybrid types, such as abstract classes or interfaces with default methods in Java
