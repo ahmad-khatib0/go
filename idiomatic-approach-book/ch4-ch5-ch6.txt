@@ -119,3 +119,9 @@ for example like!!: true := 10
    data structure takes around 10 nanoseconds to be returned, but a pointer to that data structure takes about 30 
    nanoseconds. Once your data structures are larger than a megabyte, the performance advantage flips. It takes nearly 
    2 milliseconds to return 10 megabytes of data, but a little more than half a millisecond to return a pointer to it
+
+-- within the Go runtime, a map is implemented as a pointer to a struct. Passing a map to a function means that you are 
+   copying a pointer. Because of this, you should avoid using maps for input parameters or return values, rather than
+   passing a map around, use a struct, maps are a bad choice because they say nothing about what values are contained within
+   - A slice is implemented as a struct with three fields: an int field for
+   length, an int field for capacity, and a pointer to a block of memory

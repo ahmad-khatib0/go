@@ -1,6 +1,9 @@
 package main
 
-import "fmt"
+import (
+	"fmt"
+	"os"
+)
 
 func main() {
 	var x int32 = 10
@@ -81,3 +84,28 @@ func makeFooGood() (Foo, error) {
 	f := Foo{name: "test"}
 	return f, nil
 }
+
+// Slices as Buffers
+func slicesAsBuffers(fileName string) error {
+	file, err := os.Open(fileName)
+	if err != nil {
+		return err
+	}
+	defer file.Close()
+	data := make([]byte, 100)
+	for {
+		count, err := file.Read(data)
+		if err != nil {
+			return err
+		}
+		if count == 0 {
+			return nil
+		}
+		process(data[:count])
+		// Remember that we can’t change the length or capacity of a slice when we pass it to a function, but we can
+		// change the contents up to the current length. In this code, we create a buffer of 100 bytes. and each time
+		// through the loop, we copy the next block of bytes (up to 100) into the slice. We then pass the populated
+		// portion of the buffer to process
+	}
+}
+func process([]byte) {}
