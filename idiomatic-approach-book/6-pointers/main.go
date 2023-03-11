@@ -29,6 +29,7 @@ func main() {
 	c := 10
 	failedUpdate(&c) // fmt.Println(c) // prints 10
 	update(&c)       // fmt.Println(c) // prints 20
+
 }
 
 func primitiveTypePointerInStruct() {
@@ -64,4 +65,19 @@ func failedUpdate(px *int) {
 }
 func update(px *int) {
 	*px = 20
+}
+
+// Pointers Are A Last Resort
+type Foo struct{ name string }
+
+func makeFooBad(f *Foo) error {
+	// The only time you should use pointer parameters to modify a variable is when
+	// the function expects an interface. You see this pattern when working with JSON
+	f.name = "test"
+	return nil
+}
+
+func makeFooGood() (Foo, error) {
+	f := Foo{name: "test"}
+	return f, nil
 }

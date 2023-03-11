@@ -99,6 +99,11 @@ for example like!!: true := 10
 --  If you have a struct with a field of a pointer to a primitive type, you can’t assign a literal directly to the field
 -- when you pass a nil pointer to a function, you cannot make the value non-nil. You can only reassign the value if
    there was a value already assigned to the pointer
+-- The Unmarshal function populates a variable from a slice of bytes containing JSON. It is declared to take a slice 
+   of bytes and an interface{} parameter. The value passed in for the interface{} parameter must be a pointer. If it is
+   not, an error is returned. This pattern is used because Go doesn’t have generics.
+   That means there isn’t a convenient way to pass a type into a function to specify
+   what to unmarshal into nor is there a way to specify a different return type for different types
 
 -- The lack of immutable declarations in Go might seem problematic, but the ability to choose between value and pointer 
    parameter types addresses the issue. As the Software Construction course materials go on to explain: “[U]sing
