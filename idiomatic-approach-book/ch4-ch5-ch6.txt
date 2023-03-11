@@ -97,3 +97,11 @@ for example like!!: true := 10
    have a memory address; they only exist at compile time. When you need a pointer to a primitive type, 
    declare a variable and point to it
 --  If you have a struct with a field of a pointer to a primitive type, you can’t assign a literal directly to the field
+-- when you pass a nil pointer to a function, you cannot make the value non-nil. You can only reassign the value if
+   there was a value already assigned to the pointer
+
+-- The lack of immutable declarations in Go might seem problematic, but the ability to choose between value and pointer 
+   parameter types addresses the issue. As the Software Construction course materials go on to explain: “[U]sing
+   mutable objects is just fine if you are using them entirely locally within a method, and with only one reference to the 
+   object.” Rather than declare that some variables and parameters are immutable, Go developers use pointers to
+   indicate that a parameter is mutable.
