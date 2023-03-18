@@ -24,12 +24,11 @@ type templateData struct {
 
 var functions = template.FuncMap{}
 
-// embed provides access to files embedded in the running Go program.
-
 //go:embed templates
 var templateFS embed.FS
 
 func (app *application) addDefaultData(td *templateData, r *http.Request) *templateData {
+	td.API = app.config.api
 	return td
 }
 
@@ -53,6 +52,7 @@ func (app *application) renderTemplate(w http.ResponseWriter, r *http.Request, p
 	if td == nil {
 		td = &templateData{}
 	}
+
 	td = app.addDefaultData(td, r)
 
 	err = t.Execute(w, td)
@@ -68,10 +68,10 @@ func (app *application) parseTemplate(partials []string, page, templateToRender 
 	var t *template.Template
 	var err error
 
-	// build patials
+	// build partials
 	if len(partials) > 0 {
 		for i, x := range partials {
-			partials[i] = fmt.Sprintf("template/%s.partial.gohtml", x)
+			partials[i] = fmt.Sprintf("templates/%s.partial.gohtml", x)
 		}
 	}
 
@@ -80,7 +80,6 @@ func (app *application) parseTemplate(partials []string, page, templateToRender 
 	} else {
 		t, err = template.New(fmt.Sprintf("%s.page.gohtml", page)).Funcs(functions).ParseFS(templateFS, "templates/base.layout.gohtml", templateToRender)
 	}
-
 	if err != nil {
 		app.errorLog.Println(err)
 		return nil, err

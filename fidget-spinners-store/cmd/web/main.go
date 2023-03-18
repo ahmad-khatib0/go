@@ -11,7 +11,7 @@ import (
 )
 
 const version = "1.0.0"
-const cssVersion = "1" // a trick to force browser bring a newer version if any
+const cssVersion = "1"
 
 type config struct {
 	port int
@@ -44,15 +44,18 @@ func (app *application) serve() error {
 		WriteTimeout:      5 * time.Second,
 	}
 
-	app.infoLog.Println(fmt.Printf("starting http server in %s mode on port %d", app.config.env, app.config.port))
+	app.infoLog.Printf("Starting HTTP server in %s mode on port %d\n", app.config.env, app.config.port)
+
 	return srv.ListenAndServe()
 }
 
 func main() {
 	var cfg config
-	flag.IntVar(&cfg.port, "port", 4000, "Server port to listen on") // eg, in wc -l the -l is a command-line flag
+
+	flag.IntVar(&cfg.port, "port", 4000, "Server port to listen on")
 	flag.StringVar(&cfg.env, "env", "development", "Application environment {development|production}")
 	flag.StringVar(&cfg.api, "api", "http://localhost:4001", "URL to api")
+
 	flag.Parse()
 
 	cfg.stripe.key = os.Getenv("STRIPE_KEY")
@@ -73,7 +76,7 @@ func main() {
 
 	err := app.serve()
 	if err != nil {
-		errorLog.Println(err)
+		app.errorLog.Println(err)
 		log.Fatal(err)
 	}
 }
