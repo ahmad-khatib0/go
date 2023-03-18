@@ -40,17 +40,17 @@ func (app *application) serve() error {
 		WriteTimeout:      5 * time.Second,
 	}
 
-	app.infoLog.Println(fmt.Printf("starting BACKEND Server in %s mode on port %d", app.config.env, app.config.port))
+	app.infoLog.Println(fmt.Sprintf("Starting Back end server in %s mode on port %d", app.config.env, app.config.port))
+
 	return srv.ListenAndServe()
 }
 
-// why we have two main functions ?
-// what we're going to do is build two binaries from the same codebase. And when we compile what's in CMD/ Web,
-// that's our front end. But what when compile what's in CMD/ API, that will be our backend.
 func main() {
 	var cfg config
-	flag.IntVar(&cfg.port, "port", 4001, "Server port to listen on") // eg, in wc -l the -l is a command-line flag
-	flag.StringVar(&cfg.env, "env", "development", "Application environment {development|production|maintenance}")
+
+	flag.IntVar(&cfg.port, "port", 4001, "Server port to listen on")
+	flag.StringVar(&cfg.env, "env", "development", "Application enviornment {development|production|maintenance}")
+
 	flag.Parse()
 
 	cfg.stripe.key = os.Getenv("STRIPE_KEY")
@@ -68,6 +68,6 @@ func main() {
 
 	err := app.serve()
 	if err != nil {
-		app.errorLog.Fatal(err)
+		log.Fatal(err)
 	}
 }
