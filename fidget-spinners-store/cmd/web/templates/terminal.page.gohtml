@@ -15,7 +15,7 @@
 
     <div class="mb-3">
         <label for="amount" class="form-label">Amount</label>
-        <input type="text" class="form-control" id="amount" name="amount"
+        <input type="number" class="form-control" id="amount" name="amount"
             required="" autocomplete="amount-new">
     </div>
 
@@ -27,7 +27,7 @@
 
     <div class="mb-3">
         <label for="cardholder-email" class="form-label">Cardholder Email</label>
-        <input type="email" class="form-control" id="cardholder-email" name="cardholder_email"
+        <input type="email" class="form-control" id="cardholder-email" name="email"
             required="" autocomplete="cardholder-email-new">
     </div>
 
@@ -144,6 +144,7 @@
                                 processing.classList.add("d-none");
                                 showCardSuccess();
                                 // would submit the form
+                                document.getElementById("charge_form").submit()
                             }
                         }
                     })
