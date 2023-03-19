@@ -101,7 +101,7 @@ func (m *DBModel) GetWidget(id int) (Widget, error) {
 			widgets 
 		where id = ?`, id)
 	err := row.Scan(
-		&widget.ID, 
+		&widget.ID,
 		&widget.Name,
 		&widget.Description,
 		&widget.InventoryLevel,
@@ -115,4 +115,37 @@ func (m *DBModel) GetWidget(id int) (Widget, error) {
 	}
 
 	return widget, nil
+}
+
+// InsertTransaction inserts a new txn, and returns its id
+func (m *DBModel) InsertTransaction(txn Transaction) (int, error) {
+	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
+	defer cancel()
+
+	stmt := `
+      inset into transactions 
+			   (amount, currency, last_four, bank_return_code, 
+          transaction_status_id, created_at, updated_at)
+			values (?,?,?,?,?,?,?)
+	`
+
+	result, err := m.DB.ExecContext(ctx, stmt,
+		txn.Amount,
+		txn.Currency,
+		txn.LastFour,
+		txn.BankReturnCode,
+		txn.TransactionStatusID,
+		time.Now(),
+		time.Now(),
+	)
+	if err != nil {
+		return 0, err
+	}
+
+	id, err := result.LastInsertId()
+	if err != nil {
+		return 0, err
+	}
+
+	return int(id), nil
 }

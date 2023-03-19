@@ -10,3 +10,4 @@ mongo
 
 dist/
 tmp/
+.DS_Store
