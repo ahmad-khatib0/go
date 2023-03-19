@@ -6,7 +6,7 @@ import (
 	"time"
 )
 
-// DB model is the type of db connection values
+// DBModel is the type for database connection values
 type DBModel struct {
 	DB *sql.DB
 }
@@ -16,14 +16,14 @@ type Models struct {
 	DB DBModel
 }
 
-// NewModel returns a model type with database connection pool
-func NewModel(db *sql.DB) Models {
+// NewModels returns a model type with database connection pool
+func NewModels(db *sql.DB) Models {
 	return Models{
 		DB: DBModel{DB: db},
 	}
 }
 
-// Widget is the type of all widets
+// Widget is the type for all widgets
 type Widget struct {
 	ID             int       `json:"id"`
 	Name           string    `json:"name"`
@@ -55,7 +55,7 @@ type Status struct {
 	UpdatedAt time.Time `json:"-"`
 }
 
-// Status is the type for transaction statuses
+// TransactionStatus is the type for transaction statuses
 type TransactionStatus struct {
 	ID        int       `json:"id"`
 	Name      string    `json:"name"`
@@ -63,14 +63,14 @@ type TransactionStatus struct {
 	UpdatedAt time.Time `json:"-"`
 }
 
-// Status is the type for transaction
+// Transaction is the type for transactions
 type Transaction struct {
 	ID                  int       `json:"id"`
-	Amount              int       `json:"name"`
+	Amount              int       `json:"amount"`
 	Currency            string    `json:"currency"`
 	LastFour            string    `json:"last_four"`
 	BankReturnCode      string    `json:"bank_return_code"`
-	TransactionStatusId int       `json:"transaction_status_id"`
+	TransactionStatusID int       `json:"transaction_status_id"`
 	CreatedAt           time.Time `json:"-"`
 	UpdatedAt           time.Time `json:"-"`
 }
@@ -86,14 +86,30 @@ type User struct {
 	UpdatedAt time.Time `json:"-"`
 }
 
+// GetWidget gets one widget by id
 func (m *DBModel) GetWidget(id int) (Widget, error) {
-	ctx, cnacel := context.WithTimeout(context.Background(), 3*time.Second)
-	defer cnacel()
+	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
+	defer cancel()
 
 	var widget Widget
-	row := m.DB.QueryRowContext(ctx, "select id, name from widgets where id = ?", id)
 
-	err := row.Scan(&widget.ID, &widget.Name)
+	row := m.DB.QueryRowContext(ctx, `
+		select 
+			id, name, description, inventory_level, price, coalesce(image, ''),
+			created_at, updated_at
+		from 
+			widgets 
+		where id = ?`, id)
+	err := row.Scan(
+		&widget.ID, 
+		&widget.Name,
+		&widget.Description,
+		&widget.InventoryLevel,
+		&widget.Price,
+		&widget.Image,
+		&widget.CreatedAt,
+		&widget.UpdatedAt,
+	)
 	if err != nil {
 		return widget, err
 	}

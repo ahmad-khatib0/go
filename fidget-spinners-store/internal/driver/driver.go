@@ -8,7 +8,6 @@ import (
 )
 
 func OpenDB(dsn string) (*sql.DB, error) {
-
 	db, err := sql.Open("mysql", dsn)
 	if err != nil {
 		return nil, err

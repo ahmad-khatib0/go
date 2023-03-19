@@ -1,14 +1,10 @@
-module github.com/Ahmadkhatib0/go/fidget-spinners-store
+module myapp
 
-go 1.19
-
-require (
-	github.com/go-chi/chi v1.5.4
-	github.com/go-chi/chi/v5 v5.0.8
-)
+go 1.16
 
 require (
-	github.com/go-chi/cors v1.2.1 // indirect
-	github.com/go-sql-driver/mysql v1.7.0 // indirect
-	github.com/stripe/stripe-go/v72 v72.122.0 // indirect
+	github.com/go-chi/chi/v5 v5.0.3
+	github.com/go-chi/cors v1.2.0
+	github.com/go-sql-driver/mysql v1.6.0 // indirect
+	github.com/stripe/stripe-go/v72 v72.52.0
 )
