@@ -3,6 +3,7 @@ package main
 import (
 	"encoding/json"
 	"fmt"
+	"io"
 	"io/ioutil"
 )
 
@@ -12,6 +13,7 @@ func main() {
 	c.Progeram()
 
 	theAnyType()
+	typeAssertion()
 }
 
 type LogicProvider struct{}
@@ -106,4 +108,33 @@ func (ll *LinkedList) Insert(pos int, val interface{}) *LinkedList {
 
 	ll.Next = ll.Next.Insert(pos-1, val)
 	return ll
+}
+
+// Type Assertions and Type Switches
+type MyInt int
+
+func typeAssertion() (int, error) {
+	var i interface{}
+	var mine MyInt = 20
+	i = mine
+
+	i2, ok := i.(int)
+	if !ok {
+		return 0, fmt.Errorf("unexpected type for %v", i)
+	}
+	return i2 + 1, nil
+}
+
+func typeSwitches(i interface{}) {
+	switch j := i.(type) {
+	case nil: // i is nil, type of j is interface{}
+	case int: // j is of type int
+	case MyInt: // j is of type MyInt
+	case io.Reader: // j is of type io.Reader
+	case string: // j is a string
+	case bool, rune: // i is either a bool or rune, so j is of type interface{}
+	default:
+		fmt.Println(j) // // no idea what i is, so j is of type interface{}
+	}
+
 }

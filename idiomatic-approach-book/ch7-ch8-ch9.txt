@@ -59,3 +59,7 @@ fmt.Println(c.String()) // String is a pointer receiver!!? => total: 0, last upd
     could store a value of any type. Go uses interface{} to represent this any
 -- One common use of the empty interface is as a placeholder for data of
     uncertain schema that’s read from an external source, like a JSON file
+
+-- Since the purpose of a type switch is to derive a new variable from an existing one, it is
+   idiomatic to assign the variable being switched on to a variable of the same name (i := i. (type)),
+   making this one of the few places where shadowing is a good idea. 
