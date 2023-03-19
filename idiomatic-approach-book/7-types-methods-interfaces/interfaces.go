@@ -35,3 +35,18 @@ func (c Client) Progeram() {
 //  │      Interfaces specify what callers need. The client code       │
 //  │ defines the interface to specify what functionality it requires. │
 //  ╰──────────────────────────────────────────────────────────────────╯
+
+// Embedding and Interfaces
+
+type Reader interface {
+	Read(p []byte) (n int, err error)
+}
+
+type Closer interface {
+	Close() error
+}
+
+type ReadCloser interface {
+	Reader
+	Closer
+}
