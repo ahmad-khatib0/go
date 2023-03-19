@@ -49,3 +49,13 @@ fmt.Println(c.String()) // String is a pointer receiver!!? => total: 0, last upd
     no idea they are embedded. If you have a method on an embedded field that calls another method on the 
     embedded field, and the containing struct has a method of the same name, the method on the
     embedded field will not invoke the method on containing struct. 
+
+
+************************************************************************* 
+******************************** Interfaces *****************************
+*************************************************************************
+
+-- Sometimes in a statically typed language, you need a way to say that a variable
+    could store a value of any type. Go uses interface{} to represent this any
+-- One common use of the empty interface is as a placeholder for data of
+    uncertain schema that’s read from an external source, like a JSON file
