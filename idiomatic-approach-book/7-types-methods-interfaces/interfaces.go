@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"io"
 	"io/ioutil"
+	"net/http"
 )
 
 func main() {
@@ -228,4 +229,19 @@ func usingTypeAssertionAndSwitches() {
 	}
 	result, err := walkTree(parseTree)
 	fmt.Println(result, err)
+}
+
+// ╭───────────────────────────────────────────╮
+// │ Function Types Are a Bridge to Interfaces │
+// ╰───────────────────────────────────────────╯
+type Handler interface {
+	ServeHTTP(http.ResponseWriter, *http.Request)
+}
+
+// By using a type conversion to http.HandlerFunc, any function that has the
+// signature:  func(http.ResponseWriter, *http.Request) can be used as an http.Handler:
+type HandlerFunc func(http.ResponseWriter, *http.Request)
+
+func (f HandlerFunc) ServeHTTP(w http.ResponseWriter, r *http.Request) {
+	f(w, r)
 }
