@@ -63,3 +63,10 @@ fmt.Println(c.String()) // String is a pointer receiver!!? => total: 0, last upd
 -- Since the purpose of a type switch is to derive a new variable from an existing one, it is
    idiomatic to assign the variable being switched on to a variable of the same name (i := i. (type)),
    making this one of the few places where shadowing is a good idea. 
+
+
+************************************************************************* 
+********************************** Errors *******************************
+*************************************************************************
+When using custom errors, never define a variable to be of the type of your custom error.
+Either explicitly return nil when no error occurs or define the variable to be of type error.
