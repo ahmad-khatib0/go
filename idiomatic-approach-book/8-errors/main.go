@@ -5,6 +5,7 @@ import (
 	"bytes"
 	"errors"
 	"fmt"
+	"os"
 )
 
 func main() {
@@ -28,6 +29,14 @@ func main() {
 	//  ║      considered nil, both the underlying type and the underlying value must be nil.      ║
 	//  ║ Whether or not genErr is a pointer, the underlying type part of the interface is not nil ║
 	//  ╚══════════════════════════════════════════════════════════════════════════════════════════╝
+
+	err = wrappingErrors("non_existnet.txt")
+	if err != nil {
+		fmt.Println(err) // in wrappingErrors: open non_existnet.txt: no such file or directory
+		if wrappedError := errors.Unwrap(err); wrappedError != nil {
+			fmt.Println(err) // in wrappingErrors: open non_existnet.txt: no such file or directory
+		}
+	}
 
 }
 
@@ -65,6 +74,7 @@ const (
 type StatusErr struct {
 	Status  Status
 	Message string
+	Err     error
 }
 
 func (se StatusErr) Error() string {
@@ -77,6 +87,7 @@ func errorsAreValues(uid, pwd, file string) ([]byte, error) {
 		return nil, StatusErr{
 			Status:  InvalidLogin,
 			Message: fmt.Sprintf("invalid credentials for user %s", uid),
+			Err:     err,
 		}
 	}
 	data, err := getData(file)
@@ -84,6 +95,7 @@ func errorsAreValues(uid, pwd, file string) ([]byte, error) {
 		return nil, StatusErr{
 			Status:  NotFound,
 			Message: fmt.Sprintf("file %s not found", file),
+			Err:     err,
 		}
 	}
 	return data, nil
@@ -105,4 +117,24 @@ func uninitializedInstance(flag bool) error {
 		}
 	}
 	return genErr
+}
+
+// *********************************    Wrapping Errors  *********************************
+func wrappingErrors(filename string) error {
+	f, err := os.Open(filename)
+	if err != nil {
+		return fmt.Errorf("in wrappingErrors: %w", err)
+	}
+
+	f.Close()
+	return nil
+}
+
+// -- Wrap an error with custom error type
+//  ▲
+//  █ If you want to wrap an error with your custom error type, your error type needs to implement the method Unwrap
+//  ▼
+
+func (se StatusErr) Unwrap() error {
+	return se.Err
 }

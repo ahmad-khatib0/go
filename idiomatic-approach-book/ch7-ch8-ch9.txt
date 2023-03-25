@@ -70,3 +70,11 @@ fmt.Println(c.String()) // String is a pointer receiver!!? => total: 0, last upd
 *************************************************************************
 When using custom errors, never define a variable to be of the type of your custom error.
 Either explicitly return nil when no error occurs or define the variable to be of type error.
+
+-- Wrapping errors
+   When an error is passed back through your code, you often want to add additional context to it. This 
+   context can be the name of the function that received the error or the operation it was trying to 
+   perform. When you preserve an error while adding additional information, it is called wrapping the error.
+   When you have a series of wrapped errors, it is called an error chain
+-- If you want to create a new error that contains the message from another error, but don’t want
+      to wrap it, use fmt.Errorf to create an error, but use the %v verb instead of %w
