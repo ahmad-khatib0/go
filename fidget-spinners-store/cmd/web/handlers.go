@@ -10,7 +10,7 @@ import (
 	"github.com/go-chi/chi/v5"
 )
 
-// VirtualTerminal displays the home page
+// Home displays the home page
 func (app *application) Home(w http.ResponseWriter, r *http.Request) {
 	if err := app.renderTemplate(w, r, "home", &templateData{}); err != nil {
 		app.errorLog.Println(err)
@@ -63,14 +63,14 @@ func (app *application) PaymentSucceeded(w http.ResponseWriter, r *http.Request)
 	expiryMonth := pm.Card.ExpMonth
 	expiryYear := pm.Card.ExpYear
 
-	// create  a new customer
+	// create a new customer
 	customerID, err := app.SaveCustomer(firstName, lastName, email)
 	if err != nil {
-		app.infoLog.Println(err)
+		app.errorLog.Println(err)
 		return
 	}
 
-	// create  a new transaction
+	// create a new transaction
 	amount, _ := strconv.Atoi(paymentAmount)
 	txn := models.Transaction{
 		Amount:              amount,
@@ -79,17 +79,18 @@ func (app *application) PaymentSucceeded(w http.ResponseWriter, r *http.Request)
 		ExpiryMonth:         int(expiryMonth),
 		ExpiryYear:          int(expiryYear),
 		BankReturnCode:      pi.Charges.Data[0].ID,
+		PaymentIntent:       paymentIntent,
+		PaymentMethod:       paymentMethod,
 		TransactionStatusID: 2,
 	}
 
 	txnID, err := app.SaveTransaction(txn)
 	if err != nil {
-		app.infoLog.Println(err)
+		app.errorLog.Println(err)
 		return
-
 	}
 
-	// create  a new order
+	// create a new order
 	order := models.Order{
 		WidgetID:      widgetID,
 		TransactionID: txnID,
@@ -100,10 +101,9 @@ func (app *application) PaymentSucceeded(w http.ResponseWriter, r *http.Request)
 		CreatedAt:     time.Now(),
 		UpdatedAt:     time.Now(),
 	}
-
 	_, err = app.SaveOrder(order)
 	if err != nil {
-		app.infoLog.Println(err)
+		app.errorLog.Println(err)
 		return
 	}
 
@@ -117,8 +117,10 @@ func (app *application) PaymentSucceeded(w http.ResponseWriter, r *http.Request)
 	data["expiry_month"] = expiryMonth
 	data["expiry_year"] = expiryYear
 	data["bank_return_code"] = pi.Charges.Data[0].ID
+	data["first_name"] = firstName
+	data["last_name"] = lastName
 
-	// should write this data to session, and then redirect user to new page?
+	// should write this data to session, and then redirect user to new page
 
 	if err := app.renderTemplate(w, r, "succeeded", &templateData{
 		Data: data,
@@ -139,7 +141,6 @@ func (app *application) SaveCustomer(firstName, lastName, email string) (int, er
 	if err != nil {
 		return 0, err
 	}
-
 	return id, nil
 }
 
@@ -149,7 +150,6 @@ func (app *application) SaveTransaction(txn models.Transaction) (int, error) {
 	if err != nil {
 		return 0, err
 	}
-
 	return id, nil
 }
 
@@ -159,7 +159,6 @@ func (app *application) SaveOrder(order models.Order) (int, error) {
 	if err != nil {
 		return 0, err
 	}
-
 	return id, nil
 }
 
