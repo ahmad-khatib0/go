@@ -5,6 +5,7 @@ import (
 	"bytes"
 	"errors"
 	"fmt"
+	"internal/itoa"
 	"os"
 	"reflect"
 )
@@ -216,3 +217,45 @@ func (re ResourceErr) Is(target error) bool {
 //  █  The errors.As function allows you to check if a returned
 //  █  error (or any error it wraps) matches a specific type.
 //  ▼
+
+// ****************************** Wrapping Errors with defer *************************
+
+func wrappingErrorsWithDefer(val1 int, val2 string) (_ string, err error) {
+	// NOTE: We have to name our return values, so that we can refer to err in the deferred function.
+	defer func() {
+		if err != nil {
+			err = fmt.Errorf("in wrappingErrorsWithDefer: %w", err)
+		}
+	}()
+
+	val3, err := doThing1(val1)
+	if err != nil {
+		return "", err
+	}
+	val4, err := doThing2(val2)
+	if err != nil {
+		return "", err
+	}
+	return doThing3(itoa.Itoa(val3), val4)
+}
+
+func doThing1(val int) (int, error)                    { return 0, nil }
+func doThing2(val string) (string, error)              { return "", nil }
+func doThing3(val string, val2 string) (string, error) { return "", nil }
+
+// the above cleaner code is equivalent to:
+func DoSomeThings(val1 int, val2 string) (string, error) {
+	val3, err := doThing1(val1)
+	if err != nil {
+		return "", fmt.Errorf("in DoSomeThings: %w", err)
+	}
+	val4, err := doThing2(val2)
+	if err != nil {
+		return "", fmt.Errorf("in DoSomeThings: %w", err)
+	}
+	result, err := doThing3(itoa.Itoa(val3), val4)
+	if err != nil {
+		return "", fmt.Errorf("in DoSomeThings: %w", err)
+	}
+	return result, nil
+}
