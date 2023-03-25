@@ -80,3 +80,12 @@ Either explicitly return nil when no error occurs or define the variable to be o
       to wrap it, use fmt.Errorf to create an error, but use the %v verb instead of %w
 -- Use errors.Is when you are looking for a specific instance or specific values. Use
       errors.As when you are looking for a specific type.
+
+-- Panic an Recover 
+    Go generates a panic whenever there is a situation where the Go runtime is unable to figure out what 
+    should happen next. This could be due to a programming error (like an attempt to read past the end of a
+    slice) or environmental problem (like running out of memory). As soon as a panic happens, the current 
+    function exits immediately and any defers attached to the current function start running
+    There’s a specific pattern for using recover. We register a function with defer to handle a potential panic.
+    We call recover within an if statement and check to see if a non-nil value was found. You must call 
+    recover from within a defer because once a panic happens, only deferred functions are run.

@@ -58,6 +58,11 @@ func main() {
 	if errors.As(err, &coder) {
 		fmt.Println(coder.Code())
 	}
+
+	// doPanic(os.Args[0]) // prints stacketrace
+	for _, val := range []int{1, 2, 0, 6} {
+		div60Recover(val) //  60 \n 30 \n runtime error: integer divide by zero \n 10
+	}
 }
 
 func doubleEven(i int) (int, error) {
@@ -258,4 +263,20 @@ func DoSomeThings(val1 int, val2 string) (string, error) {
 		return "", fmt.Errorf("in DoSomeThings: %w", err)
 	}
 	return result, nil
+}
+
+// ****************************** panic and recover *************************
+func doPanic(msg string) {
+	panic(msg)
+}
+
+// Go provides a way to capture a panic in order to provide a more graceful shutdown or to prevent shutdown at all.
+func div60Recover(i int) {
+	defer func() {
+		if v := recover(); v != nil {
+			fmt.Println(v)
+		}
+	}()
+
+	fmt.Println(60 / i)
 }
