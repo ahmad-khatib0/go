@@ -78,3 +78,5 @@ Either explicitly return nil when no error occurs or define the variable to be o
    When you have a series of wrapped errors, it is called an error chain
 -- If you want to create a new error that contains the message from another error, but don’t want
       to wrap it, use fmt.Errorf to create an error, but use the %v verb instead of %w
+-- Use errors.Is when you are looking for a specific instance or specific values. Use
+      errors.As when you are looking for a specific type.

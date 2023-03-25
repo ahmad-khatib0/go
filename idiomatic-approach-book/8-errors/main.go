@@ -6,6 +6,7 @@ import (
 	"errors"
 	"fmt"
 	"os"
+	"reflect"
 )
 
 func main() {
@@ -38,6 +39,24 @@ func main() {
 		}
 	}
 
+	err = isAndAs("non_existnet.txt")
+	if err != nil {
+		if errors.Is(err, os.ErrNotExist) {
+			fmt.Println("this file is not existed")
+		}
+	}
+
+	// Now we can find, for example, all errors that refer to the database, no matter the code:
+	if errors.Is(err, ResourceErr{Resource: "Database"}) {
+		fmt.Println("the database is broken", err)
+	}
+
+	var coder interface {
+		Code() int
+	}
+	if errors.As(err, &coder) {
+		fmt.Println(coder.Code())
+	}
 }
 
 func doubleEven(i int) (int, error) {
@@ -138,3 +157,62 @@ func wrappingErrors(filename string) error {
 func (se StatusErr) Unwrap() error {
 	return se.Err
 }
+
+// *********************************   Is and As  *********************************
+func isAndAs(filename string) error {
+	f, err := os.Open(filename)
+	if err != nil {
+		return fmt.Errorf("in wrappingErrors: %w", err)
+	}
+
+	f.Close()
+	return nil
+}
+
+// ▲
+// █   Custom Is checker for (non-comparable type)  because Is By default
+// █   uses == to compare each wrapped error with the specified error
+// ▼
+type MyErr struct {
+	Codes []int
+}
+
+func (me MyErr) Error() string {
+	return fmt.Sprintf("codes: %v", me.Codes)
+}
+
+func (me MyErr) Is(target error) bool {
+	if me2, ok := target.(MyErr); ok {
+		return reflect.DeepEqual(me, me2)
+	}
+	return false
+}
+
+// ▲
+// █   Another use for defining your own Is method is to allow
+// █   comparisons against errors that aren’t identical instances.
+// ▼
+type ResourceErr struct {
+	Resource string
+	Code     int
+}
+
+func (re ResourceErr) Error() string {
+	return fmt.Sprintf("%s: %d", re.Resource, re.Code)
+}
+
+func (re ResourceErr) Is(target error) bool {
+	if other, ok := target.(ResourceErr); ok {
+		ignoreResource := other.Resource == ""
+		ignoreCode := other.Code == 0
+		matchResource := other.Resource == re.Resource
+		matchCode := other.Code == re.Code
+		return matchResource && matchCode || matchResource && ignoreCode || ignoreResource && matchCode
+	}
+	return false
+}
+
+//  ▲
+//  █  The errors.As function allows you to check if a returned
+//  █  error (or any error it wraps) matches a specific type.
+//  ▼
