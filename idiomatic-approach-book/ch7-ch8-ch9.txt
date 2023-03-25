@@ -89,3 +89,24 @@ Either explicitly return nil when no error occurs or define the variable to be o
     There’s a specific pattern for using recover. We register a function with defer to handle a potential panic.
     We call recover within an if statement and check to see if a non-nil value was found. You must call 
     recover from within a defer because once a panic happens, only deferred functions are run.
+
+
+                                        ┍━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┑
+                                        │ ┌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌┐ │
+                                        │ ╎ Repositories, Modules, and Packages ╎ │
+                                        │ └╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌┘ │
+                                        │                                         │
+                                        ┕━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┙
+                                        
+Library management in Go is based around three concepts: 
+     repositories, modules, and packages. 
+   - A repository is familiar to all developers. It is a place in a version control system where the source 
+     code for a project is stored. 
+   - A module is the root of a Go library or application, stored in a repository. 
+     Modules consist of one or more packages, which give the module organization and structure.
+   
+-- There are two optional sections in go.mod file . The replace section lets you override the location where a 
+   dependent module is located, and the exclude section prevents a specific version of a module from being used
+--  the name of a package is determined by its package clause, not its import path.
+-- a good reason for creating a directory whose name doesn’t 
+   match the package name is to support versioning using directories.
