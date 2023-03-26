@@ -221,3 +221,48 @@ func varyingVariables() {
 	}
 
 }
+
+// *********************************  CleanUp Goroutines *********************************
+func countTo(max int) <-chan int {
+	ch := make(chan int)
+	go func() {
+		for i := 0; i < max; i++ {
+			ch <- i
+		}
+		close(ch)
+	}()
+	return ch
+}
+
+func cleanupGoroutine() {
+	// if we exit the loop early, the goroutine blocks forever, waiting for a value to be read from the channel
+	for i := range countTo(10) {
+		if i > 5 {
+			break
+		}
+		fmt.Println(i)
+	}
+}
+
+// an example, where we pass the same data to multiple functions,
+// but only want the result from the fastest function:
+func searchData(s string, searchers []func(string) []string) []string {
+	// We use an empty struct for the type because the value is unimportant; we never write to this channel, only close it.
+	done := make(chan struct{})
+	result := make(chan []string)
+
+	for _, searcher := range searchers {
+		go func(searcher func(string) []string) {
+			select {
+			case result <- searcher(s):
+			case <-done:
+			}
+		}(searcher)
+	}
+
+	// we read the first value written to result, and then we close done. This signals to the
+	// goroutines that they should exit, preventing them from leaking :
+	r := <-result
+	close(done)
+	return r
+}
