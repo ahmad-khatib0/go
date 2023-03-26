@@ -15,7 +15,9 @@ func main() {
 
 	// doneChannel()
 
-	pipelines()
+	// pipelines()
+
+	usingCancelFunctionWithGoroutines()
 }
 
 func process(val int) int {
@@ -244,6 +246,7 @@ func cleanupGoroutine() {
 	}
 }
 
+// Use the done channel to CleanUp the goroutine
 // an example, where we pass the same data to multiple functions,
 // but only want the result from the fastest function:
 func searchData(s string, searchers []func(string) []string) []string {
@@ -265,4 +268,37 @@ func searchData(s string, searchers []func(string) []string) []string {
 	r := <-result
 	close(done)
 	return r
+}
+
+// **********************  Using a Cancel Function To Terminate a Goroutine **********************
+func countToWithCancel(max int) (<-chan int, func()) {
+	ch := make(chan int)
+	done := make(chan struct{})
+	cancel := func() {
+		close(done)
+	}
+
+	go func() {
+		for i := 0; i < max; i++ {
+			select {
+			case <-done:
+				return
+			default:
+				ch <- i
+			}
+		}
+		close(ch)
+	}()
+	return ch, cancel
+}
+
+func usingCancelFunctionWithGoroutines() {
+	ch, cancel := countToWithCancel(10)
+	for i := range ch {
+		if i > 5 {
+			break
+		}
+		fmt.Println(i)
+	}
+	cancel()
 }
