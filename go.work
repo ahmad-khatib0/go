@@ -1,4 +1,7 @@
 go 1.19
 
 use ./simple-bank
+
 use ./fidget-spinners-store
+
+use ./idiomatic-approach-book/9-modules-packages-imports/modules

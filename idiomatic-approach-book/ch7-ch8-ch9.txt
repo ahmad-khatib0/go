@@ -122,3 +122,8 @@ Library management in Go is based around three concepts:
    first time the package is referenced by another package.
 -- an alias is just another name for a type. If you want to add new methods or change the fields 
    in an aliased struct, you must add them to the original type.
+-- github.com/learning-go-book/formatter v0.0.0-20200921021027-5abc380940ae
+   Go makes up a pseudo_version because this package has no tag specified 
+-- The go.mod file is automatically updated to include the module path that contains the package and
+   the version of the module. The go.sum file is updated with two entries: one with the module, its version,
+   and a hash of the module, the other with the hash of the go.mod file for the module
