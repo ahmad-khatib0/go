@@ -110,3 +110,10 @@ Library management in Go is based around three concepts:
 --  the name of a package is determined by its package clause, not its import path.
 -- a good reason for creating a directory whose name doesn’t 
    match the package name is to support versioning using directories.
+
+-- Package Comments and godoc
+    1. The comment is written directly before the item being documented with
+        no blank lines between the comment and the declaration of the item.
+    2. The comment starts with the name of the item.
+    3. Use a blank comment to break your comment into multiple paragraphs
+    4. Insert preformatted comments by indenting the lines.
