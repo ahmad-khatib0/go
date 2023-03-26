@@ -120,3 +120,5 @@ Library management in Go is based around three concepts:
     
 -- When you declare a function named init that takes no parameters and returns no values, it runs the
    first time the package is referenced by another package.
+-- an alias is just another name for a type. If you want to add new methods or change the fields 
+   in an aliased struct, you must add them to the original type.
