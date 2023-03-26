@@ -127,3 +127,34 @@ Library management in Go is based around three concepts:
 -- The go.mod file is automatically updated to include the module path that contains the package and
    the version of the module. The go.sum file is updated with two entries: one with the module, its version,
    and a hash of the module, the other with the hash of the go.mod file for the module
+-- You might see dependencies labeled // indirect in your go.mod file. These are
+   dependencies that aren’t declared in your project directly. There are a few reasons why they are
+   added to your go.mod file. One reason is that your project depends on an older module that
+   doesn’t have a go.mod file or the go.mod file has an error and is missing some of its
+   dependencies. When building with modules, all dependencies must be listed in a go.mod file.
+   Since the dependency declarations have to go somewhere, your go.mod is modified.
+   An indirect declaration might also be present if a direct dependency properly specifies the
+   indirect dependency, but it specifies an older version than what’s installed in your project. This
+   happens when you explicitly update an indirect dependency with go get or downgrade a dependency’s version.
+-- To upgrade to the bug patch release for the current minor version, 
+   use the command go get -u=patch github.com/learning-go-book/simpletax
+-- In order to ensure that a module always builds with identical dependencies, some organizations like to
+   keep copies of their dependencies inside their module. This is known as vendoring
+
+-- Go supports two different ways for creating the different import paths:
+   1- Create a subdirectory within your module named vN, where N is the major version of your module. 
+      If you are creating version 2 of your module, call this directory v2. Copy your code into
+      this subdirectory, including the README and LICENSE file.
+   2- Create a branch in your version control system. You can either put the old code on the branch or 
+      the new code. Name the branch vN if you putting the new code on the branch, or vN-1 if you are putting
+      the old code there. For example, if you are creating version 2 of your module
+      and want to put version 1 code on the branch, name the branch v1.
+
+--  by default, go get doesn’t fetch code directly from source code repositories. Instead, it sends requests 
+    to a proxy server run by Google at https://proxy.golang.org . This server keeps copies of every version
+    of virtually all public Go modules. If a module or a version of a module isn’t present in the
+    proxy server, it downloads the module from the module’s repository, stores a copy, and returns the module.
+--  Just as the proxy server protects you from a module or a version of a module being removed from the 
+    internet, the sum database protects you against modifications to a version of a module. This could
+    be malicious (someone has hijacked a module and slipped in malicious code), or it could be inadvertent 
+    (a module maintainer fixes a bug or adds a new feature and re-uses an existing version tag).

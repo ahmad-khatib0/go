@@ -4,11 +4,12 @@ go mod verify                                        # verify the health of pack
 go mod tidy                                          # recompile packages 
 go build .                                           # build 
 go list -m all                                       # list dependencies 
-go list -m -versions github.com/gorilla/mux          # list availible versions of the mux library  
+go list -m -versions github.com/gorilla/mux          # list available versions of the mux library  
 go mod why github.com/gorilla/mux                    # list which modules are depending on mux library
 go mod graph                                         # list which dependencies are depending on each other
 go mod edit -go 1.7                                  # change variety of things in the mod file, in a terminal manner
-go mod vendor                                        
-# git dependencies to a folder instead of from global go folder, this is like the node_modules , 
-# go run -mod=vendor main.go                         # run from the vendor folder directlly 
-# go run --race .                                    # check where you have race condetions 
+go mod vendor                                        # git dependencies to a folder instead of from 
+                                                       global go folder, this is like the node_modules , 
+go run -mod=vendor main.go                         # run from the vendor folder directlly 
+go run --race .                                    # check where you have race condetions 
+go list -m -versions github.com/learning-go-book/simpletax  #  see what versions of the module are available
