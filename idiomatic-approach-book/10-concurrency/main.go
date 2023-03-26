@@ -185,3 +185,39 @@ func pipelines() {
 		fmt.Println(n)
 	}
 }
+
+// ********************** Goroutines, for Loops, and Varying Variables **********************
+func varyingVariables() {
+	a := []int{2, 4, 6, 8, 10}
+	ch := make(chan int, len(a))
+	for _, v := range a {
+		go func() {
+			ch <- v * 2
+		}()
+	}
+	for i := 0; i < len(a); i++ {
+		fmt.Println(<-ch) // 20 20 20 20 20 20
+	}
+
+	// The reason why every goroutine wrote 20 to ch is that the closure for every goroutine captured the same
+	// variable. The index and value variables in a for loop are reused on each iteration. The last value assigned
+	// to v was 10. When the goroutines run, (THAT’S THE VALUE THAT THEY SEE). This problem isn’t unique to for loops;
+	// any time a goroutine depends on a variable whose value might change, you must pass the value into the goroutine
+
+	// to solve this problem:  first is to shadow the value within the loop:
+	for _, v := range a {
+		v := v
+		go func() {
+			ch <- v * 2
+		}()
+	}
+
+	// Secondaly: If you want to avoid shadowing and make the data flow more obvious,
+	// you can also pass the value as a parameter to the goroutine
+	for _, v := range a {
+		go func(value int) {
+			ch <- value * 2
+		}(v)
+	}
+
+}
