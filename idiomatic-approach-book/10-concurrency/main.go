@@ -5,6 +5,17 @@ import (
 	"time"
 )
 
+func main() {
+
+	selectGoRoutine()
+
+	deadLockingGoroutines()
+
+	// infiniteRoutine()
+
+	doneChannel()
+}
+
 func process(val int) int {
 	return val
 }
@@ -22,12 +33,6 @@ func runThingsConcurrently(in <-chan int, out chan<- int) {
 			out <- result
 		}
 	}()
-}
-
-func main() {
-
-	selectGoRoutine()
-	deadLockingGoroutines()
 }
 
 func selectGoRoutine() {
@@ -113,4 +118,26 @@ func infiniteRoutine() {
 	}()
 
 	time.Sleep(time.Second * 10) // prevent running previous Goroutines for ever
+}
+
+// ********************************* The Done Channel *********************************
+func doWork(done <-chan bool) {
+	// done <- chan   means that this function receive only READ access to the done channel
+	for {
+		select {
+		case <-done:
+			// this means that the parent Goroutines (which is go doWork(done) ) the power to
+			// cancel this goroutine when it needs to do that, this will prevent infinine unintentionaly goroutine
+			return
+		default:
+			fmt.Println("infinine go routine")
+		}
+	}
+}
+func doneChannel() {
+	done := make(chan bool)
+	go doWork(done)
+
+	time.Sleep(time.Second * 3)
+	close(done)
 }
