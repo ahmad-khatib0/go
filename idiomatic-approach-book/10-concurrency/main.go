@@ -22,6 +22,12 @@ func runThingsConcurrently(in <-chan int, out chan<- int) {
 }
 
 func main() {
+
+	selectGoRoutine()
+	deadLockingGoroutines()
+}
+
+func selectGoRoutine() {
 	myChannel1 := make(chan string)
 	myChannel2 := make(chan string)
 
@@ -43,4 +49,27 @@ func main() {
 	case msgFromChannel2 := <-myChannel2:
 		fmt.Println(msgFromChannel2)
 	}
+
+}
+
+// ********************************* Deadlocking Goroutines *********************************
+func deadLockingGoroutines() {
+	ch1 := make(chan int)
+	ch2 := make(chan int)
+
+	go func() {
+		v := 1
+		ch1 <- v
+		v2 := <-ch2
+		fmt.Println(v, v2)
+	}()
+
+	v := 2
+	var v2 int
+	select {
+	case ch2 <- v:
+	case v2 = <-ch1:
+	}
+	fmt.Println(v, v2)
+
 }
