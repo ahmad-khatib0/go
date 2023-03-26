@@ -1,6 +1,9 @@
 package main
 
-import "fmt"
+import (
+	"fmt"
+	"time"
+)
 
 func process(val int) int {
 	return val
@@ -72,4 +75,42 @@ func deadLockingGoroutines() {
 	}
 	fmt.Println(v, v2)
 
+}
+
+// ********************************* Buffered VS UnBuffered Channels ************************
+//  ┏╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍┓
+//  ╏ UnBuffered channels is esentialy used to perform synchourness communication between Goroutines ╏
+//  ╏so if the size is zero, or the size is omitted, the channel is unbuffered. (the 2th arg in make)╏
+//  ┗╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍┛
+
+func bufferedChannels() {
+	// a buffered channel has a limited capcity of elements
+	myChannel1 := make(chan string, 3)
+	chars := []string{"a", "b", "c"}
+
+	for _, s := range chars {
+		select {
+		case myChannel1 <- s:
+		}
+	}
+
+	close(myChannel1)
+
+	for result := range myChannel1 { // this indicates that we're able to loop over a closed channel
+		fmt.Println(result)
+	}
+
+}
+
+func infiniteRoutine() {
+	go func() {
+		for {
+			select {
+			default:
+				fmt.Println("infinine go routine")
+			}
+		}
+	}()
+
+	time.Sleep(time.Second * 10) // prevent running previous Goroutines for ever
 }
