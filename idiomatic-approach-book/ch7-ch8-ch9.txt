@@ -117,3 +117,6 @@ Library management in Go is based around three concepts:
     2. The comment starts with the name of the item.
     3. Use a blank comment to break your comment into multiple paragraphs
     4. Insert preformatted comments by indenting the lines.
+    
+-- When you declare a function named init that takes no parameters and returns no values, it runs the
+   first time the package is referenced by another package.
