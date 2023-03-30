@@ -374,3 +374,25 @@ func backpressureTechnique() {
 	})
 	http.ListenAndServe(":8080", nil)
 }
+
+// Turning Off a case In a select
+// Assigning the channel to nil, make it unreadable in the next iteration, so the case
+// will not execute, so this can prevent consuming precious resources
+func avoidJunkCaseInSelect(ch1 <-chan int, ch2 <-chan int, done <-chan bool) {
+	for {
+		select {
+		case _, ok := <-ch1:
+			if !ok {
+				ch1 = nil // the case will never succeed again!
+				continue
+			}
+		case _, ok := <-ch2:
+			if !ok {
+				ch2 = nil // the case will never succeed again!
+				continue
+			}
+		case <-done:
+			return
+		}
+	}
+}
