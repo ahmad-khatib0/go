@@ -302,3 +302,24 @@ func usingCancelFunctionWithGoroutines() {
 	}
 	cancel()
 }
+
+// ********************************* Best Way to Use Buffered Channels *******************************
+// so we're writing and reading the same amount into and from the results channel, which will ensure
+// not having an unintentionaly blocking goroutine that is waiting to be read
+// So what we are doing here is reading out the values as they are written. When all of the
+// values have been read, we return the results, knowing that we aren’t leaking any goroutines.
+func processChannel(ch chan int) []int {
+	const conc = 10
+	results := make(chan int, conc)
+	for i := 0; i < conc; i++ {
+		value := i
+		go func() {
+			results <- process(value)
+		}()
+	}
+	var out []int
+	for i := 0; i < conc; i++ {
+		out = append(out, <-results)
+	}
+	return out
+}

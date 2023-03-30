@@ -41,7 +41,7 @@ type Models struct {
 	Author Author
 }
 
-// User is the stucture which holds one user from the database. Note
+// User is the stuctur which holds one user from the database. Note
 // that it embeds a token type.
 type User struct {
 	ID        int       `json:"id"`
