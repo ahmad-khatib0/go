@@ -59,7 +59,6 @@ func doSomeWork1() {}
 func doSomeWork2() {}
 func doSomeWork3() {}
 
-// *********************************   Using WaitGroups  *********************************
 func processAndGather(in <-chan int, processor func(int) int, num int) []int {
 	out := make(chan int, num)
 	var wg sync.WaitGroup
@@ -82,4 +81,32 @@ func processAndGather(in <-chan int, processor func(int) int, num int) []int {
 		result = append(result, v)
 	}
 	return result
+}
+
+// ********************************* Running Code Exactly Once  *********************************
+// sometimes you want to lazy load, or call some initialization code exactly once after program launch time. This
+// is usually because the initialization is relatively slow and may not even be needed every time your program runs.
+type SlowComplicatedParser interface {
+	Parse(string) string
+}
+
+var parser SlowComplicatedParser
+var once sync.Once
+
+// Declaring a sync.Once instance inside a function is usually the wrong thing to do, as a new instance
+// will be created on every function call and there will be no memory of previous invocations.
+
+func Parse(dateToParse string) string {
+	// If Parse is called more than once, once.Do will not execute the closure again.
+	once.Do(func() {
+		parser = initParser()
+	})
+	return parser.Parse("")
+}
+
+func initParser() SlowComplicatedParser {
+	// do all sorts of setup and loading here
+	var p SlowComplicatedParser
+	p.Parse("")
+	return p
 }
