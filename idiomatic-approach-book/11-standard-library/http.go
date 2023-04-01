@@ -4,12 +4,15 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"log"
 	"net/http"
 	"time"
 )
 
 func main() {
-	httpRequest()
+	// httpRequest()
+
+	middleware()
 }
 
 // ***************** HTTP Client
@@ -85,4 +88,64 @@ func muxServe() {
 	mux := http.NewServeMux()
 	mux.Handle("/person/", http.StripPrefix("/person", person))
 	mux.Handle("/dog/", http.StripPrefix("/dog", dog))
+}
+
+// *****************  Middleware
+
+func RequestTimer(h http.Handler) http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		start := time.Now()
+		h.ServeHTTP(w, r)
+		end := time.Now()
+		log.Printf("request time for %s: %v", r.URL.Path,
+			end.Sub(start))
+	})
+}
+
+var securityMsg = []byte("You didn't give the secret password\n")
+
+func TerribleSecurityProvider(password string) func(http.Handler) http.Handler {
+	return func(h http.Handler) http.Handler {
+		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+
+			if r.Header.Get("X-Secret-Password") != password {
+				w.WriteHeader(http.StatusUnauthorized)
+				w.Write(securityMsg)
+				return
+			}
+
+			h.ServeHTTP(w, r)
+
+		})
+	}
+}
+
+func middleware() {
+	mux := http.NewServeMux()
+
+	terribleSecurity := TerribleSecurityProvider("GOPHER")
+
+	mux.Handle("/hello", terribleSecurity(RequestTimer(
+		http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+			w.Write([]byte("Hello!\n"))
+		}),
+	)),
+	)
+
+	// you can apply a set of middleware to all of the handlers registered with a single request router:
+	terribleSecurity = TerribleSecurityProvider("GOPHER")
+	wrappedMux := terribleSecurity(RequestTimer(mux))
+	s := http.Server{
+		Addr: ":8080",
+
+		Handler: wrappedMux,
+	}
+
+	err := s.ListenAndServe()
+	if err != nil {
+		if err != http.ErrServerClosed {
+			panic(err)
+		}
+	}
+
 }
