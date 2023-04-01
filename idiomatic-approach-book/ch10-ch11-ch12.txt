@@ -115,3 +115,9 @@ Imagine that you have a request that spawns several goroutines, each one calling
 service returns an error that prevents you from returning a valid result, there is no point in continuing to process 
 the other goroutines. In Go, this is called cancellation and the context provides the mechanism for implementing this
 
+--------------------- Timers
+There are generally four things that a server can do to manage its load:
+   1. limit simultaneous requests
+   2. limit how many requests are queued waiting to run
+   3. limit how long a request can run
+   4. limit the resources a request can use (such as memory or disk space)

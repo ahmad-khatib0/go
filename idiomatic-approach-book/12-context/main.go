@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"net/http"
+	"time"
 )
 
 func Middleware(handler http.Handler) http.Handler {
@@ -59,4 +60,44 @@ func (sc ServiceCaller) callAnotherService(ctx context.Context, data string) (st
 	}
 	// do the rest of the stuff to process the response
 	return "done", err
+}
+
+// Timers
+
+func timers() {
+
+	ctx := context.Background()
+	parent, cancel := context.WithTimeout(ctx, 2*time.Second)
+	defer cancel()
+
+	child, cancel2 := context.WithTimeout(parent, 3*time.Second)
+	defer cancel2()
+
+	start := time.Now()
+	<-child.Done()
+	// Done returns channel of struct{} ( Why struct ?  because  an empty struct uses no memory.)
+
+	end := time.Now()
+	fmt.Println(end.Sub(start))
+}
+
+func longRunningThing(ctx context.Context, data string) (string, error) { return "", nil }
+
+func longRunningThingManager(ctx context.Context, data string) (string, error) {
+	type wrapper struct {
+		result string
+		err    error
+	}
+	ch := make(chan wrapper, 1)
+	go func() {
+		// do the long running thing
+		result, err := longRunningThing(ctx, data)
+		ch <- wrapper{result, err}
+	}()
+	select {
+	case data := <-ch:
+		return data.result, data.err
+	case <-ctx.Done(): // triggered if the context is canceled
+		return "", ctx.Err()
+	}
 }
