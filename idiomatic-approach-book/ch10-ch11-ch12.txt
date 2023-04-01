@@ -72,4 +72,24 @@ buf := make([]byte, 2048)
 
 
 ------------------------ Time: 
+-- There are two main types used to represent time, time.Duration and time.Time.
+-- The smallest amount of time that Go can represent is one nanosecond
+-- The Truncate and Round methods truncate or round a time.Duration to the units of the specified time.Duration.
+-- The fact that a time.Time instance contains a time zone means that you should not use == to check if two 
+   time.Time instances refer to the same moment in time. Instead, use the Equal method, which corrects for time zone
+-- Go  relies on the idea of formatting the date and time January 2, 2006 at 3:04:05PM MST 
+   (Mountain Standard Time) to specify your format. Why that date? Because each part of it represents one 
+   of the numbers from 1 to 7 (MST is 7 hours before UTC).
+-- You can compare a time.Time instance against another instance with the After, Before, and Equal methods.
 
+Monotonic Time
+  Most operating systems keep track of two different sorts of time: the wall clock, which corresponds to the 
+  current time, and the monotonic clock which simply counts up from the time the computer was booted. 
+  The reason for tracking two different clocks is that the wall clock doesn’t uniformly increase. Daylight
+  Saving Time, leap seconds, and NTP (Network Time Protocol) updates can make the wall clock move unexpectedly 
+  forwards or backwards. This can cause problems when setting a timer or finding the amount of time that’s elapsed.
+  To address this potential problem, Go uses monotonic time to track elapsed time whenever a timer is set or a
+  time.Time instance is created with time.Now. This support is invisible; timers use it automatically.
+  The Sub method uses the montonic clock to calculate the time.Duration if both of the time.Time instances 
+  have it set. If they don’t (because one or both of the instances were not created with time.Now), the Sub 
+  method uses the time specified in the instances to calculate the time.Duration instead.
