@@ -48,3 +48,28 @@
    2- If you are sharing access to a field in a struct, use mutexes.
    3- If you discover a critical performance issue when using channels and you cannot 
       find any other way to fix the issue, modify your code to use a mutex.
+
+
+
+
+ ╔══════════════════════════════════════════════════════════════════════════════════════════╗
+ ║ ********************************* The Standard Library ********************************* ║
+ ╚══════════════════════════════════════════════════════════════════════════════════════════╝
+------------------------ Io and friends: 
+type Reader interface {
+  Read(p []byte) (n int, err error)
+}
+buf := make([]byte, 2048)
+	 we create our buffer once and re-use it on every call to r.Read. This allows us to use a single memory
+	 allocation to read from a potentially large data source. If the Read method was written to return a
+   []byte, it would require a new allocation on every single call. Each allocation would end up on the heap,
+   which would make quite a lot of work for the garbage collector
+
+-- - io.MultiReader, which returns an io.Reader that reads from multiple io.Reader instances, one after another.
+   - io.LimitReader, which returns an io.Reader that only reads up to a specified number of bytes from the supplied io.Reader.
+   - io.MultiWriter, which returns an io.Writer that writes to multiple io.Writer instances at the same time.
+-- The io.Seeker interface is used for random access to a resource 
+
+
+------------------------ Time: 
+
