@@ -1,12 +1,18 @@
 package main
 
 import (
+	"bytes"
 	"encoding/json"
 	"fmt"
 	"io/ioutil"
 	"os"
+	"strings"
 	"time"
 )
+
+func main() {
+	encodingAndDecodingStreams()
+}
 
 // ********************************* Encoding *********************************
 //  ┌
@@ -79,4 +85,37 @@ func toFile() {
 	}
 	fmt.Printf("%+v\n", fromFile) // => {Name:Fred Age:40}
 
+}
+
+// Encoding and Decoding JSON Streams
+func encodingAndDecodingStreams() {
+	const data = `
+		{"name": "Fred", "age": 40}
+		{"name": "Mary", "age": 21}
+		{"name": "Pat", "age": 30}
+	`
+	var t struct {
+		Name string `json:"name"`
+		Age  int    `json:"age"`
+	}
+
+	dec := json.NewDecoder(strings.NewReader(data))
+	var b bytes.Buffer
+	enc := json.NewEncoder(&b)
+
+	// dec.More() This lets us read the data in, one JSON object at a time.
+	for dec.More() {
+		err := dec.Decode(&t)
+		if err != nil {
+			panic(err)
+		}
+		fmt.Println(t) // {Fred 40} then:  {Mary 21} then: {Pat 30} sequentially
+		err = enc.Encode(t)
+		// Writing out multiple values with the json.Encoder works just like using it to write out a single value
+		if err != nil {
+			panic(err)
+		}
+	}
+	out := b.String()
+	fmt.Println(out)
 }
