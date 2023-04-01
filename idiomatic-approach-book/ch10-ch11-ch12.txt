@@ -38,3 +38,13 @@
 --  If you have two goroutines that both access the same two channels, they must be accessed in the same order 
     in both goroutines, or they will deadlock. This means that neither one can proceed because they are waiting 
     on each other. If every goroutine in your Go application is deadlocked, the Go runtime kills your program
+    
+-- A mutex. it's short for mutual exclusion, and the job of a mutex is to limit the concurrent execution 
+    of some code or access to shared piece of data. This protected part is called the critical section.
+-- When a mutex is used to protect a value, there is nothing to indicate which goroutine currently has 
+   ownership of the value, because access to the value is shared by all of the concurrent processes
+-- decide whether to use channels or mutexes:
+   1- If you are coordinating goroutines or tracking a value as it is transformed by a series of goroutines, use channels.
+   2- If you are sharing access to a field in a struct, use mutexes.
+   3- If you discover a critical performance issue when using channels and you cannot 
+      find any other way to fix the issue, modify your code to use a mutex.
