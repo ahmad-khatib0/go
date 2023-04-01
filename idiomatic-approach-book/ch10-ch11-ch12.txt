@@ -103,3 +103,15 @@ Monotonic Time
    re-use of the same struct over and over, giving you control over memory usage. Second, there’s simply no other 
    way to do it. Because Go doesn’t currently have generics, there’s no way to specify what type should be instantiated 
    to store the bytes being read. Even when Go adopts generics, the memory usage advantages will remain.
+
+
+
+
+ ╒═════════════════════════════════════════════════════════════════════════════╕
+ │ ********************************* Context ********************************* │
+ ╘═════════════════════════════════════════════════════════════════════════════╛
+--------------------- Cancellation
+Imagine that you have a request that spawns several goroutines, each one calling a different HTTP service. If one
+service returns an error that prevents you from returning a valid result, there is no point in continuing to process 
+the other goroutines. In Go, this is called cancellation and the context provides the mechanism for implementing this
+
