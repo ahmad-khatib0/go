@@ -93,3 +93,13 @@ Monotonic Time
   The Sub method uses the montonic clock to calculate the time.Duration if both of the time.Time instances 
   have it set. If they don’t (because one or both of the instances were not created with time.Now), the Sub 
   method uses the time specified in the instances to calculate the time.Duration instead.
+
+
+--------------------- Encoding/Json
+-- The word marshaling means converting from a Go data type to an encoding, 
+   and unmarshaling means converting to a Go data type.
+-- json.Unmarshal populates data into an input parameter, just like the implementations of the io.Reader 
+   interface. There are two reasons for this. First, just like io.Reader implementations, this allows for efficient
+   re-use of the same struct over and over, giving you control over memory usage. Second, there’s simply no other 
+   way to do it. Because Go doesn’t currently have generics, there’s no way to specify what type should be instantiated 
+   to store the bytes being read. Even when Go adopts generics, the memory usage advantages will remain.
