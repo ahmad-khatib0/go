@@ -11,7 +11,9 @@ import (
 )
 
 func main() {
-	encodingAndDecodingStreams()
+	// encodingAndDecodingStreams()
+
+	customJsonParsing()
 }
 
 // ********************************* Encoding *********************************
@@ -21,10 +23,10 @@ func main() {
 //  └
 
 type Order struct {
-	ID          string    `json:"id"`
-	DateOrdered time.Time `json:"date_ordered"`
-	CustomerID  string    `json:"customer_id"`
-	Items       []Item    `json:"items"`
+	ID          string      `json:"id"`
+	DateOrdered RFC822ZTime `json:"date_ordered"`
+	CustomerID  string      `json:"customer_id"`
+	Items       []Item      `json:"items"`
 }
 type Item struct {
 	ID   string `json:"id"`
@@ -118,4 +120,60 @@ func encodingAndDecodingStreams() {
 	}
 	out := b.String()
 	fmt.Println(out)
+}
+
+// Custom JSON Parsing
+type RFC822ZTime struct {
+	time.Time
+}
+
+func (rt RFC822ZTime) MarshalJSON() ([]byte, error) {
+	out := rt.Time.Format(time.RFC822Z)
+	return []byte(`"` + out + `"`), nil
+}
+
+func (rt *RFC822ZTime) UnmarshalJSON(b []byte) error {
+	if string(b) == "null" {
+		return nil
+	}
+	t, err := time.Parse(`"`+time.RFC822Z+`"`, string(b))
+	//  the method that reads the time value is declared on a value receiver
+	if err != nil {
+		return err
+	}
+	*rt = RFC822ZTime{t}
+	// while the method that modifies the the time value is declared on a pointer receiver.
+	return nil
+}
+
+func customJsonParsing() {
+	data := `
+	{
+		"id": "12345",
+		"items": [
+			{
+				"id": "xyz123",
+				"name": "Thing 1"
+			},
+			{
+				"id": "abc789",
+				"name": "Thing 2"
+			}
+		],
+		"date_ordered": "01 May 20 13:01 +0000",
+		"customer_id": "3"
+	}`
+
+	var o Order
+	err := json.Unmarshal([]byte(data), &o)
+	if err != nil {
+		panic(err)
+	}
+	fmt.Printf("%+v\n", o)
+	fmt.Println(o.DateOrdered.Month())
+	out, err := json.Marshal(o)
+	if err != nil {
+		panic(err)
+	}
+	fmt.Println(string(out))
 }
