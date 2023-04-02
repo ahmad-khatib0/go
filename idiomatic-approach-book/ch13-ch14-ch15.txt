@@ -1,0 +1,7 @@
+ ╒═══════════════════════════════════════════════════════════════════════════════════════════════════╕
+ │ ******************************************** Testing ******************************************** │
+ ╘═══════════════════════════════════════════════════════════════════════════════════════════════════╛
+
+-- The go test command allows you to specify which packages to test. Using ./... for the package name specifies 
+    that you want to run tests in the current directory and all of the subdirectories of the current directory.
+    Include a -v flag to get verbose testing out
