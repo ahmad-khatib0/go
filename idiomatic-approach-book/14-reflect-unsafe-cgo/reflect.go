@@ -76,3 +76,21 @@ func changeIntReflect(i *int) {
 	iv := reflect.ValueOf(i)
 	iv.Elem().SetInt(20)
 }
+
+func makingNewValues() {
+	// a trick that lets you create a variable to represent a reflect.Type if you don’t have a value handy
+	// stringType       contains a reflect.Type that represents a string
+	// stringSliceType  contains a reflect.Type that represents a []string
+	var stringType = reflect.TypeOf((*string)(nil)).Elem() // converting nil to a pointer to string
+	// without the parenthesis around string, the compiler thinks that we are converting nil to string, which is illegal.
+	var stringSliceType = reflect.TypeOf([]string(nil))
+	// since nil is a valid value for a slice. All we have to do is
+	// type conversion of nil to a []string and pass that to reflect.Type.
+
+	ssv := reflect.MakeSlice(stringSliceType, 0, 10)
+	sv := reflect.New(stringType).Elem()
+	sv.SetString("hello")
+	ssv = reflect.Append(ssv, sv)
+	ss := ssv.Interface().([]string)
+	fmt.Println(ss) // prints [hello]
+}
