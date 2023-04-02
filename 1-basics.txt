@@ -15,4 +15,4 @@ go run --race .                                    # check where you have race c
 go list -m -versions github.com/learning-go-book/simpletax  #  see what versions of the module are available
 go test -v -cover -coverprofile=c.out                # output test coverage to a file
 go tool cover -html=c.out                            # opens browser with coverage details 
-
+go test -bench=.                                     # run all benchmarks in a directory 

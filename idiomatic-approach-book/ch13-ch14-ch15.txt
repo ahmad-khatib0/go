@@ -15,3 +15,12 @@
    tests to always run if you pass the flag -count=1 to go test.
 -- The advantage of using the _test package suffix is that it lets you treat your package as a “black box”; 
    you are forced to only interact with it via its public facing functions, methods, types, constants, and variables.
+-- Running a benchmark with memory allocation information 
+   produces output with five columns. Here’s what each one means:
+   1- BenchmarkFileLen1-12: The name of the benchmark, a hyphen, and the value of GOMAXPROCS for the benchmark.
+   2- 25: The number of times that the test ran in order to produce a stable result
+   3- 47201025 ns/op: How long it took to run a single pass of this benchmark, in nanoseconds 
+      (there are 1,000,000,000 nanoseconds in a second)
+   4- 65342 B/op: The number of bytes allocated during a single pass of the benchmark.
+   5- 65208 allocs/op: The number of times bytes had to be allocated from the heap during a single pass 
+      of the benchmark. This will always be less than or equal to the number of bytes allocated.
