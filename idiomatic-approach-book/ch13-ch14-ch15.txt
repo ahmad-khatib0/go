@@ -9,3 +9,9 @@
    to hold your files. Go reserves this directory name as a place to hold test files. When reading from
    testdata, always use a relative file reference. Since go test changes the current working directory to the 
    current package, each package accesses its own testdata via a relative file path.
+-- Go caches compiled packages if they haven’t changed, Go also caches test results when running tests 
+   across multiple packages if they have passed and their code hasn’t changed. The tests are re-compiled 
+   and re-run if you change any file in the package or in the testdata directory. You can also force 
+   tests to always run if you pass the flag -count=1 to go test.
+-- The advantage of using the _test package suffix is that it lets you treat your package as a “black box”; 
+   you are forced to only interact with it via its public facing functions, methods, types, constants, and variables.
