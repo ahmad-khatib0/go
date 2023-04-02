@@ -54,3 +54,31 @@ USING THE -SHORT FLAG
 -- It’s easy to accidentally reference a variable from two different goroutines 
    without acquiring a lock. The computer science term for this is a data race.
 -- ? A binary with -race enabled runs approximately ten times slower than a normal binary
+
+
+
+
+ ╓──────────────────────────────────────────────────────────────────────────────────────────╖
+ ║ ********************************* Reflect, Unsafe, CGo ********************************* ║
+ ╙──────────────────────────────────────────────────────────────────────────────────────────╜
+--  When the type of the data can’t be determined at compile time, you can use the reflection support in 
+    the reflect package to interact with and even construct data. When you need to take advantage of the 
+    memory layout of data types in Go, you can use the unsafe package. And if there is functionality that 
+    can only be provided by libraries written in C, you can call into C code with cgo.
+-- Reflection is built around three core concepts: Types, Kinds, and Values.
+-- When to use reflecation: 
+   1- Reading and writing from a database. The database/sql package uses reflection to send 
+      records to databases and read data back.
+   2- Go’s built-in templating libraries, text/template and
+      html/template use reflection to process the values that are passed to the templates.
+   3- The fmt package uses reflection heavily, as all of those calls to fmt.Println and friends 
+      rely on reflection to detect the type of the provided parameters.
+   4- The errors package uses reflection to implement errors.Is and errors.As.
+   5- The sort package uses reflection to implement functions that sort and evaluate 
+      slices of any type: sort.Slice, sort.SliceStable, and sort.SliceIsSorted.
+   6- The last main usage of reflection in the Go standard library is for marshaling and unmarshaling data 
+      into JSON and XML, along with the other data formats defined in the various encoding packages. Struct 
+      tags are accessed via reflection, and the fields in structs are read and written using reflection as well.
+      
+-- A type in reflection defines the properties of a variable, what it can hold, and how you can interact with it
+-- if you define a struct named Foo, the kind is reflect.Struct and the type is "Foo" 
