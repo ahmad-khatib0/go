@@ -5,3 +5,7 @@
 -- The go test command allows you to specify which packages to test. Using ./... for the package name specifies 
     that you want to run tests in the current directory and all of the subdirectories of the current directory.
     Include a -v flag to get verbose testing out
+-- If you want to use sample data to test functions in a package, create a subdirectory named testdata 
+   to hold your files. Go reserves this directory name as a place to hold test files. When reading from
+   testdata, always use a relative file reference. Since go test changes the current working directory to the 
+   current package, each package accesses its own testdata via a relative file path.
