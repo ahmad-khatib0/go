@@ -5,9 +5,15 @@ import (
 	"reflect"
 )
 
+//******************************************** Types ********************************************
+
 func main() {
 
 	reflectTypeOf()
+
+	reflectElem()
+
+	reflectOnStruct()
 }
 
 func reflectTypeOf() {
@@ -35,3 +41,20 @@ func reflectElem() {
 	fmt.Println(xpt.Elem().Name()) // returns "int"
 	fmt.Println(xpt.Elem().Kind()) // returns reflect.Int
 }
+
+func reflectOnStruct() {
+
+	type Foo struct {
+		A int    `myTag:"value"`
+		B string `myTag:"value2"`
+	}
+
+	var f Foo
+	ft := reflect.TypeOf(f)
+	for i := 0; i < ft.NumField(); i++ {
+		curField := ft.Field(i)
+		fmt.Println(curField.Name, curField.Type.Name(), curField.Tag.Get("myTag"))
+	}
+}
+
+//******************************************** Values ********************************************
