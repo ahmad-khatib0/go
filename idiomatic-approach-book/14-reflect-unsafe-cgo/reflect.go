@@ -14,6 +14,8 @@ func main() {
 	reflectElem()
 
 	reflectOnStruct()
+
+	checkIfInterfaceValueIsNil()
 }
 
 func reflectTypeOf() {
@@ -93,4 +95,44 @@ func makingNewValues() {
 	ssv = reflect.Append(ssv, sv)
 	ss := ssv.Interface().([]string)
 	fmt.Println(ss) // prints [hello]
+}
+
+// Use Reflection To Check If an Interface’s Value is nil
+//  ▲
+//  █   If you want to check if the value associated with an interface is nil,
+//  █   you can do so with reflection using two methods: IsValid and IsNil
+//  ▼
+
+func hasNoValue(i interface{}) bool {
+	iv := reflect.ValueOf(i)
+
+	// The IsValid method returns true if reflect.Value holds anything other than a nil interface
+	if !iv.IsValid() {
+		return true
+	}
+
+	switch iv.Kind() {
+	case reflect.Ptr, reflect.Slice, reflect.Map, reflect.Func,
+		reflect.Interface:
+		return iv.IsNil()
+	default:
+		return false
+	}
+}
+
+func checkIfInterfaceValueIsNil() {
+	var a interface{}
+	fmt.Println(a == nil, hasNoValue(a)) // prints true true
+
+	var b *int
+	fmt.Println(b == nil, hasNoValue(b)) // prints true true
+
+	var c interface{} = b
+	fmt.Println(c == nil, hasNoValue(c)) // prints false true
+
+	var d int
+	fmt.Println(hasNoValue(d)) // prints false
+
+	var e interface{} = d
+	fmt.Println(e == nil, hasNoValue(e)) // prints false false
 }
