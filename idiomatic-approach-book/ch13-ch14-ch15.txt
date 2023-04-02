@@ -50,3 +50,7 @@ USING THE -SHORT FLAG
     tests that take a long time. Those are different concepts. Finally, I find the -short flag unintuitive. 
     You should run short tests all the time. It makes more sense to require a flag to include 
     long-running tests, not to exclude them.
+
+-- It’s easy to accidentally reference a variable from two different goroutines 
+   without acquiring a lock. The computer science term for this is a data race.
+-- ? A binary with -race enabled runs approximately ten times slower than a normal binary

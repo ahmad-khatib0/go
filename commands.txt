@@ -16,3 +16,4 @@ go list -m -versions github.com/learning-go-book/simpletax  #  see what versions
 go test -v -cover -coverprofile=c.out                # output test coverage to a file
 go tool cover -html=c.out                            # opens browser with coverage details 
 go test -bench=.                                     # run all benchmarks in a directory 
+go test -race                                        # runs the test with race checker
