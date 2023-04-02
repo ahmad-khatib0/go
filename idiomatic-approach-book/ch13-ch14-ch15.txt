@@ -82,3 +82,5 @@ USING THE -SHORT FLAG
       
 -- A type in reflection defines the properties of a variable, what it can hold, and how you can interact with it
 -- if you define a struct named Foo, the kind is reflect.Struct and the type is "Foo" 
+-- Using reflection is roughly 30 times slower than a custom function for string filtering and nearly 
+   70 times slower for ints. It uses significantly more memory and performs thousands of allocations,

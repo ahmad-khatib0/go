@@ -16,6 +16,8 @@ func main() {
 	reflectOnStruct()
 
 	checkIfInterfaceValueIsNil()
+
+	Filter()
 }
 
 func reflectTypeOf() {
@@ -135,4 +137,35 @@ func checkIfInterfaceValueIsNil() {
 
 	var e interface{} = d
 	fmt.Println(e == nil, hasNoValue(e)) // prints false false
+}
+
+// using reflect to make filtering function
+func Filterering(slice interface{}, filter interface{}) interface{} {
+	sv := reflect.ValueOf(slice)
+	fv := reflect.ValueOf(filter)
+
+	sliceLen := sv.Len()
+	out := reflect.MakeSlice(sv.Type(), 0, sliceLen)
+	for i := 0; i < sliceLen; i++ {
+		curVal := sv.Index(i)
+		values := fv.Call([]reflect.Value{curVal})
+		if values[0].Bool() {
+			out = reflect.Append(out, curVal)
+		}
+	}
+	return out.Interface()
+}
+
+func Filter() {
+	names := []string{"Andrew", "Bob", "Clara", "Hortense"}
+	longNames := Filterering(names, func(s string) bool {
+		return len(s) > 3
+	}).([]string)
+	fmt.Println(longNames) // [Andrew Clara Hortense]
+
+	ages := []int{20, 50, 13}
+	adults := Filterering(ages, func(age int) bool {
+		return age >= 18
+	}).([]int)
+	fmt.Println(adults) // [20 50]
 }
