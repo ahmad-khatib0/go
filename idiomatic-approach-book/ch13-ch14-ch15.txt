@@ -33,3 +33,20 @@ MOCKS AND STUBS
     We used stubs in our examples to return canned values to a given response. You can write your own mocks by hand,
     or you can use a third party library to generate them. The two most popular options are the gomock library from
     Google and the testify library from Stretchr, Inc.
+
+USING THE -SHORT FLAG
+    Another option is to use go test with the -short flag. If you want to skip over tests that take a long 
+    time, label your slow tests by placing the the following code at the start of the test function:
+     +----------------------------------------+
+     |          if testing.Short() {          |
+     | t.Skip("skipping test in short mode.") |
+     |                   }                    |
+     +----------------------------------------+
+    When you want to run only short tests, pass the -short flag to go test. There are a few problems with the 
+    -short flag. If you use it, there are only two levels of testing: short tests and all tests. By using 
+    build tags, you can group your integration tests, specifying which service they need in order to run. 
+    Another argument against using the -short flag to indicate integration tests is philosophical. Build 
+    tags indicate a dependency, while the -short flag is only meant to indicate that you don’t want to run 
+    tests that take a long time. Those are different concepts. Finally, I find the -short flag unintuitive. 
+    You should run short tests all the time. It makes more sense to require a flag to include 
+    long-running tests, not to exclude them.
