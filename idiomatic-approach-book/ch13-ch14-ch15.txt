@@ -24,3 +24,12 @@
    4- 65342 B/op: The number of bytes allocated during a single pass of the benchmark.
    5- 65208 allocs/op: The number of times bytes had to be allocated from the heap during a single pass 
       of the benchmark. This will always be less than or equal to the number of bytes allocated.
+
+MOCKS AND STUBS
+    The terms mock and stub are often used interchangeably, but they are actually two different concepts.
+    Martin Fowler, a respected voice on all things related to software development, wrote a blog post on mocks that,
+    among other things, covers the difference between mocks and stubs. In short, a stub returns back a canned value 
+    for a given input while a mock validates that a set of calls happen in the expected order with the expected inputs.
+    We used stubs in our examples to return canned values to a given response. You can write your own mocks by hand,
+    or you can use a third party library to generate them. The two most popular options are the gomock library from
+    Google and the testify library from Stretchr, Inc.
