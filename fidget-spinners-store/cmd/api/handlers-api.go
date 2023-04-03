@@ -34,8 +34,6 @@ func (app *application) GetPaymentIntent(w http.ResponseWriter, r *http.Request)
 		return
 	}
 
-	app.infoLog.Println(payload.Amount)
-
 	amount, err := strconv.Atoi(payload.Amount)
 	if err != nil {
 		app.errorLog.Println(err)
@@ -128,5 +126,4 @@ func (app *application) CreateCustomerAndSubscribeToPlan(w http.ResponseWriter, 
 
 	w.Header().Set("Content-Type", "application/json")
 	w.Write(out)
-
 }

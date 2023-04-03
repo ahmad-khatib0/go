@@ -1,7 +1,6 @@
 package main
 
 import (
-	"fmt"
 	"myapp/internal/cards"
 	"myapp/internal/models"
 	"net/http"
@@ -278,9 +277,10 @@ func (app *application) BronzePlan(w http.ResponseWriter, r *http.Request) {
 
 	data := make(map[string]interface{})
 	data["widget"] = widget
+
 	if err := app.renderTemplate(w, r, "bronze-plan", &templateData{
 		Data: data,
 	}); err != nil {
-		fmt.Println(err)
+		app.errorLog.Print(err)
 	}
 }
