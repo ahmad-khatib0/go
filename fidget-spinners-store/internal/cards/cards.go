@@ -1,11 +1,11 @@
 package cards
 
 import (
-	"github.com/stripe/stripe-go/customer"
-	"github.com/stripe/stripe-go/sub"
 	"github.com/stripe/stripe-go/v72"
+	"github.com/stripe/stripe-go/v72/customer"
 	"github.com/stripe/stripe-go/v72/paymentintent"
 	"github.com/stripe/stripe-go/v72/paymentmethod"
+	"github.com/stripe/stripe-go/v72/sub"
 )
 
 // Card holds the information needed by this package
