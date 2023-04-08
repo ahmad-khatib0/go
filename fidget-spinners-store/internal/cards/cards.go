@@ -1,8 +1,8 @@
 package cards
 
 import (
-	"github.com/stripe/stripe-go/v72"
 	"github.com/stripe/stripe-go/v72/customer"
+	"github.com/stripe/stripe-go/v72"
 	"github.com/stripe/stripe-go/v72/paymentintent"
 	"github.com/stripe/stripe-go/v72/paymentmethod"
 	"github.com/stripe/stripe-go/v72/sub"
@@ -83,7 +83,7 @@ func (c *Card) SubscribeToPlan(cust *stripe.Customer, plan, email, last4, cardTy
 
 	params := &stripe.SubscriptionParams{
 		Customer: stripe.String(stripeCustomerID),
-		Items:    items,
+		Items: items,
 	}
 
 	params.AddMetadata("last_four", last4)
@@ -101,7 +101,7 @@ func (c *Card) CreateCustomer(pm, email string) (*stripe.Customer, string, error
 	stripe.Key = c.Secret
 	customerParams := &stripe.CustomerParams{
 		PaymentMethod: stripe.String(pm),
-		Email:         stripe.String(email),
+		Email: stripe.String(email),
 		InvoiceSettings: &stripe.CustomerInvoiceSettingsParams{
 			DefaultPaymentMethod: stripe.String(pm),
 		},
