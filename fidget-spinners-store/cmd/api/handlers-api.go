@@ -368,7 +368,7 @@ func (app *application) VirtualTerminalPaymentSucceeded(w http.ResponseWriter, r
 
 	card := cards.Card{
 		Secret: app.config.stripe.secret,
-		Key: app.config.stripe.key,
+		Key:    app.config.stripe.key,
 	}
 
 	pi, err := card.RetrievePaymentIntent(txnData.PaymentIntent)
@@ -387,13 +387,15 @@ func (app *application) VirtualTerminalPaymentSucceeded(w http.ResponseWriter, r
 	txnData.ExpiryMonth = int(pm.Card.ExpMonth)
 	txnData.ExpiryYear = int(pm.Card.ExpYear)
 
-	txn := models.Transaction {
-		Amount: txnData.PaymentAmount,
-		Currency: txnData.PaymentCurrency,
-		LastFour: txnData.LastFour,
-		ExpiryMonth: txnData.ExpiryMonth,
-		ExpiryYear: txnData.ExpiryYear,
-		BankReturnCode: pi.Charges.Data[0].ID,
+	txn := models.Transaction{
+		Amount:              txnData.PaymentAmount,
+		Currency:            txnData.PaymentCurrency,
+		LastFour:            txnData.LastFour,
+		ExpiryMonth:         txnData.ExpiryMonth,
+		ExpiryYear:          txnData.ExpiryYear,
+		PaymentIntent:       txnData.PaymentIntent,
+		PaymentMethod:       txnData.PaymentMethod,
+		BankReturnCode:      pi.Charges.Data[0].ID,
 		TransactionStatusID: 2,
 	}
 
