@@ -622,8 +622,8 @@ func (app *application) CancelSubscription(w http.ResponseWriter, r *http.Reques
 	}
 
 	card := cards.Card{
-		Secret:   app.config.stripe.secret,
-		Key:      app.config.stripe.key,
+		Secret: app.config.stripe.secret,
+		Key: app.config.stripe.key,
 		Currency: subToCancel.Currency,
 	}
 
