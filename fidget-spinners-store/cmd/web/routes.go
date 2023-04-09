@@ -12,10 +12,11 @@ func (app *application) routes() http.Handler {
 
 	mux.Get("/", app.Home)
 
-	mux.Route("/admin", func(mux chi.Router) {
+	mux.Route("/admin", func(mux chi.Router){
 		mux.Use(app.Auth)
 		mux.Get("/virtual-terminal", app.VirtualTerminal)
 	})
+
 	// mux.Post("/virtual-terminal-payment-succeeded", app.VirtualTerminalPaymentSucceeded)
 	// mux.Get("/virtual-terminal-receipt", app.VirtualTerminalReceipt)
 

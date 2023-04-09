@@ -28,7 +28,8 @@ func (app *application) SendMail(from, to, subject, tmpl string, data interface{
 		return err
 	}
 
-	formattedMessage := tpl.String() // html version
+	formattedMessage := tpl.String()
+
 
 	templateToRender = fmt.Sprintf("templates/%s.plain.tmpl", tmpl)
 	t, err = template.New("email-plain").ParseFS(emailTemplateFS, templateToRender)
@@ -42,7 +43,7 @@ func (app *application) SendMail(from, to, subject, tmpl string, data interface{
 		return err
 	}
 
-	plainMessage := tpl.String() // string version
+	plainMessage := tpl.String()
 
 	app.infoLog.Println(formattedMessage, plainMessage)
 

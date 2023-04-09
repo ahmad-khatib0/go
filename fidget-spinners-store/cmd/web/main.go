@@ -69,8 +69,8 @@ func main() {
 	flag.StringVar(&cfg.env, "env", "development", "Application environment {development|production}")
 	flag.StringVar(&cfg.db.dsn, "dsn", "root:@tcp(localhost:3306)/fidgets-store?parseTime=true&tls=false", "DSN")
 	flag.StringVar(&cfg.api, "api", "http://localhost:4001", "URL to api")
-	flag.StringVar(&cfg.secretkey, "secret", "adeefdad44fdsadsa", "secret key")
-	flag.StringVar(&cfg.frontend, "frontend", "http://localhost:4000", "url to frontend")
+	flag.StringVar(&cfg.secretkey, "secret", "bRWmrwNUTqNUuzckjxsFlHZjxHkjrzKP", "secret key")
+	flag.StringVar(&cfg.frontend, "frontend", "http://localhost:4000", "url to front end")
 
 	flag.Parse()
 

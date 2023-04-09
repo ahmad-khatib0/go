@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 	"myapp/internal/cards"
+	"myapp/internal/encryption"
 	"myapp/internal/models"
 	"myapp/internal/urlsigner"
 	"net/http"
@@ -192,6 +193,7 @@ func (app *application) VirtualTerminalPaymentSucceeded(w http.ResponseWriter, r
 	http.Redirect(w, r, "/virtual-terminal-receipt", http.StatusSeeOther)
 }
 
+// Receipt displays a receipt
 func (app *application) Receipt(w http.ResponseWriter, r *http.Request) {
 	txn := app.Session.Get(r.Context(), "receipt").(TransactionData)
 	data := make(map[string]interface{})
@@ -204,6 +206,7 @@ func (app *application) Receipt(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
+// VirtualTerminalReceipt displays a receipt
 func (app *application) VirtualTerminalReceipt(w http.ResponseWriter, r *http.Request) {
 	txn := app.Session.Get(r.Context(), "receipt").(TransactionData)
 	data := make(map[string]interface{})
@@ -302,6 +305,7 @@ func (app *application) LoginPage(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
+// PostLoginPage handles the posted login form
 func (app *application) PostLoginPage(w http.ResponseWriter, r *http.Request) {
 	app.Session.RenewToken(r.Context())
 
@@ -331,13 +335,16 @@ func (app *application) Logout(w http.ResponseWriter, r *http.Request) {
 	http.Redirect(w, r, "/login", http.StatusSeeOther)
 }
 
+// ForgotPassword shows the forgot password page
 func (app *application) ForgotPassword(w http.ResponseWriter, r *http.Request) {
 	if err := app.renderTemplate(w, r, "forgot-password", &templateData{}); err != nil {
 		app.errorLog.Print(err)
 	}
 }
 
+// ShowResetPassword shows the reset password page (and validates url integrity)
 func (app *application) ShowResetPassword(w http.ResponseWriter, r *http.Request) {
+	email := r.URL.Query().Get("email")
 	theURL := r.RequestURI
 	testURL := fmt.Sprintf("%s%s", app.config.frontend, theURL)
 
@@ -359,8 +366,18 @@ func (app *application) ShowResetPassword(w http.ResponseWriter, r *http.Request
 		return
 	}
 
+	encyrptor := encryption.Encryption{
+		Key: []byte(app.config.secretkey),
+	}
+
+	encryptedEmail, err := encyrptor.Encrypt(email)
+	if err != nil {
+		app.errorLog.Println("Encryption failed")
+		return
+	}
+
 	data := make(map[string]interface{})
-	data["email"] = r.URL.Query().Get("email")
+	data["email"] = encryptedEmail
 
 	if err := app.renderTemplate(w, r, "reset-password", &templateData{
 		Data: data,

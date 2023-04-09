@@ -274,6 +274,7 @@ func (m *DBModel) GetUserByEmail(email string) (User, error) {
 	return u, nil
 }
 
+
 func (m *DBModel) Authenticate(email, password string) (int, error) {
 	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
 	defer cancel()

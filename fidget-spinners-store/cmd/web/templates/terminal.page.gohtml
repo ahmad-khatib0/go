@@ -18,7 +18,7 @@
 
             <div class="mb-3">
                 <label for="charge_amount" class="form-label">Amount</label>
-                <input type="number" class="form-control" id="charge_amount"
+                <input type="text" class="form-control" id="charge_amount"
                     required="" autocomplete="charge_amount-new">
             </div>
 
@@ -84,7 +84,6 @@ checkAuth();
 document.getElementById("charge_amount").addEventListener("change", function(evt){
     if (evt.target.value !== "") {
         document.getElementById("amount").value = parseInt((evt.target.value * 100), 10);
-        console.log(document.getElementById("amount").value )
     } else {
         document.getElementById("amount").value = 0;
     }

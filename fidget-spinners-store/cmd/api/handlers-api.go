@@ -5,6 +5,7 @@ import (
 	"errors"
 	"fmt"
 	"myapp/internal/cards"
+	"myapp/internal/encryption"
 	"myapp/internal/models"
 	"myapp/internal/urlsigner"
 	"net/http"
@@ -370,7 +371,7 @@ func (app *application) VirtualTerminalPaymentSucceeded(w http.ResponseWriter, r
 
 	card := cards.Card{
 		Secret: app.config.stripe.secret,
-		Key:    app.config.stripe.key,
+		Key: app.config.stripe.key,
 	}
 
 	pi, err := card.RetrievePaymentIntent(txnData.PaymentIntent)
@@ -389,15 +390,15 @@ func (app *application) VirtualTerminalPaymentSucceeded(w http.ResponseWriter, r
 	txnData.ExpiryMonth = int(pm.Card.ExpMonth)
 	txnData.ExpiryYear = int(pm.Card.ExpYear)
 
-	txn := models.Transaction{
-		Amount:              txnData.PaymentAmount,
-		Currency:            txnData.PaymentCurrency,
-		LastFour:            txnData.LastFour,
-		ExpiryMonth:         txnData.ExpiryMonth,
-		ExpiryYear:          txnData.ExpiryYear,
-		PaymentIntent:       txnData.PaymentIntent,
-		PaymentMethod:       txnData.PaymentMethod,
-		BankReturnCode:      pi.Charges.Data[0].ID,
+	txn := models.Transaction {
+		Amount: txnData.PaymentAmount,
+		Currency: txnData.PaymentCurrency,
+		LastFour: txnData.LastFour,
+		ExpiryMonth: txnData.ExpiryMonth,
+		ExpiryYear: txnData.ExpiryYear,
+		PaymentIntent: txnData.PaymentIntent,
+		PaymentMethod: txnData.PaymentMethod,
+		BankReturnCode: pi.Charges.Data[0].ID,
 		TransactionStatusID: 2,
 	}
 
@@ -409,6 +410,7 @@ func (app *application) VirtualTerminalPaymentSucceeded(w http.ResponseWriter, r
 
 	app.writeJSON(w, http.StatusOK, txn)
 }
+
 func (app *application) SendPasswordResetEmail(w http.ResponseWriter, r *http.Request) {
 	var payload struct {
 		Email string `json:"email"`
@@ -424,7 +426,7 @@ func (app *application) SendPasswordResetEmail(w http.ResponseWriter, r *http.Re
 	_, err = app.DB.GetUserByEmail(payload.Email)
 	if err != nil {
 		var resp struct {
-			Error   bool   `json:"error"`
+			Error bool `json:"error"`
 			Message string `json:"message"`
 		}
 		resp.Error = true
@@ -435,7 +437,7 @@ func (app *application) SendPasswordResetEmail(w http.ResponseWriter, r *http.Re
 
 	link := fmt.Sprintf("%s/reset-password?email=%s", app.config.frontend, payload.Email)
 
-	sign := urlsigner.Signer{
+	sign := urlsigner.Signer {
 		Secret: []byte(app.config.secretkey),
 	}
 
@@ -456,17 +458,18 @@ func (app *application) SendPasswordResetEmail(w http.ResponseWriter, r *http.Re
 	}
 
 	var resp struct {
-		Error   bool   `json:"error"`
+		Error bool `json:"error"`
 		Message string `json:"message"`
 	}
 
 	resp.Error = false
+
 	app.writeJSON(w, http.StatusCreated, resp)
 }
 
 func (app *application) ResetPassword(w http.ResponseWriter, r *http.Request) {
 	var payload struct {
-		Email    string `json:"email"`
+		Email string `json:"email"`
 		Password string `json:"password"`
 	}
 
@@ -475,8 +478,18 @@ func (app *application) ResetPassword(w http.ResponseWriter, r *http.Request) {
 		app.badRequest(w, r, err)
 		return
 	}
+	
+	encyrptor := encryption.Encryption{
+		Key: []byte(app.config.secretkey),
+	}
 
-	user, err := app.DB.GetUserByEmail(payload.Email)
+	realEmail, err := encyrptor.Decrypt(payload.Email)
+	if err != nil {
+		app.badRequest(w, r, err)
+		return
+	}
+
+	user, err := app.DB.GetUserByEmail(realEmail)
 	if err != nil {
 		app.badRequest(w, r, err)
 		return
@@ -495,7 +508,7 @@ func (app *application) ResetPassword(w http.ResponseWriter, r *http.Request) {
 	}
 
 	var resp struct {
-		Error   bool   `json:"error"`
+		Error bool `json:"error"`
 		Message string `json:"message"`
 	}
 	resp.Error = false

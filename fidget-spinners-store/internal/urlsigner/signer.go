@@ -16,7 +16,7 @@ func (s *Signer) GenerateTokenFromString(data string) string {
 	var urlToSign string
 
 	crypt := goalone.New(s.Secret, goalone.Timestamp)
-	if strings.Contains(data, "?") { // in case url has string queries
+	if strings.Contains(data, "?") {
 		urlToSign = fmt.Sprintf("%s&hash=", data)
 	} else {
 		urlToSign = fmt.Sprintf("%s?hash=", data)
@@ -43,5 +43,5 @@ func (s *Signer) Expired(token string, minutesUntilExpire int) bool {
 	crypt := goalone.New(s.Secret, goalone.Timestamp)
 	ts := crypt.Parse([]byte(token))
 
-	return time.Since(ts.Timestamp) > time.Duration(minutesUntilExpire)*time.Minute
+	return time.Since(ts.Timestamp) > time.Duration(minutesUntilExpire) * time.Minute
 }
