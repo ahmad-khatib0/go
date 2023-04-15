@@ -9,6 +9,7 @@ import (
 	"github.com/phpdave11/gofpdf/contrib/gofpdi"
 )
 
+// Order describes the json payload received by this microservice
 type Order struct {
 	ID        int       `json:"id"`
 	Quantity  int       `json:"quantity"`
@@ -20,6 +21,7 @@ type Order struct {
 	CreatedAt time.Time `json:"created_at"`
 }
 
+// CreateAndSendInvoice creates an invoice as a PDF, and emails it to recipient
 func (app *application) CreateAndSendInvoice(w http.ResponseWriter, r *http.Request) {
 	// receive json
 	var order Order
@@ -59,6 +61,7 @@ func (app *application) CreateAndSendInvoice(w http.ResponseWriter, r *http.Requ
 	app.writeJSON(w, http.StatusCreated, resp)
 }
 
+// createInvoicePDF generates a PDF version of the invoice
 func (app *application) createInvoicePDF(order Order) error {
 	pdf := gofpdf.New("P", "mm", "Letter", "")
 	pdf.SetMargins(10, 13, 10)
