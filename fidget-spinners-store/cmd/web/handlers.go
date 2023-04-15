@@ -172,13 +172,13 @@ func (app *application) PaymentSucceeded(w http.ResponseWriter, r *http.Request)
 
 	// call microservice
 	inv := Invoice{
-		ID: orderID,
-		Amount: order.Amount,
-		Product: "Widget",
-		Quantity: order.Quantity,
+		ID:        orderID,
+		Amount:    order.Amount,
+		Product:   "Widget",
+		Quantity:  order.Quantity,
 		FirstName: txnData.FirstName,
-		LastName: txnData.LastName,
-		Email: txnData.Email,
+		LastName:  txnData.LastName,
+		Email:     txnData.Email,
 		CreatedAt: time.Now(),
 	}
 
@@ -211,8 +211,7 @@ func (app *application) callInvoiceMicro(inv Invoice) error {
 		return err
 	}
 	defer resp.Body.Close()
-	app.infoLog.Println(resp.Body)
-	
+
 	return nil
 }
 

@@ -44,8 +44,6 @@ func (app *application) SendMail(from, to, subject, tmpl string, attachments []s
 
 	plainMessage := tpl.String()
 
-	app.infoLog.Println(formattedMessage, plainMessage)
-
 	// send the mail
 	server := mail.NewSMTPClient()
 	server.Host = app.config.smtp.host
