@@ -700,6 +700,7 @@ func (m *DBModel) UpdateOrderStatus(id, statusID int) error {
 	return nil
 }
 
+// GetAllUsers returns a slice of all users
 func (m *DBModel) GetAllUsers() ([]*User, error) {
 	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
 	defer cancel()
@@ -740,6 +741,7 @@ func (m *DBModel) GetAllUsers() ([]*User, error) {
 	return users, nil
 }
 
+// GetOneUser returns one user by id
 func (m *DBModel) GetOneUser(id int) (User, error) {
 	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
 	defer cancel()
@@ -769,6 +771,7 @@ func (m *DBModel) GetOneUser(id int) (User, error) {
 	return u, nil
 }
 
+// EditUser edits an existing user
 func (m *DBModel) EditUser(u User) error {
 	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
 	defer cancel()
@@ -796,6 +799,7 @@ func (m *DBModel) EditUser(u User) error {
 	return nil
 }
 
+// AddUser inserts a user into the database
 func (m *DBModel) AddUser(u User, hash string) error {
 	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
 	defer cancel()
@@ -819,6 +823,7 @@ func (m *DBModel) AddUser(u User, hash string) error {
 	return nil
 }
 
+// DeleteUser deletes a user by id
 func (m *DBModel) DeleteUser(id int) error {
 	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
 	defer cancel()
@@ -835,6 +840,6 @@ func (m *DBModel) DeleteUser(id int) error {
 	if err != nil {
 		return err
 	}
-	return nil
 
+	return nil
 }

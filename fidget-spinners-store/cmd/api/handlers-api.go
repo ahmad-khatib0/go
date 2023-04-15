@@ -723,6 +723,7 @@ func (app *application) OneUser(w http.ResponseWriter, r *http.Request) {
 	app.writeJSON(w, http.StatusOK, user)
 }
 
+// EditUser is the handler for adding or editing an existing user
 func (app *application) EditUser(w http.ResponseWriter, r *http.Request) {
 	id := chi.URLParam(r, "id")
 	userID, _ := strconv.Atoi(id)
@@ -777,6 +778,7 @@ func (app *application) EditUser(w http.ResponseWriter, r *http.Request) {
 	app.writeJSON(w, http.StatusOK, resp)
 }
 
+// DeleteUser deletes a user, and all associated tokens, from the database
 func (app *application) DeleteUser(w http.ResponseWriter, r *http.Request) {
 	id := chi.URLParam(r, "id")
 	userID, _ := strconv.Atoi(id)
