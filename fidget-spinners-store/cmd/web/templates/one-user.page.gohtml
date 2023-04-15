@@ -58,5 +58,25 @@ class="needs-validation" autocomplete="off" novalidate="">
 {{end}}
 
 {{define "js"}}
+<script>
+document.addEventListener("DOMContentLoaded", function() {
+    let token = localStorage.getItem("token");
+    let id = window.location.pathname.split("/").pop();
 
+    const requestOptions = {
+        method: 'post',
+        headers: {
+            'Accept': 'application/json',
+            'Content-Type': 'application/json',
+            'Authorization': 'Bearer ' + token,
+        }
+    }
+
+    fetch('{{.API}}/api/admin/all-users/' + id, requestOptions)
+    .then(response => response.json())
+    .then(function (data) {
+        console.log(data);
+    })
+})
+</script>
 {{end}}

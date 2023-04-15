@@ -655,6 +655,7 @@ func (app *application) RefundCharge(w http.ResponseWriter, r *http.Request) {
 
 }
 
+// CancelSubscription is the handler to cancel a subscription
 func (app *application) CancelSubscription(w http.ResponseWriter, r *http.Request) {
 	var subToCancel struct {
 		ID            int    `json:"id"`
@@ -697,6 +698,7 @@ func (app *application) CancelSubscription(w http.ResponseWriter, r *http.Reques
 	app.writeJSON(w, http.StatusOK, resp)
 }
 
+// AllUsers returns a JSON file listing all admin users
 func (app *application) AllUsers(w http.ResponseWriter, r *http.Request) {
 	allUsers, err := app.DB.GetAllUsers()
 	if err != nil {
@@ -705,4 +707,18 @@ func (app *application) AllUsers(w http.ResponseWriter, r *http.Request) {
 	}
 
 	app.writeJSON(w, http.StatusOK, allUsers)
+}
+
+// OneUser gets one user by id (from the url) and returns it as JSON
+func (app *application) OneUser(w http.ResponseWriter, r *http.Request) {
+	id := chi.URLParam(r, "id")
+	userID, _ := strconv.Atoi(id)
+
+	user, err := app.DB.GetOneUser(userID)
+	if err != nil {
+		app.badRequest(w, r, err)
+		return
+	}
+
+	app.writeJSON(w, http.StatusOK, user)
 }
