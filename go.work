@@ -11,3 +11,5 @@ use ./idiomatic-approach-book/12-context/context_cancel
 use ./idiomatic-approach-book/13-testing
 
 use ./websockets/chat
+
+use ./websockets/vigilate
