@@ -1,8 +1,9 @@
 package handlers
 
 import (
-	"github.com/tsawler/vigilate/internal/helpers"
 	"net/http"
+
+	"github.com/tsawler/vigilate/internal/helpers"
 )
 
 // ListEntries lists schedule entries
