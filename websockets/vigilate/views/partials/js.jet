@@ -1,4 +1,5 @@
 
+
 <script src="/static/admin/js/pusher.min.js"></script>
 
 <script>
@@ -12,6 +13,10 @@
     });
 
     let publicChannel = pusher.subscribe("public-channel");
+
+    publicChannel.bind("test-event", function(data) {
+        successAlert(data.message);
+    })
 
 
     let attention = Prompt();

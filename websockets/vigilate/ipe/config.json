@@ -8,7 +8,7 @@
     {
       "ApplicationDisabled": false,
       "Secret": "123abc",
-      "Key": "123abc",
+      "Key": "abc123",
       "OnlySSL": false,
       "Name": "App",
       "AppID": "1",
