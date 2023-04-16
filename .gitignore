@@ -2,8 +2,6 @@ tags
 
 node_modules
 .env
-books-library/db-data/*
-books-library/backend/vueapi
 
 mod
 mongo
@@ -11,3 +9,9 @@ mongo
 dist/
 tmp/
 .DS_Store
+
+#folders and files
+
+#books-library/db-data/*
+books-library/backend/vueapi
+/websockets/vigilate/vigilate
