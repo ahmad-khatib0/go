@@ -1,4 +1,3 @@
-
 <script src="/static/admin/js/pusher.min.js"></script>
 
 <script>
@@ -19,6 +18,10 @@
 
     publicChannel.bind("app-stopping", function (data) {
         warningAlert(data.message);
+    })
+
+    publicChannel.bind("host-service-status-changed", function(data) {
+        successAlert(data.message);
     })
 
     // things we want to look for
@@ -130,4 +133,3 @@
         }
     }
 </script>
-
