@@ -250,13 +250,11 @@ func (repo *DBRepo) OneUser(w http.ResponseWriter, r *http.Request) {
 	vars := make(jet.VarMap)
 
 	if id > 0 {
-
 		u, err := repo.DB.GetUserById(id)
 		if err != nil {
 			ClientError(w, r, http.StatusBadRequest)
 			return
 		}
-
 		vars.Set("user", u)
 	} else {
 		var u models.User
@@ -383,8 +381,6 @@ func (repo *DBRepo) ToggleServiceForHost(w http.ResponseWriter, r *http.Request)
 	serviceID, _ := strconv.Atoi(r.Form.Get("service_id"))
 	active, _ := strconv.Atoi(r.Form.Get("active"))
 
-	log.Println("Data:", hostID, serviceID, active)
-
 	err = repo.DB.UpdateHostServiceStatus(hostID, serviceID, active)
 	if err != nil {
 		log.Println(err)
@@ -394,4 +390,17 @@ func (repo *DBRepo) ToggleServiceForHost(w http.ResponseWriter, r *http.Request)
 	out, _ := json.MarshalIndent(resp, "", "    ")
 	w.Header().Set("Content-Type", "application/json")
 	w.Write(out)
+}
+
+// SetSystemPref sets a given system preference to supplied value, and returns JSON response
+func (repo *DBRepo) SetSystemPref(w http.ResponseWriter, r *http.Request) {
+	var resp jsonResp
+	resp.OK = true
+	resp.Message = ""
+
+	out, _ := json.MarshalIndent(resp, "", "   ")
+
+	w.Header().Set("Content-Type", "application/json")
+	w.Write(out)
+
 }
