@@ -2,17 +2,16 @@ package helpers
 
 import (
 	"fmt"
-	"log"
-	"math/rand"
-	"net/http"
-	"runtime/debug"
-	"time"
-
 	"github.com/CloudyKit/jet/v6"
 	"github.com/justinas/nosurf"
 	"github.com/tsawler/vigilate/internal/config"
 	"github.com/tsawler/vigilate/internal/models"
 	"github.com/tsawler/vigilate/internal/templates"
+	"log"
+	"math/rand"
+	"net/http"
+	"runtime/debug"
+	"time"
 )
 
 const (
