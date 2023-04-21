@@ -2,7 +2,9 @@
 
 {{block css()}}
 <style>
-
+.pointer {
+    cursor: pointer;
+}
 </style>
 {{end}}
 
@@ -311,7 +313,7 @@ Host
                                         <td>
                                             <span class="{{.Service.Icon}}"></span>
                                             {{.Service.ServiceName}}
-                                            <span class="badge bg-secondary" onclick="checkNow({{.ID}}, 'pending')">
+                                            <span class="badge bg-secondary pointer" onclick="checkNow({{.ID}}, 'pending')">
                                                 Check Now
                                             </span>
                                         </td>
@@ -400,7 +402,6 @@ Host
             errorAlert("Error: check all tabs!");
             this.event.preventDefault();
             this.event.stopPropagation();
-
         }
         form.classList.add('was-validated');
 
@@ -410,12 +411,12 @@ Host
     }
 
     function checkNow(id, oldStatus) {
-        console.log("Clicked check now");
+        console.log("Clicked check now")
 
         fetch('/admin/perform-check/' + id + '/' + oldStatus)
             .then(response => response.json())
             .then(data => {
-                console.log("Ok:", data.ok, "message:", data.message);
+                console.log("Ok:", data.ok, "message", data.message)
             });
     }
 </script>

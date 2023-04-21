@@ -10,6 +10,7 @@ import (
 	"github.com/go-chi/chi"
 )
 
+// jsonResp describes the JSON response sent back to client
 type jsonResp struct {
 	OK            bool      `json:"ok"`
 	Message       string    `json:"message"`
@@ -29,18 +30,25 @@ func (repo *DBRepo) TestCheck(w http.ResponseWriter, r *http.Request) {
 	log.Println(hostServiceID, oldStatus)
 
 	// get host service
+	hs, err := repo.DB.GetHostServiceByID(hostServiceID)
+	if err != nil {
+		log.Println(err)
+		return
+	}
+
+	log.Println("Service name is", hs.Service.ServiceName)
 
 	// get host?
 
 	// test the service
 
 	// create json
-
-	// send json to client
 	resp := jsonResp{
 		OK:      true,
 		Message: "test message",
 	}
+
+	// send json to client
 
 	out, _ := json.MarshalIndent(resp, "", "    ")
 	w.Header().Set("Content-Type", "application/json")
