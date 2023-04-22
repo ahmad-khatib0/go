@@ -9,3 +9,4 @@ packages:
     emit_prepared_queries: false # to generate codes that work with prepared statement.
     emit_interface: false # to generate Querier interface for the generated package.
     emit_exact_table_names: false # Sqlc will try to singularize the table name to use as the model struct name
+    emit_empty_slices: true
