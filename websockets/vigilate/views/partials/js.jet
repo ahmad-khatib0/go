@@ -1,4 +1,3 @@
-
 <script src="/static/admin/js/pusher.min.js"></script>
 
 <script>
@@ -330,4 +329,3 @@
         }
     }
 </script>
-
