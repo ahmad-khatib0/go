@@ -3,17 +3,18 @@ package db
 import (
 	"context"
 	"database/sql"
-	"reflect"
 	"testing"
 	"time"
 
-	"github.com/Ahmadkhatib0/go/simple-bank/util"
 	"github.com/stretchr/testify/require"
+	"github.com/techschool/simplebank/util"
 )
 
 func createRandomAccount(t *testing.T) Account {
+	user := createRandomUser(t)
+
 	arg := CreateAccountParams{
-		Owner:    util.RandomOwner(),
+		Owner:    user.Username,
 		Balance:  util.RandomMoney(),
 		Currency: util.RandomCurrency(),
 	}
@@ -95,25 +96,5 @@ func TestListAccounts(t *testing.T) {
 
 	for _, account := range accounts {
 		require.NotEmpty(t, account)
-	}
-}
-
-func Test_createRandomAccount(t *testing.T) {
-	type args struct {
-		t *testing.T
-	}
-	tests := []struct {
-		name string
-		args args
-		want Account
-	}{
-		// TODO: Add test cases.
-	}
-	for _, tt := range tests {
-		t.Run(tt.name, func(t *testing.T) {
-			if got := createRandomAccount(tt.args.t); !reflect.DeepEqual(got, tt.want) {
-				t.Errorf("createRandomAccount() = %v, want %v", got, tt.want)
-			}
-		})
 	}
 }
