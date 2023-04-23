@@ -3,8 +3,8 @@ module github.com/techschool/simplebank
 go 1.19
 
 require (
-	github.com/Ahmadkhatib0/go/simple-bank v0.0.0-20230422155437-b3366d6fc135
 	github.com/aead/chacha20poly1305 v0.0.0-20201124145622-1a5aba2a8b29
+	github.com/dgrijalva/jwt-go v3.2.0+incompatible
 	github.com/gin-gonic/gin v1.9.0
 	github.com/go-playground/validator/v10 v10.11.2
 	github.com/golang/mock v1.4.4
