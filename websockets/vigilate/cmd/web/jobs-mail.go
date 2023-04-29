@@ -8,8 +8,8 @@ import (
 	"strconv"
 	"time"
 
+	"github.com/Ahmadkhatib0/go/websockets/vigilate/internal/channeldata"
 	"github.com/aymerick/douceur/inliner"
-	"github.com/tsawler/vigilate/internal/channeldata"
 	mail "github.com/xhit/go-simple-mail/v2"
 	"jaytaylor.com/html2text"
 )

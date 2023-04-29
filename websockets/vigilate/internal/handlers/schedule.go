@@ -6,9 +6,9 @@ import (
 	"net/http"
 	"sort"
 
+	"github.com/Ahmadkhatib0/go/websockets/vigilate/internal/helpers"
+	"github.com/Ahmadkhatib0/go/websockets/vigilate/internal/models"
 	"github.com/CloudyKit/jet/v6"
-	"github.com/tsawler/vigilate/internal/helpers"
-	"github.com/tsawler/vigilate/internal/models"
 )
 
 // ByHost allows us to sort by host

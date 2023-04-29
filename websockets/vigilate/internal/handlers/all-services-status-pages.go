@@ -4,8 +4,8 @@ import (
 	"log"
 	"net/http"
 
+	"github.com/Ahmadkhatib0/go/websockets/vigilate/internal/helpers"
 	"github.com/CloudyKit/jet/v6"
-	"github.com/tsawler/vigilate/internal/helpers"
 )
 
 // AllHealthyServices lists all healthy services

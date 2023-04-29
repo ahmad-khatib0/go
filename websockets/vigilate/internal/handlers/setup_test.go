@@ -8,14 +8,14 @@ import (
 	"testing"
 	"time"
 
+	"github.com/Ahmadkhatib0/go/websockets/vigilate/internal/channeldata"
+	"github.com/Ahmadkhatib0/go/websockets/vigilate/internal/config"
+	"github.com/Ahmadkhatib0/go/websockets/vigilate/internal/driver"
+	"github.com/Ahmadkhatib0/go/websockets/vigilate/internal/helpers"
+	"github.com/Ahmadkhatib0/go/websockets/vigilate/internal/repository/dbrepo"
 	"github.com/alexedwards/scs/v2"
 	"github.com/pusher/pusher-http-go"
 	"github.com/robfig/cron/v3"
-	"github.com/tsawler/vigilate/internal/channeldata"
-	"github.com/tsawler/vigilate/internal/config"
-	"github.com/tsawler/vigilate/internal/driver"
-	"github.com/tsawler/vigilate/internal/helpers"
-	"github.com/tsawler/vigilate/internal/repository/dbrepo"
 )
 
 var testSession *scs.SessionManager

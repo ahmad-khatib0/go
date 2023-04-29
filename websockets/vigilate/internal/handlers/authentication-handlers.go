@@ -9,8 +9,8 @@ import (
 	"strings"
 	"time"
 
-	"github.com/tsawler/vigilate/internal/helpers"
-	"github.com/tsawler/vigilate/internal/models"
+	"github.com/Ahmadkhatib0/go/websockets/vigilate/internal/helpers"
+	"github.com/Ahmadkhatib0/go/websockets/vigilate/internal/models"
 )
 
 // LoginScreen shows the home (login) screen

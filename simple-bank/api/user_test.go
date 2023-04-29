@@ -11,13 +11,13 @@ import (
 	"reflect"
 	"testing"
 
+	mockdb "github.com/Ahmadkhatib0/go/simple-bank/db/mock"
+	db "github.com/Ahmadkhatib0/go/simple-bank/db/sqlc"
+	"github.com/Ahmadkhatib0/go/simple-bank/util"
 	"github.com/gin-gonic/gin"
 	"github.com/golang/mock/gomock"
 	"github.com/lib/pq"
 	"github.com/stretchr/testify/require"
-	mockdb "github.com/techschool/simplebank/db/mock"
-	db "github.com/techschool/simplebank/db/sqlc"
-	"github.com/techschool/simplebank/util"
 )
 
 type eqCreateUserParamsMatcher struct {
@@ -276,8 +276,8 @@ func TestLoginUserAPI(t *testing.T) {
 		{
 			name: "InvalidUsername",
 			body: gin.H{
-				"username":  "invalid-user#1",
-				"password":  password,
+				"username": "invalid-user#1",
+				"password": password,
 			},
 			buildStubs: func(store *mockdb.MockStore) {
 				store.EXPECT().

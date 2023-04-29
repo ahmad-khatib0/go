@@ -6,7 +6,7 @@ import (
 	"log"
 	"time"
 
-	"github.com/tsawler/vigilate/internal/models"
+	"github.com/Ahmadkhatib0/go/websockets/vigilate/internal/models"
 	"golang.org/x/crypto/bcrypt"
 )
 

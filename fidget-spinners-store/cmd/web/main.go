@@ -6,12 +6,12 @@ import (
 	"fmt"
 	"html/template"
 	"log"
-	"myapp/internal/driver"
-	"myapp/internal/models"
 	"net/http"
 	"os"
 	"time"
 
+	"github.com/Ahmadkhatib0/go/fidget-spinners-store/internal/driver"
+	"github.com/Ahmadkhatib0/go/fidget-spinners-store/internal/models"
 	"github.com/alexedwards/scs/mysqlstore"
 	"github.com/alexedwards/scs/v2"
 )

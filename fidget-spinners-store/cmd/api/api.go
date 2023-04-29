@@ -4,11 +4,12 @@ import (
 	"flag"
 	"fmt"
 	"log"
-	"myapp/internal/driver"
-	"myapp/internal/models"
 	"net/http"
 	"os"
 	"time"
+
+	"github.com/Ahmadkhatib0/go/fidget-spinners-store/internal/driver"
+	"github.com/Ahmadkhatib0/go/fidget-spinners-store/internal/models"
 )
 
 const version = "1.0.0"

@@ -4,11 +4,12 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
-	"github.com/tsawler/vigilate/internal/config"
 	"log"
 	"net/http"
 	"net/url"
 	"strings"
+
+	"github.com/Ahmadkhatib0/go/websockets/vigilate/internal/config"
 )
 
 func SendTextTwilio(to, msg string, app *config.AppConfig) error {

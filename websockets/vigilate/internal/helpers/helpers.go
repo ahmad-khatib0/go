@@ -8,11 +8,11 @@ import (
 	"runtime/debug"
 	"time"
 
+	"github.com/Ahmadkhatib0/go/websockets/vigilate/internal/config"
+	"github.com/Ahmadkhatib0/go/websockets/vigilate/internal/models"
+	"github.com/Ahmadkhatib0/go/websockets/vigilate/internal/templates"
 	"github.com/CloudyKit/jet/v6"
 	"github.com/justinas/nosurf"
-	"github.com/tsawler/vigilate/internal/config"
-	"github.com/tsawler/vigilate/internal/models"
-	"github.com/tsawler/vigilate/internal/templates"
 )
 
 const (

@@ -3,11 +3,11 @@ package config
 import (
 	"html/template"
 
+	"github.com/Ahmadkhatib0/go/websockets/vigilate/internal/channeldata"
+	"github.com/Ahmadkhatib0/go/websockets/vigilate/internal/driver"
 	"github.com/alexedwards/scs/v2"
 	"github.com/pusher/pusher-http-go"
 	"github.com/robfig/cron/v3"
-	"github.com/tsawler/vigilate/internal/channeldata"
-	"github.com/tsawler/vigilate/internal/driver"
 )
 
 // AppConfig holds application configuration

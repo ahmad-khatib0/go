@@ -5,10 +5,10 @@ import (
 	"encoding/json"
 	"fmt"
 
+	db "github.com/Ahmadkhatib0/go/simple-bank/db/sqlc"
+	"github.com/Ahmadkhatib0/go/simple-bank/util"
 	"github.com/hibiken/asynq"
 	"github.com/rs/zerolog/log"
-	db "github.com/techschool/simplebank/db/sqlc"
-	"github.com/techschool/simplebank/util"
 )
 
 const TaskSendVerifyEmail = "task:send_verify_email"

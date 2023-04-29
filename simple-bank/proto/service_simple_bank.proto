@@ -9,7 +9,7 @@ import "rpc_login_user.proto";
 import "rpc_verify_email.proto";
 import "protoc-gen-openapiv2/options/annotations.proto";
 
-option go_package = "github.com/techschool/simplebank/pb";
+option go_package = "github.com/Ahmadkhatib0/go/simple-bank/pb";
 
 option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_swagger) = {
     info: {

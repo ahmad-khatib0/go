@@ -5,7 +5,7 @@ import (
 	"log"
 	"time"
 
-	"github.com/tsawler/vigilate/internal/models"
+	"github.com/Ahmadkhatib0/go/websockets/vigilate/internal/models"
 )
 
 // InsertHost inserts a host into the database

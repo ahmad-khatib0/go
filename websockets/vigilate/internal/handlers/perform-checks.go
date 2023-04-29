@@ -10,12 +10,12 @@ import (
 	"strings"
 	"time"
 
+	"github.com/Ahmadkhatib0/go/websockets/vigilate/internal/certificateutils"
+	"github.com/Ahmadkhatib0/go/websockets/vigilate/internal/channeldata"
+	"github.com/Ahmadkhatib0/go/websockets/vigilate/internal/helpers"
+	"github.com/Ahmadkhatib0/go/websockets/vigilate/internal/models"
+	"github.com/Ahmadkhatib0/go/websockets/vigilate/internal/sms"
 	"github.com/go-chi/chi/v5"
-	"github.com/tsawler/vigilate/internal/certificateutils"
-	"github.com/tsawler/vigilate/internal/channeldata"
-	"github.com/tsawler/vigilate/internal/helpers"
-	"github.com/tsawler/vigilate/internal/models"
-	"github.com/tsawler/vigilate/internal/sms"
 )
 
 const (

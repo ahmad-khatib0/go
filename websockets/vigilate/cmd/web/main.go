@@ -8,11 +8,11 @@ import (
 	"runtime"
 	"time"
 
+	"github.com/Ahmadkhatib0/go/websockets/vigilate/internal/config"
+	"github.com/Ahmadkhatib0/go/websockets/vigilate/internal/handlers"
+	"github.com/Ahmadkhatib0/go/websockets/vigilate/internal/models"
 	"github.com/alexedwards/scs/v2"
 	"github.com/pusher/pusher-http-go"
-	"github.com/tsawler/vigilate/internal/config"
-	"github.com/tsawler/vigilate/internal/handlers"
-	"github.com/tsawler/vigilate/internal/models"
 )
 
 var app config.AppConfig

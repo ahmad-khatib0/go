@@ -4,14 +4,14 @@ import (
 	"bytes"
 	"encoding/json"
 	"fmt"
-	"myapp/internal/cards"
-	"myapp/internal/encryption"
-	"myapp/internal/models"
-	"myapp/internal/urlsigner"
 	"net/http"
 	"strconv"
 	"time"
 
+	"github.com/Ahmadkhatib0/go/fidget-spinners-store/internal/cards"
+	"github.com/Ahmadkhatib0/go/fidget-spinners-store/internal/encryption"
+	"github.com/Ahmadkhatib0/go/fidget-spinners-store/internal/models"
+	"github.com/Ahmadkhatib0/go/fidget-spinners-store/internal/urlsigner"
 	"github.com/go-chi/chi/v5"
 )
 
