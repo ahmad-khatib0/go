@@ -1,7 +1,6 @@
 package main
 
 import (
-	"backend/internal/data"
 	"encoding/base64"
 	"errors"
 	"fmt"
@@ -10,6 +9,7 @@ import (
 	"strconv"
 	"time"
 
+	"github.com/Ahmadkhatib0/go/books-library/internal/data"
 	"github.com/go-chi/chi"
 	"github.com/mozillazg/go-slugify"
 )

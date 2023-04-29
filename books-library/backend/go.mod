@@ -1,4 +1,4 @@
-module backend
+module github.com/Ahmadkhatib0/go/books-library
 
 go 1.19
 

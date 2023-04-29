@@ -1,9 +1,7 @@
 package main
 
 import (
-	// "backend/internal/data"
 	"net/http"
-	// "time"
 
 	"github.com/go-chi/chi"
 	"github.com/go-chi/chi/middleware"

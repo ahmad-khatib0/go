@@ -1,12 +1,13 @@
 package main
 
 import (
-	"backend/internal/data"
-	"backend/internal/driver"
 	"fmt"
 	"log"
 	"net/http"
 	"os"
+
+	"github.com/Ahmadkhatib0/go/books-library/internal/data"
+	"github.com/Ahmadkhatib0/go/books-library/internal/driver"
 )
 
 type config struct {

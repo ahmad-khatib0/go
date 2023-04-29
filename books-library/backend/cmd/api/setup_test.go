@@ -1,11 +1,11 @@
 package main
 
 import (
-	"backend/internal/data"
 	"log"
 	"os"
 	"testing"
 
+	"github.com/Ahmadkhatib0/go/books-library/internal/data"
 	"github.com/DATA-DOG/go-sqlmock"
 )
 
