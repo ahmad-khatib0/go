@@ -22,7 +22,7 @@ func NewHTTPServer(addr string) *http.Server {
 }
 
 type httpServer struct {
-	log *Log
+	Log *Log
 }
 
 func newHTTPServer() *httpServer {
@@ -52,7 +52,7 @@ func (s *httpServer) handleProduce(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	off, err := s.log.Append(req.Record)
+	off, err := s.Log.Append(req.Record)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return

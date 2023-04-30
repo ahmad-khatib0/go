@@ -1,6 +1,9 @@
 package server
 
-import "sync"
+import (
+	"fmt"
+	"sync"
+)
 
 type Log struct {
 	mu      sync.Mutex
@@ -38,3 +41,5 @@ type Record struct {
 	Value  []byte `json:"value"`
 	Offset uint64 `json:"offset"`
 }
+
+var ErrOffsetNotFound = fmt.Errorf("offset not found")
