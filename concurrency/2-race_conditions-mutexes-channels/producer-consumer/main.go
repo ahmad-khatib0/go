@@ -17,23 +17,35 @@ const NumberOfPizzas = 10
 
 var pizzasMade, pizzasFailed, total int
 
+// Producer is a type for structs that holds two channels: one for pizzas, with all
+// information for a given pizza order including whether it was made
+// successfully, and another to handle end of processing (when we quit the channel)
 type Producer struct {
 	data chan PizzaOrder
 	quit chan chan error // one channel that holds a channel of errors
 }
 
+// PizzaOrder is a type for structs that describes a given pizza order. It has the order
+// number, a message indicating what happened to the order, and a boolean
+// indicating if the order was successfully completed.
 type PizzaOrder struct {
 	pizzaNumber int
 	message     string
 	success     bool
 }
 
+// Close is simply a method of closing the channel when we are done with it (i.e.
+// something is pushed to the quit channel)
 func (p *Producer) Close() error {
 	ch := make(chan error)
 	p.quit <- ch
 	return <-ch // will return nil if channel closed successfully , and error if any
 }
 
+// makePizza attempts to make a pizza. We generate a random number from 1-12,
+// and put in two cases where we can't make the pizza in time. Otherwise,
+// we make the pizza without issue. To make things interesting, each pizza
+// will take a different length of time to produce (some pizzas are harder than others).
 func makePizza(pizzaNumber int) *PizzaOrder {
 	pizzaNumber++
 
@@ -81,6 +93,12 @@ func makePizza(pizzaNumber int) *PizzaOrder {
 	}
 }
 
+// pizzeria is a goroutine that runs in the background and
+// calls makePizza to try to make one order each time it iterates through
+// the for loop. It executes until it receives something on the quit
+// channel. The quit channel does not receive anything until the consumer
+// sends it (when the number of orders is greater than or equal to the
+// constant NumberOfPizzas).
 func pizzeria(pizzaMaker *Producer) {
 	// keep track of which pizza we are making
 	var i = 0
@@ -88,9 +106,23 @@ func pizzeria(pizzaMaker *Producer) {
 	// run forever or until we receive a quit notification
 	// try to make pizzas
 	for {
-		currenPizza := makePizza(i)
-		// try to make a pizza
-		// decision
+		currentPizza := makePizza(i)
+		if currentPizza != nil {
+			i = currentPizza.pizzaNumber
+
+			select {
+			// we tried to make a pizza (we send something to the data channel -- a chan PizzaOrder)
+			case pizzaMaker.data <- *currentPizza:
+
+			// we want to quit, so send pizzMaker.quit to the quitChan (a chan error)
+			case quitChan := <-pizzaMaker.quit:
+				// close channels
+				close(pizzaMaker.data)
+				close(quitChan)
+
+				return // exist from this go routine
+			}
+		}
 	}
 
 }
