@@ -18,4 +18,4 @@ use ./books-library/backend
 
 use ./concurrency/1-basic
 
-use ./concurrency/2-race_conditions-mutexes-channels
+use ./concurrency/2-race_conditions-mutexes-channels/bank-balance-calculator
