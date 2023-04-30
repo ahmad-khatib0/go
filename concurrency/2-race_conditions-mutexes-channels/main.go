@@ -78,6 +78,7 @@ func main() {
 
 	// loop through 52 weeks and print out how much is made; keep a running total
 	for i, income := range incomes {
+
 		go func(i int, income Income) {
 			defer wg.Done()
 
@@ -89,7 +90,8 @@ func main() {
 				bankBalance = temp
 
 				balance.Unlock()
-				fmt.Printf("on week %d, you earned %d.00 from %s\n", week, income.Amount, income.Source)
+
+				fmt.Printf("On week %d, you earned $%d.00 from %s\n", week, income.Amount, income.Source)
 			}
 		}(i, income)
 	}
@@ -97,6 +99,6 @@ func main() {
 	wg.Wait()
 	// print out final balance
 
-	fmt.Printf("final bank balance %d.00", bankBalance)
+	fmt.Printf("Final bank balance: $%d.00", bankBalance)
 	fmt.Println()
 }
