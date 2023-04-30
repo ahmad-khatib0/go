@@ -8,27 +8,44 @@ import (
 var msg string
 var wg sync.WaitGroup
 
-func updateMessage(s string, m *sync.Mutex) {
+func updateMessage(s string) {
 	defer wg.Done()
-
-	m.Lock()
 	msg = s
-	m.Unlock()
+}
+
+func raceCondition() {
+	msg = "hello world"
+
+	wg.Add(2)
+
+	go updateMessage("Hello universe")
+	go updateMessage("Hello cosoms")
+	wg.Wait()
+
+	fmt.Println(msg)
 }
 
 func main() {
 	raceCondition()
 }
 
-func raceCondition() {
-	msg = "hello world"
+// func updateMessage(s string, m *sync.Mutex) {
+// 	defer wg.Done()
 
-	var muxtex sync.Mutex
-	wg.Add(2)
+// 	m.Lock()
+// 	msg = s
+// 	m.Unlock()
+// }
 
-	go updateMessage("Hello universe", &muxtex)
-	go updateMessage("Hello cosoms", &muxtex)
-	wg.Wait()
+// func raceCondition() {
+// 	msg = "hello world"
 
-	fmt.Println(msg)
-}
+// 	var muxtex sync.Mutex
+// 	wg.Add(2)
+
+// 	go updateMessage("Hello universe", &muxtex)
+// 	go updateMessage("Hello cosoms", &muxtex)
+// 	wg.Wait()
+
+// 	fmt.Println(msg)
+// }
