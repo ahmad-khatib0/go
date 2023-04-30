@@ -8,9 +8,12 @@ import (
 var msg string
 var wg sync.WaitGroup
 
-func updateMessage(s string) {
+func updateMessage(s string, m *sync.Mutex) {
 	defer wg.Done()
+
+	m.Lock()
 	msg = s
+	m.Unlock()
 }
 
 func main() {
@@ -19,10 +22,12 @@ func main() {
 
 func raceCondition() {
 	msg = "hello world"
+
+	var muxtex sync.Mutex
 	wg.Add(2)
 
-	go updateMessage("Hello universe")
-	go updateMessage("Hello cosoms")
+	go updateMessage("Hello universe", &muxtex)
+	go updateMessage("Hello cosoms", &muxtex)
 	wg.Wait()
 
 	fmt.Println(msg)
