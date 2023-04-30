@@ -10,7 +10,7 @@ func printSomething(s string, wg *sync.WaitGroup) {
 	fmt.Println(s)
 }
 
-func main() {
+func waitGroups() {
 	fmt.Println("hello concurrency")
 	var wg sync.WaitGroup
 
@@ -37,4 +37,10 @@ func main() {
 
 	wg.Add(1)
 	printSomething("this is the second thing to be printed!", &wg)
+
+}
+
+func main() {
+	// waitGroups()
+	Challenge()
 }
