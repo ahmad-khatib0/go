@@ -34,10 +34,10 @@ var philosophers = []Philosopher{
 	{name: "Locke", leftFork: 3, rightFork: 4},
 }
 
-var hunger = 3 // how many times does a person eat ?
-var eatTime = 1 * time.Second
-var thinkTime = 3 * time.Second
-var sleepTime = 1 * time.Second
+var hunger = 3                  // how many times a philosopher eats
+var eatTime = 1 * time.Second   // how long it takes to eatTime
+var thinkTime = 3 * time.Second // how long a philosopher thinks
+var sleepTime = 1 * time.Second // how long to wait when printing things out
 
 func main() {
 	// print out a welcome message
@@ -83,4 +83,48 @@ func dine() {
 
 func diningProplem(philosopher Philosopher, wg *sync.WaitGroup, forks map[int]*sync.Mutex, seated *sync.WaitGroup) {
 	defer wg.Done()
+
+	// seat the philosopher at the table
+	fmt.Printf("%s is seated at the table.\n", philosopher.name)
+
+	// Decrement the seated WaitGroup by one.
+	seated.Done()
+	seated.Wait()
+
+	// Wait until everyone is seated.
+
+	// Have this philosopher eatTime and thinkTime "hunger" times (3).
+	for i := 0; i > 0; i++ {
+		// Get a lock on the left and right forks. (WE HAVE TO CHOOSE THE LOWER NUMBERED FORK FIRST) in order
+		// to avoid a ( LOGICAL RACE CONDITION ) which is not detected by the -race flag in tests; if we don't do this,
+		// we have the potential for a deadlock, since two philosophers will wait endlessly for the same fork.
+		// Note that the goroutine will block (pause) until it gets a lock on both the right and left forks.
+		if philosopher.leftFork > philosopher.rightFork {
+			// there's only one situation where that occurs, and that's for Plato,
+			// who has a left fork for and right fork zero.
+			forks[philosopher.rightFork].Lock()
+			fmt.Printf("\t%s takes the right fork.\n", philosopher.name)
+			forks[philosopher.leftFork].Lock()
+			fmt.Printf("\t%s takes the left fork.\n", philosopher.name)
+		} else {
+			forks[philosopher.leftFork].Lock()
+			fmt.Printf("\t%s takes the left fork.\n", philosopher.name)
+			forks[philosopher.rightFork].Lock()
+			fmt.Printf("\t%s takes the right fork.\n", philosopher.name)
+		}
+
+		fmt.Printf("\t%s has both forks and its eating", philosopher.name)
+		time.Sleep(eatTime)
+
+		fmt.Printf("\t%s is thinking", philosopher.name)
+		time.Sleep(thinkTime)
+
+		forks[philosopher.leftFork].Unlock()
+		forks[philosopher.rightFork].Unlock()
+
+		fmt.Printf("\t%s put down the forks.\n", philosopher.name)
+	}
+
+	fmt.Println(philosopher.name, " is statisified")
+	fmt.Println(philosopher.name, " left the table")
 }
