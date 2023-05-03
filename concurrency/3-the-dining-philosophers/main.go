@@ -25,7 +25,7 @@ type Philosopher struct {
 	leftFork  int
 }
 
-// philosophers is list of all philosophers
+// philosophers is list of all philosophers.
 var philosophers = []Philosopher{
 	{name: "Plato", leftFork: 4, rightFork: 0},
 	{name: "Socrates", leftFork: 0, rightFork: 1},
@@ -34,6 +34,7 @@ var philosophers = []Philosopher{
 	{name: "Locke", leftFork: 3, rightFork: 4},
 }
 
+// Define a few variables.
 var hunger = 3                  // how many times a philosopher eats
 var eatTime = 1 * time.Second   // how long it takes to eatTime
 var thinkTime = 3 * time.Second // how long a philosopher thinks
@@ -47,9 +48,17 @@ func main() {
 
 	// start the meal
 	dine()
+
+	// print out finished message
+	fmt.Println("The table is empty.")
+
 }
 
 func dine() {
+	eatTime = 0 * time.Second
+	sleepTime = 0 * time.Second
+	thinkTime = 0 * time.Second
+
 	// wg is the WaitGroup that keeps track of how many philosophers are still at the table. When
 	// it reaches zero, everyone is finished eating and has left. We add 5 (the number of philosophers) to this
 	// wait group.
@@ -70,9 +79,10 @@ func dine() {
 	// Start the meal by iterating through our slice of Philosophers.
 	for i := 0; i < len(philosophers); i++ {
 		// fire off a goroutine for the current philosopher
-		go diningProplem(philosophers[i], wg, forks, seated)
+		go diningProblem(philosophers[i], wg, forks, seated)
 	}
 
+	// Wait for the philosophers to finish. This blocks until the wait group is 0.
 	wg.Wait()
 }
 
@@ -80,8 +90,7 @@ func dine() {
 // philosopher, our WaitGroup to determine when everyone is done, a map containing the mutexes for every
 // fork on the table, and a WaitGroup used to pause execution of every instance of this goroutine
 // until everyone is seated at the table.
-
-func diningProplem(philosopher Philosopher, wg *sync.WaitGroup, forks map[int]*sync.Mutex, seated *sync.WaitGroup) {
+func diningProblem(philosopher Philosopher, wg *sync.WaitGroup, forks map[int]*sync.Mutex, seated *sync.WaitGroup) {
 	defer wg.Done()
 
 	// seat the philosopher at the table
@@ -89,16 +98,17 @@ func diningProplem(philosopher Philosopher, wg *sync.WaitGroup, forks map[int]*s
 
 	// Decrement the seated WaitGroup by one.
 	seated.Done()
-	seated.Wait()
 
 	// Wait until everyone is seated.
+	seated.Wait()
 
 	// Have this philosopher eatTime and thinkTime "hunger" times (3).
-	for i := 0; i > 0; i++ {
+	for i := hunger; i > 0; i-- {
 		// Get a lock on the left and right forks. (WE HAVE TO CHOOSE THE LOWER NUMBERED FORK FIRST) in order
 		// to avoid a ( LOGICAL RACE CONDITION ) which is not detected by the -race flag in tests; if we don't do this,
 		// we have the potential for a deadlock, since two philosophers will wait endlessly for the same fork.
 		// Note that the goroutine will block (pause) until it gets a lock on both the right and left forks.
+
 		if philosopher.leftFork > philosopher.rightFork {
 			// there's only one situation where that occurs, and that's for Plato,
 			// who has a left fork for and right fork zero.
@@ -113,18 +123,22 @@ func diningProplem(philosopher Philosopher, wg *sync.WaitGroup, forks map[int]*s
 			fmt.Printf("\t%s takes the right fork.\n", philosopher.name)
 		}
 
-		fmt.Printf("\t%s has both forks and its eating", philosopher.name)
+		// By the time we get to this line, the philosopher has a lock (mutex) on both forks.
+		fmt.Printf("\t%s has both forks and is eating.\n", philosopher.name)
 		time.Sleep(eatTime)
 
-		fmt.Printf("\t%s is thinking", philosopher.name)
+		// The philosopher starts to think, but does not drop the forks yet.
+		fmt.Printf("\t%s is thinking.\n", philosopher.name)
 		time.Sleep(thinkTime)
 
+		// Unlock the mutexes for both forks.
 		forks[philosopher.leftFork].Unlock()
 		forks[philosopher.rightFork].Unlock()
 
 		fmt.Printf("\t%s put down the forks.\n", philosopher.name)
 	}
 
-	fmt.Println(philosopher.name, " is statisified")
-	fmt.Println(philosopher.name, " left the table")
+	// The philosopher has finished eating, so print out a message.
+	fmt.Println(philosopher.name, "is satsified.")
+	fmt.Println(philosopher.name, "left the table.")
 }
