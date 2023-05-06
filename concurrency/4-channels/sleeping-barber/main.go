@@ -47,6 +47,7 @@ func main() {
 	doneChan := make(chan bool)
 	clientChan := make(chan string, seatingCapacity)
 
+	// create the barbershop
 	shop := BarberShop{
 		ShopCapacity:    seatingCapacity,
 		HairCutDuration: cutDuration,
@@ -58,9 +59,10 @@ func main() {
 
 	color.Green("the shop is open for the day!")
 
-	// create the barbershop
-
 	// add barbers
+	shop.addBarber("Frank")
+
+	time.Sleep(time.Second * 5)
 
 	// start the barbershop as a goroutine
 
