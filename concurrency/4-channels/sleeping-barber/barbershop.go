@@ -74,3 +74,18 @@ func (shop *BarberShop) CloseShopForDay() {
 	color.Green("-------------------------------------------------------------")
 	color.Green("The barber now is closed for the day, and every one gone home")
 }
+
+func (shop *BarberShop) addClinet(client string) {
+	color.Green("*** %s arrives", client)
+
+	if shop.Open {
+		select {
+		case shop.ClientsChan <- client:
+			color.Blue("%s takes a seat in the waiting room", client)
+		default:
+			color.Red("the waiting room is fullt, so the %s leaves", client)
+		}
+	} else {
+		color.Red("The shop is already closed, so %s leaves!", client)
+	}
+}
