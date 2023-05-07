@@ -20,4 +20,16 @@ use ./concurrency/1-basic
 
 use ./concurrency/2-race_conditions-mutexes-channels/bank-balance-calculator
 
+use ./concurrency/3-the-dining-philosophers
+
+use ./concurrency/4-channels/basics
+
+use ./concurrency/4-channels/select
+
+use ./concurrency/4-channels/buffered-channels
+
+use ./concurrency/4-channels/sleeping-barber
+
+use ./concurrency/5-subscription-service
+
 use ./distributed-services/proglog
