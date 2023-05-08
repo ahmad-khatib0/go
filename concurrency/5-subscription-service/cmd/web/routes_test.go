@@ -20,7 +20,7 @@ var routes = []string{
 func Test_Routes_Exist(t *testing.T) {
 	testRoutes := testApp.routes()
 
-	chiRoutes := testRoutes.(chi.Router) // casting testRoutes to be of type chi.Router
+	chiRoutes := testRoutes.(chi.Router)
 
 	for _, route := range routes {
 		routeExists(t, chiRoutes, route)
