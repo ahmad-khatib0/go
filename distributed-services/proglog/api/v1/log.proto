@@ -4,9 +4,39 @@ package log.v1;
 
 option go_package = "github.com/Ahmadkhatib0/go/distributed-services/proglog/api/log_v1";
 
+service  Log { 
+  rpc Produce(ProduceRequest) returns (ProduceResponse) {}
+  rpc Consume(ConsumeRequest) returns (ConsumeResponse) {}
+  rpc ConsumeStream(ConsumeRequest) returns (stream ConsumeResponse) {}
+  rpc ProduceStream(stream ProduceRequest) returns (stream ProduceResponse) {}
+}
+
+// +----------------------------------------------------------------------------------+
+// | // The request includes the record to produce to the log, and the response sends |
+// | // back the record’s offset, which is essentially the record’s identifier        |
+// +----------------------------------------------------------------------------------+
+// +---------------------------------------------------------------------------------+
+// | with consuming: the user specifies the offset of the logs they want to consume, |
+// | and the server responds back with the specified record.                         |
+// +---------------------------------------------------------------------------------+
+message ProduceRequest { 
+  Record record = 1;
+}
+
+message ProduceResponse { 
+  uint64 offset = 1;
+}
+
+message ConsumeRequest{ 
+  uint64 offset = 1;
+}
+
+message ConsumeResponse { 
+  Record record = 2;
+}
+
 message Record { 
   bytes value = 1; 
   uint64 offset = 2;
 }
-
 

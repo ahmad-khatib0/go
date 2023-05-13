@@ -1,0 +1,17 @@
+
++------+
+| gRPC |
++------+
+1- each RPC line is an endpoint in that service, The requests 
+   and responses are messages that the compiler turns into Go structs,   
+2- ConsumeStream—a server-side streaming RPC where the client sends a
+   request to the server and gets back a stream to read a sequence of messages
+3- ProduceStream—a bidirectional streaming RPC where both the client and
+    server send a sequence of messages using a read-write stream. The two
+    streams operate independently, so the clients and servers can read and
+    write in whatever order they like. For example, the server could wait to
+    receive all of the client’s requests before sending back its response. You’d
+    order your calls this way if your server needed to process the requests in
+    batches or aggregate a response over multiple requests. Alternatively, the
+    server could send back a response for each request in lockstep. You’d
+    order your calls this way if each request required its own corresponding response.
