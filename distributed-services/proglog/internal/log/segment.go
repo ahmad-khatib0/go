@@ -24,12 +24,10 @@ type segment struct {
 }
 
 func newSegment(dir string, baseOffset uint64, c Config) (*segment, error) {
-
 	s := &segment{
 		baseOffset: baseOffset,
 		config:     c,
 	}
-
 	var err error
 	// to create the files if they don’t exist yet
 	storeFile, err := os.OpenFile(
@@ -37,38 +35,30 @@ func newSegment(dir string, baseOffset uint64, c Config) (*segment, error) {
 		os.O_RDWR|os.O_CREATE|os.O_APPEND,
 		0644,
 	)
-
 	if err != nil {
 		return nil, err
 	}
-
 	if s.store, err = newStore(storeFile); err != nil {
 		return nil, err
 	}
-
 	indexFile, err := os.OpenFile(
 		path.Join(dir, fmt.Sprintf("%d%s", baseOffset, ".index")),
-		os.O_RDWR|os.O_CREATE|os.O_APPEND,
+		os.O_RDWR|os.O_CREATE,
 		0644,
 	)
-
 	if err != nil {
 		return nil, err
 	}
-
 	if s.index, err = newIndex(indexFile, c); err != nil {
 		return nil, err
 	}
-
 	// we set the segment’s next offset to prepare for the next appended record
-	if off, _, err := s.index.Read(-1); err != nil { //  If the index is empty
+	if off, _, err := s.index.Read(-1); err != nil {
 		s.nextOffset = baseOffset
 	} else {
 		s.nextOffset = baseOffset + uint64(off) + 1
 	}
-
 	return s, nil
-
 }
 
 func (s *segment) Append(record *api.Record) (offset uint64, err error) {
@@ -100,12 +90,10 @@ func (s *segment) Read(off uint64) (*api.Record, error) {
 	if err != nil {
 		return nil, err
 	}
-
 	p, err := s.store.Read(pos)
 	if err != nil {
 		return nil, err
 	}
-
 	record := &api.Record{}
 	err = proto.Unmarshal(p, record)
 	return record, err
@@ -113,22 +101,8 @@ func (s *segment) Read(off uint64) (*api.Record, error) {
 
 // IsMaxed() returns whether the segment has reached its max size
 func (s *segment) IsMaxed() bool {
-	return s.store.size >= s.config.Segment.MaxStoreBytes || s.index.size >= s.config.Segment.MaxIndexBytes
-}
-
-func (s *segment) Remove() error {
-	if err := s.Close(); err != nil {
-		return nil
-	}
-
-	if err := os.Remove(s.index.Name()); err != nil {
-		return err
-	}
-
-	if err := os.Remove(s.store.Name()); err != nil {
-		return err
-	}
-	return nil
+	return s.store.size >= s.config.Segment.MaxStoreBytes ||
+		s.index.size >= s.config.Segment.MaxIndexBytes
 }
 
 func (s *segment) Close() error {
@@ -141,12 +115,25 @@ func (s *segment) Close() error {
 	return nil
 }
 
+func (s *segment) Remove() error {
+	if err := s.Close(); err != nil {
+		return err
+	}
+	if err := os.Remove(s.index.Name()); err != nil {
+		return err
+	}
+	if err := os.Remove(s.store.Name()); err != nil {
+		return err
+	}
+	return nil
+}
+
 // nearestMultiple(j uint64, k uint64) returns the nearest and lesser multiple of k in j, for example
 // nearestMultiple(9, 4) == 8. We take the lesser multiple to make sure we stay under the user’s disk capacity
-func nearsetMultiple(j, k uint64) uint64 {
+func nearestMultiple(j, k uint64) uint64 {
 	if j >= 0 {
 		return (j / k) * k
 	}
-
 	return ((j - k + 1) / k) * k
+
 }
