@@ -30,3 +30,18 @@ in ca-csr.json
    • O—organization                                                                 
    • OU—organizational unit (such as the department responsible for owning the key) 
  ╘══════════════════════════════════════════════════════════════════════════════════╛
+
+The simplest way to implement authorization is with an access control list (ACL). An ACL is a table 
+  of rules where each row says something like “Subject A is permitted to do action B on object 
+  C.” For example: Alice is permitted to read Distributed Services with Go. In this example, 
+  Alice is the subject, to read is the action, and Distributed Services with Go is the object.
+
++-----------------------------------------------------------------------------+
+| The model.conf configures Casbin to use ACL as its authorization mechanism. |
++-----------------------------------------------------------------------------+
+
+╒════════════════════════════════════════════════════════════════════════════════════════════════════════╕
+  In the policy.csv file, this is an ACL table, with two entries saying that the root client has produce 
+  and consume permissions on the * object (which we’re using as a wildcard,                              
+  meaning any object). All other clients, including nobody, will be denied.                              
+╘════════════════════════════════════════════════════════════════════════════════════════════════════════╛
