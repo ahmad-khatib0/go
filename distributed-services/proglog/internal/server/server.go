@@ -10,6 +10,11 @@ type Config struct {
 	CommitLog CommitLog
 }
 
+type CommitLog interface {
+	Append(*api.Record) (uint64, error)
+	Read(uint64) (*api.Record, error)
+}
+
 var _ api.LogServer = (*grpcServer)(nil)
 
 type grpcServer struct {
@@ -63,6 +68,8 @@ func (s *grpcServer) ProduceStream(stream api.Log_ProduceStreamServer) error {
 // ConsumeStream(*api.ConsumeRequest, api.Log_ConsumeStreamServer) implements a server-side streaming RPC so the
 // client can tell the server where in the log to read records, and then the server
 // will stream every record that follows—even records that aren’t in the log yet!
+// When the server reaches the end of the log, the server will wait until someone
+// appends a record to the log and then continue streaming records to the client.
 func (s *grpcServer) ConsumeStream(req *api.ConsumeRequest, stream api.Log_ConsumeStreamServer) error {
 	for {
 		select {
