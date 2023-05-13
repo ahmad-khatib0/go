@@ -15,3 +15,18 @@
     batches or aggregate a response over multiple requests. Alternatively, the
     server could send back a response for each request in lockstep. You’d
     order your calls this way if each request required its own corresponding response.
+
++-----+
+| TLS |
++-----+
+CFSSL has two tools we’ll need:
+    • cfssl to sign, verify, and bundle TLS certificates and output the results as JSON. 
+    • cfssljson to take that JSON output and split them into separate key, cer- tificate, CSR, and bundle files.
+in ca-csr.json 
+ ╒══════════════════════════════════════════════════════════════════════════════════╕
+   • C—country                                                                      
+   • L—locality or municipality (such as city)                                      
+   • ST—state or province                                                           
+   • O—organization                                                                 
+   • OU—organizational unit (such as the department responsible for owning the key) 
+ ╘══════════════════════════════════════════════════════════════════════════════════╛
