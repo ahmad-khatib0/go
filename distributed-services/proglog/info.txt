@@ -45,3 +45,62 @@ The simplest way to implement authorization is with an access control list (ACL)
   and consume permissions on the * object (which we’re using as a wildcard,                              
   meaning any object). All other clients, including nobody, will be denied.                              
 ╘════════════════════════════════════════════════════════════════════════════════════════════════════════╛
+
+
+╒═════════╕
+│ Metrics │
+╘═════════╛
+Metrics measure numeric data over time, such as how many requests failed or how long each request took.
+  Metrics like these help to define service-level indicators (SLI), objectives (SLO), and agreements (SLA). 
+  You’ll use metrics to report the health of your system, trigger internal alerts, and graph on
+  dashboards to get an idea of how your system’s doing at a glance. there are three types of metrics:
+
+Counters
+    Counters track the number of times an event happened, such as the
+    number of requests that failed or the sum of some fact of your system like the number of bytes processed.
+    You’ll often take a counter and use it to get a rate: the number of times an event happened in an interval
+    Who cares about the total requests we’ve received other than to brag about it? What we care about is how
+    many requests we’ve handled in the past second or minute—if that dropped significantly you’d want to check 
+    for latency in your system. You’d want to know when your request error rate spikes so you can see
+    what’s wrong and fix it.
+Histograms
+    Histograms show you a distribution of your data. You’ll mainly use histograms 
+    for measuring the percentiles of your request duration and sizes.
+Gauges
+    Gauges track the current value of something. You can replace that value entirely.
+    Gauges are useful for saturation-type metrics, like a host’s disk usage percentage 
+    or the number of load balancers compared to your cloud provider’s limits.
+
+┌───────────────────────────────────────────┐
+  Google’s four golden signals1 to measure: 
+└───────────────────────────────────────────┘
+• Latency: the time it takes your service to process requests. If your latency spikes, you often need 
+    to scale your system vertically by changing to an instance with more memory, CPUs, or IOPS, 
+    or scale your system horizontally by adding more instances to your load balancer
+
+• Traffic: the amount of demand on your service. For a typical web service,
+    this could be requests processed per second. For an online video game or video streaming service, 
+    it could be the number of concurrent users. These metrics are good for bragging rights (hopefully), 
+    but more important, they can help give you an idea of the scale at which youu’re 
+    working and when you’ve scaled to the point you need a new design.
+    
+• Errors: your service’s request failure rate. Internal server errors are par-ticularly important.
+
+• Saturation—a measure of your service’s capacity. For example, if your
+    service persists data to disk, at your current ingress rate will you run out of hard drive space soon?
+    If you have an in-memory store, how much memory is your service using compared to the memory available?
+
+• Traces comprise one or more spans. Spans can have parent/child relationships
+    or be linked as siblings. Each span represents a part of the request’s execution.
+
+OpenTelemetry8 is a Cloud Native Computing Foundation (CNCF) project that provides robust and 
+    portable APIs and libraries that we can use for metrics and distributed tracing in our service. 
+    (OpenCensus and OpenTracing merged to form OpenTelemetry, which is backward-compatible with existing 
+    Open-Census integrations.)  OpenTelemetry’s Go gRPC integration supports traces but not metrics, 
+
+
+
+When a test file implements TestMain(m *testing.M), Go will call TestMain(m) instead
+    of running the tests directly. TestMain() gives us a place for setup that applies to all tests in that 
+    file, like enabling our debug output. Flag parsing has to go in TestMain() instead of init(), 
+    otherwise Go can’t define the flag and your code will error and exit
