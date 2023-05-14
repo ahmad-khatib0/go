@@ -104,3 +104,49 @@ When a test file implements TestMain(m *testing.M), Go will call TestMain(m) ins
     of running the tests directly. TestMain() gives us a place for setup that applies to all tests in that 
     file, like enabling our debug output. Flag parsing has to go in TestMain() instead of init(), 
     otherwise Go can’t define the flag and your code will error and exit
+
+
+When you have an application that needs to talk to a service, the tool you
+use for service discovery needs to perform the following tasks:
+    • Manage a registry of services containing info such as their IPs and ports;
+    • Help services find other services using the registry;
+    • Health check service instances and remove them if they’re not well; and
+    • Deregister services when they go offline.
+
+Serf maintains cluster membership by using an efficient, lightweight gossip
+    protocol to communicate between the service’s nodes. Unlike service registry
+    projects like ZooKeeper and Consul, Serf doesn’t have a central-registry architectural style.
+    Instead, each instance of your service in the cluster runs as a Serf node.
+To implement service discovery with Serf we need to:
+    1. Create a Serf node on each server.
+    2. Configure each Serf node with an address to listen on and accept connec-tions from other Serf nodes.
+    3. Configure each Serf node with addresses of other Serf nodes and join their cluster.
+    4. Handle Serf’s cluster discovery events, such as when a node joins or fails in the cluster.
+
+Serf has a lot of configurable parameters, but the five parameters you’ll typically use are:
+    • NodeName—the node name acts as the node’s unique identifier across the
+      Serf cluster. If you don’t set the node name, Serf uses the hostname.
+      
+    • BindAddr and BindPort—Serf listens on this address and port for gossiping.
+    
+    • Tags—Serf shares these tags to the other nodes in the cluster and should
+      use these tags for simple data that informs the cluster how to handle this
+      node. For example, Consul shares each node’s RPC address with Serf
+      tags, and once they know each other’s RPC address, they can make RPCs
+      to each other. Consul shares whether the node is a voter or non-voter, which changes the node’s
+      role in the Raft cluster. In our code, similar to Consul, we’ll share each node’s user 
+      configured RPC address with a Serf tag so the nodes know which addresses to send their RPCs.
+      
+    • EventCh—the event channel is how you’ll receive Serf’s events when a node joins or leaves the cluster.
+      If you want a snapshot of the members at any point in time, you can call Serf’s Members() method.
+      
+    • StartJoinAddrs—when you have an existing cluster and you create a new node
+      that you want to add to that cluster, you need to point your new node to
+      at least one of the nodes now in the cluster. After the new node connects
+      to one of those nodes in the existing cluster, it’ll learn about the rest of
+      the nodes, and vice versa (the existing nodes learn about the new node).
+      The StartJoinAddrs field is how you configure new nodes to join an existing
+      cluster. You set the field to the addresses of nodes in the cluster, and
+      Serf’s gossip protocol takes care of the rest to join your node to the cluster.
+      In a production environment, specify at least three addresses to make
+      your cluster resilient to one or two node failures or a disrupted network.

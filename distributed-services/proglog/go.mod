@@ -21,6 +21,7 @@ require (
 	github.com/golang/protobuf v1.5.2 // indirect
 	github.com/google/certificate-transparency-go v1.1.4 // indirect
 	github.com/grpc-ecosystem/go-grpc-middleware v1.3.0 // indirect
+	github.com/hashicorp/serf v0.8.5 // indirect
 	github.com/jmhodges/clock v1.2.0 // indirect
 	github.com/jmoiron/sqlx v1.3.3 // indirect
 	github.com/kisielk/sqlstruct v0.0.0-20201105191214-5f3e10d3ab46 // indirect
