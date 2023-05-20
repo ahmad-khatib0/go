@@ -208,3 +208,15 @@ A Raft instance comprises:
     • A stable store where Raft stores the cluster’s confi, servers in the cluster, their addresses, and so on;
     • A snapshot store where Raft stores compact snapshots of its data; and
     • A transport that Raft uses to connect with the server’s peers.
+
+Your FSM must implement three methods:
+    • Apply(record *raft.Log)—Raft invokes this method after committing a log entry.
+    
+    • Snapshot() Raft periodically calls this method to snapshot its state. For
+      most services, you’ll be able to build a compacted log—for example, if we were building a 
+      key-value store and we had a bunch of commands saying “set foo to bar,” “set foo to baz,” 
+      “set foo to qux,” and so on, we would only set the latest command to restore the current state.
+      Because we’re replicating a log itself, we need the full log to restore it.
+      
+    • Restore(io.ReadCloser)—Raft calls this to restore an FSM from a snapshot for instance, 
+      if an EC2 instance failed and a new instance took its place.
