@@ -220,3 +220,25 @@ Your FSM must implement three methods:
       
     • Restore(io.ReadCloser)—Raft calls this to restore an FSM from a snapshot for instance, 
       if an EC2 instance failed and a new instance took its place.
+
+
+
+┌────────────────────────────────────────────────┐
+  Multiplex to Run Multiple Services on One Port 
+└────────────────────────────────────────────────┘
+Multiplexing allows you to serve different services on the same port. This makes
+    your service easier to use: there’s less documentation, less configuration, and fewer connections to manage.
+    And you can serve multiple services even when a firewall constrains you to one port. There’s a slight perf 
+    hit on each new connection because the multiplexer reads the first bytes to identify the connection, 
+    but for long-lived connections that performance hit is negligible.
+    
+The issue with multiplexing mutual TLS gRPC connections is that gRPC needs information 
+    taken during the handshake to authenticate clients later on. So we have to multiplex before the 
+    handshake and need to make a way to identify Raft from gRPC connections.
+    We identify the Raft connections from the gRPC connections by making the
+    Raft connections write a byte to identify them by. We write the number 1 as the first byte of our 
+    Raft connections to separate them from the gRPC connec- tions. If we had other services, we could 
+    differentiate them from gRPC by passing a custom dialer to the gRPC client to send the number 2 as 
+    the first byte. The TLS standards4 don’t assign multiplexing schemes to the values 0–19, saying 
+    that they “require coordination,” like we’ve done. It’s better to handle internal services specially 
+    because you control the clients and can make them write whatever you need to identify them.
