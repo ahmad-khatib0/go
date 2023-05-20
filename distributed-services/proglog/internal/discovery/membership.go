@@ -3,6 +3,7 @@ package discovery
 import (
 	"net"
 
+	"github.com/hashicorp/raft"
 	"github.com/hashicorp/serf/serf"
 	"go.uber.org/zap"
 )
@@ -131,7 +132,16 @@ func (m *Membership) Leave() error {
 
 // logError() logs the given error and message.
 func (m *Membership) logError(err error, msg string, member serf.Member) {
-	m.logger.Error(
+	log := m.logger.Error
+
+	if err == raft.ErrNotLeader {
+		// logError() will log the non-leader errors at the debug level now, and logs like these would be good
+		// candidates for removal. why checking for ErrNotLeader here? because Raft will error and return
+		// ErrNotLeader when you try to change the cluster on non-leader nodes
+		log = m.logger.Debug
+	}
+
+	log(
 		msg,
 		zap.Error(err),
 		zap.String("name", member.Name),
