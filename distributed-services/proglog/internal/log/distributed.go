@@ -2,7 +2,10 @@ package log
 
 import (
 	"bytes"
+	"crypto/tls"
+	"fmt"
 	"io"
+	"net"
 	"os"
 	"path/filepath"
 	"time"
@@ -365,4 +368,92 @@ func (f *fsm) Restore(r io.ReadCloser) error {
 		buf.Reset()
 	}
 	return nil
+}
+
+//  +-------------------------------------------------------------------------+
+//  |  ┌──────────────┐                                                       |
+//  |    Stream Layer                                                         |
+//  |  └──────────────┘                                                       |
+//  | Raft uses a stream layer in the transport to provide a low-level stream |
+//  | abstraction to connect with Raft servers                                |
+//  +-------------------------------------------------------------------------+
+
+var _ raft.StreamLayer = (*StreamLayer)(nil)
+
+type StreamLayer struct {
+	ln              net.Listener
+	serverTLSConfig *tls.Config
+	peerTLSConfig   *tls.Config
+}
+
+// NewStreamLayer want to enable encrypted communication between servers with TLS,
+// so we need to take in the TLS configs used to accept incoming connections
+// (the serverTLSConfig) and create outgoing connections (the peerTLSConfig).
+func NewStreamLayer(ln net.Listener, serverTLSConfig, peerTLSConfig *tls.Config) *StreamLayer {
+
+	return &StreamLayer{
+		ln:              ln,
+		serverTLSConfig: serverTLSConfig,
+		peerTLSConfig:   peerTLSConfig,
+	}
+
+}
+
+const RaftRPC = 1
+
+func (s *StreamLayer) Dial(addr raft.ServerAddress, timeout time.Duration) (net.Conn, error) {
+	dialer := &net.Dialer{Timeout: timeout} // makes outgoing connections to other servers in the Raft cluster
+
+	var conn, err = dialer.Dial("tcp", string(addr))
+	if err != nil {
+		return nil, err
+	}
+
+	// IDENTIFY TO MUX THIS IS A RAFT RPC
+	//  When we connect to a server, we write the RaftRPC byte to identify the connection type so we can
+	// multiplex Raft on the same port as our Log gRPC requests
+	_, err = conn.Write([]byte{byte(RaftRPC)})
+	if err != nil {
+		return nil, err
+	}
+
+	// if we configure the stream layer with a peer TLS config, we make a TLS client-side connection.
+	if s.peerTLSConfig != nil {
+		conn = tls.Client(conn, s.peerTLSConfig)
+	}
+
+	return conn, err
+}
+
+func (s *StreamLayer) Accept() (net.Conn, error) {
+	conn, err := s.ln.Accept() // Accept() is the mirror of Dial(). We accept the incoming connection
+	if err != nil {
+		return nil, err
+	}
+
+	b := make([]byte, 1)
+	_, err = conn.Read(b)
+	if err != nil {
+		return nil, err
+	}
+
+	if bytes.Compare([]byte{byte(RaftRPC)}, b) != 0 {
+		// 0 if a == b, -1 if a \< b, and +1 if a > b.
+		return nil, fmt.Errorf("not a raft rpc")
+	}
+
+	if s.serverTLSConfig != nil {
+		return tls.Server(conn, s.serverTLSConfig), nil
+	}
+	return conn, nil
+}
+
+// Close() closes the listener
+func (s *StreamLayer) Close() error {
+	return s.ln.Close()
+}
+
+// Addr() returns the listener’s address.
+func (s *StreamLayer) Addr() net.Addr {
+	return s.ln.Addr()
 }
