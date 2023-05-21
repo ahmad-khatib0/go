@@ -242,3 +242,41 @@ The issue with multiplexing mutual TLS gRPC connections is that gRPC needs infor
     the first byte. The TLS standards4 don’t assign multiplexing schemes to the values 0–19, saying 
     that they “require coordination,” like we’ve done. It’s better to handle internal services specially 
     because you control the clients and can make them write whatever you need to identify them.
+
+
+
+Three strategies can be used for solving the discovery and load balancing problem:
+    • Server proxying—your client sends its requests to a load balancer that knows the servers 
+      (either by querying a service registry or by being the service registry) and proxies the 
+      requests to your back-end services.
+    • External load balancing—your client queries an external load-balancing
+      service that knows the servers and tells the client which server to send the RPC.
+    • Client-side balancing—your client queries a service registry to learn about
+      the servers, picks the server to send its RPC, and sends its RPC directly to the server.
+
+┌────────────────────────────────────┐
+  Load Balance on the Client in gRPC 
+└────────────────────────────────────┘
+When you call grpc.Dial, gRPC takes the address and passes it on to the resolver, and the resolver 
+    discovers the servers. gRPC’s default resolver is the DNS resolver. If the address you give to gRPC has 
+    multiple DNS records associated with it, gRPC will balance requests across each of those records’ servers.
+    
+gRPC uses round-robin load balancing by default. The round-robin algorithm works by sending the first 
+    call to the first server, the second call to the second server, and so on. After the last server,
+    it goes back to the first server again. So, we send each server the same number of calls. Round-robin 
+    works well when each request requires the same work by the server—stateless services that defer the work 
+    to a separate service like a database, for example. You can always begin with round-robin load 
+    balancing and optimize later.
+
+The issue with round-robin load balancing, however, is that it doesn’t consider
+    what you know about each request, client, and server. For example:
+    • If your server is a replicated distributed service with a single writer and multiple readers, 
+      you’ll want to read from replicas so the writer can focus on the writes. This requires knowing 
+      whether the request is a read or a write and whether the server is a primary or a replica.
+    • If your service is a globally distributed service, you’ll want your clients to
+      prioritize networking with local servers, which means you must know 
+      the location of the clients and the servers.
+    • If your system is latency sensitive, you can track metrics on how many in-flight or 
+      queued requests a server has or some other combination of latency metrics and have 
+      the client request the server with the smallest number.
+
