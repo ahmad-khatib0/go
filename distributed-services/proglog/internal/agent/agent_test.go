@@ -12,6 +12,7 @@ import (
 	api "github.com/Ahmadkhatib0/go/distributed-services/proglog/api/v1"
 	"github.com/Ahmadkhatib0/go/distributed-services/proglog/internal/agent"
 	"github.com/Ahmadkhatib0/go/distributed-services/proglog/internal/config"
+	"github.com/Ahmadkhatib0/go/distributed-services/proglog/internal/loadbalance"
 	"github.com/stretchr/testify/require"
 	"github.com/travisjeffery/go-dynaport"
 	"google.golang.org/grpc"
@@ -100,6 +101,11 @@ func TestAgent(t *testing.T) {
 	)
 	require.NoError(t, err)
 
+	// wait until replication has finished
+	// 	Because our replication works asynchronously across servers, the logs pro-
+	// duced to one server won’t be immediately available on the replica servers.
+	time.Sleep(3 * time.Second)
+
 	consumeResponse, err := leaderClient.Consume(
 		context.Background(),
 		&api.ConsumeRequest{Offset: produceResponse.Offset},
@@ -107,11 +113,6 @@ func TestAgent(t *testing.T) {
 	require.NoError(t, err)
 
 	require.Equal(t, consumeResponse.Record.Value, []byte("foo"))
-
-	// wait until replication has finished
-	// 	Because our replication works asynchronously across servers, the logs pro-
-	// duced to one server won’t be immediately available on the replica servers.
-	time.Sleep(3 * time.Second)
 
 	followerClient := client(t, agents[1], peerTLSConfig)
 	consumeResponse, err = followerClient.Consume(
@@ -139,7 +140,7 @@ func client(t *testing.T, agent *agent.Agent, tlsConfig *tls.Config) api.LogClie
 	rpcAddr, err := agent.Config.RPCAddr()
 	require.NoError(t, err)
 
-	conn, err := grpc.Dial(fmt.Sprintf("%s", rpcAddr), opts...)
+	conn, err := grpc.Dial(fmt.Sprintf("%s:///%s", loadbalance.Name, rpcAddr), opts...)
 	require.NoError(t, err)
 
 	client := api.NewLogClient(conn)
