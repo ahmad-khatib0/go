@@ -280,3 +280,23 @@ The issue with round-robin load balancing, however, is that it doesn’t conside
       queued requests a server has or some other combination of latency metrics and have 
       the client request the server with the smallest number.
 
+-- Resolve the Servers
+   resolver.Builder comprises two methods—Build() and Scheme():
+   
+    • Build() receives the data needed to build a resolver that can discover the servers (like the target address) 
+      and the client connection the resolver will update with the servers it discovers. Build() sets up a client 
+      connection to our server so the resolver can call the GetServers() API.
+
+    • Scheme() returns the resolver’s scheme identifier. When you call grpc.Dial, gRPC parses out the 
+      scheme from the target address you gave it and tries to find a resolver that matches, defaulting to its 
+      DNS resolver. For our resolver, we'll format the target address like: proglog://your-service-address
+
+You update the state with a slice of resolver.Address to inform the load balancer
+      what servers it can choose from. A resolver.Address has three fields:
+    • Addr (required)—the address of the server to connect to.
+    
+    • Attributes (optional but useful)—a map containing any data that’s useful for the load balancer.
+      We’ll tell the picker what server is the leader and what servers are followers with this field.
+      
+    • ServerName (optional and you likely don’t need to set)—the name used as the transport certificate 
+      authority for the address, instead of the hostname taken from the Dial target string.
