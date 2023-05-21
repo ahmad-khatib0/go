@@ -300,3 +300,10 @@ You update the state with a slice of resolver.Address to inform the load balance
       
     • ServerName (optional and you likely don’t need to set)—the name used as the transport certificate 
       authority for the address, instead of the hostname taken from the Dial target string.
+
+
+-- Route and Balance Requests with Pickers
+    In the gRPC architecture, pickers handle the RPC balancing logic. They’re called pickers because 
+    they pick a server from the servers discovered by the resolver to handle each RPC Pickers can route 
+    RPCs based on information about the RPC, client, and server, so their utility goes 
+    beyond balancing to any kind of request-routing logic
