@@ -16,14 +16,3 @@ func main() {
 	err := http.ListenAndServe(":4000", mux)
 	log.Fatal(err)
 }
-
-func home(w http.ResponseWriter, r *http.Request) {
-	// Check if the current request URL path exactly matches "/". If it doesn't the http.NotFound()
-	// function to send a 404 response to the client. becauase you can not changing the catch-all behavior
-	if r.URL.Path != "/" {
-		http.NotFound(w, r)
-		return
-	}
-
-	w.Write([]byte("Hello from Snippetbox"))
-}

@@ -40,3 +40,13 @@ http.HandleFunc("/snippet/create", createSnippet)
 
 --  When headers are written to a HTTP/2 connection the header names and values 
     will always be converted to lowercase, as per the specifications.
+
+
+┌────────────┐
+  Templating 
+└────────────┘
+-- {{define "base"}}...{{end}} action to define a distinct named template called base
+
+-- the dot at the end of the {{template "title" .}} action represents any 
+   dynamic data that you want to pass to the invoked template
+
