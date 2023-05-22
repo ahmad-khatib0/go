@@ -41,6 +41,14 @@ http.HandleFunc("/snippet/create", createSnippet)
 --  When headers are written to a HTTP/2 connection the header names and values 
     will always be converted to lowercase, as per the specifications.
 
+.. Go’s file server has a few really nice features: 
+-- It sanitizes all request paths by running them through the path.Clean() function before searching for a 
+   file. This removes any . and .. elements from the URL path, which helps to stop directory traversal attacks. 
+-- Range requests are fully supported. This is great if your application is
+   serving large files and you want to support resumable downloads
+-- The Last-Modified and If-Modified-Since headers are transparently supported. If a file hasn’t changed 
+   since the user last requested it, then http.FileServer will send a 304 Not Modified status code instead 
+   of the file itself. This helps reduce latency and processing overhead for both the client and server.
 
 ┌────────────┐
   Templating 
@@ -49,4 +57,8 @@ http.HandleFunc("/snippet/create", createSnippet)
 
 -- the dot at the end of the {{template "title" .}} action represents any 
    dynamic data that you want to pass to the invoked template
+
+-- Go also provides a {{block}}...{{end}} action, This acts like the {{template}} action, except it allows 
+   you to specify default content if the template being invoked doesn’t exist in the current template set.
+
 
