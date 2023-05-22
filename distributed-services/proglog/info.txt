@@ -307,3 +307,20 @@ You update the state with a slice of resolver.Address to inform the load balance
     they pick a server from the servers discovered by the resolver to handle each RPC Pickers can route 
     RPCs based on information about the RPC, client, and server, so their utility goes 
     beyond balancing to any kind of request-routing logic
+
+
+┌────────────┐
+  Kubernetes 
+└────────────┘
+- All containers running in a pod share the same network namespace, the same IP address, and the same 
+     interprocess communication (IPC) namespace, and they can share the same volumes. These are logical
+     hosts because a physical host (what Kubernetes calls a node) may run multiple pods.
+- Controllers are control loops that watch the state of your resources and make changes where needed. 
+    Kubernetes itself is made up of many controllers. For example, the Deployment controller watches your 
+    Deployment resources; if you increase the replicas on a Deployment, the controller will schedule more pods.
+- Try to use kubectl for one-off operations. For operations you run again and again, like deploying 
+    or upgrading a service, you’ll use the Helm package manager or an operator
+- Kind (an acronym for Kubernetes IN Docker) We use the Kind tool to run a local Kubernetes cluster in Docker.
+
+- kind create cluster          #  create a Kind cluster
+- kubectl cluster-info         # verify that Kind created your cluster and configured kubectl to use it

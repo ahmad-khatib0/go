@@ -1,0 +1,25 @@
+
+┌──────┐
+  HTTP 
+└──────┘
+You might sometimes see network addresses written using named ports like ":http" or ":http-alt"
+    instead of a number. If you use a named port then Go will attempt to look up the relevant port 
+    number from your /etc/services file when starting the server,
+
+Pattern "/" is an example of a subtree path (because it ends in a trailing slash). Another example would 
+    be something like "/static/". Subtree path patterns are matched (and the corresponding handler called) 
+    whenever the start of a request URL path matches the subtree path. If it helps your understanding, you can 
+    think of subtree paths as acting a bit like they have a wildcard at the end, like "/**" or "/static/**".
+
+http.HandleFunc("/snippet/create", createSnippet) 
+  # These allow you to register routes without declaring a servemux, Behind the scenes, these functions 
+    register their routes with something called the DefaultServeMux , DON'T do that Because DefaultServeMux 
+    is a global variable, any package can access it and register a route — including any third-party packages 
+    that your application imports. If one of those third-party packages is compromised, they could use 
+    DefaultServeMux to expose a malicious handler to the web.
+
+-- Request URL paths are automatically sanitized, if a user makes a request to /foo/bar/..//baz they 
+   will automatically be sent a 301 Permanent Redirect to /foo/baz instead.
+--  if you have registered the subtree path /foo/, then any request to /foo will be redirected to /foo/
+-- servemux is pretty lightweight. It doesn’t support routing based on the request method, it 
+   doesn’t support semantic URLs with variables in them, and it doesn’t support regexp-based patterns

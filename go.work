@@ -33,3 +33,5 @@ use ./concurrency/4-channels/sleeping-barber
 use ./concurrency/5-subscription-service
 
 use ./distributed-services/proglog
+
+use ./snippetbox
