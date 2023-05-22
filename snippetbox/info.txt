@@ -21,5 +21,22 @@ http.HandleFunc("/snippet/create", createSnippet)
 -- Request URL paths are automatically sanitized, if a user makes a request to /foo/bar/..//baz they 
    will automatically be sent a 301 Permanent Redirect to /foo/baz instead.
 --  if you have registered the subtree path /foo/, then any request to /foo will be redirected to /foo/
+
 -- servemux is pretty lightweight. It doesn’t support routing based on the request method, it 
    doesn’t support semantic URLs with variables in them, and it doesn’t support regexp-based patterns
+   
+-- It’s only possible to call w.WriteHeader() once per response, and after the status code has been 
+   written it can’t be changed. If you try to call w.WriteHeader() a second time Go will log a warning message
+   
+-- If you don’t call w.WriteHeader() explicitly, then the first call to w.Write() will automatically send 
+   a 200 OK status code to the user. So, if you want to send a non-200 status code, you must call
+   w.WriteHeader() before any call to w.Write().
+   
+-- The http.DetectContentType() function generally works quite well, but it can’t distinguish JSON from 
+   plain text. And, by default, JSON responses will be sent with a Content-Type: text/plain; charset=utf-8
+
+-- the header name will always be canonicalized using the textproto.CanonicalMIMEHeaderKey() function. 
+   This converts the first letter and any letter following a hyphen to uppercase, and the rest to lowercase
+
+--  When headers are written to a HTTP/2 connection the header names and values 
+    will always be converted to lowercase, as per the specifications.
