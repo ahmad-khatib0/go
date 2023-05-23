@@ -72,6 +72,20 @@ http.HandleFunc("/snippet/create", createSnippet)
 -- To run the generate_cert.go tool,  then the generate_cert.go 
    file should be located under /usr/lib/golang/src/crypto/tls/generate_cert.go
 
+-- Go enables keep-alives on all accepted connections. This helps reduce latency (especially for HTTPS connections) 
+   because a client can reuse the same connection for multiple requests without having to repeat the handshake.
+-- Setting a short ReadTimeout period helps to mitigate the risk from slow-client-attacks such as Slowloris which 
+   could otherwise keep a connection open indefinitely by sending partial, incomplete, HTTP(S) requests.
+-- For HTTP connections, if some data is written to the connection more tham 10 seconds after the read 
+   of the request header finished, Go will close the underlying connection instead of writing the data.
+-- For HTTPS connections, if some data is written to the connection more than 10 seconds after the request is first 
+   accepted, Go will close the underlying connection instead of writing the data. This means that if you’re 
+   using HTTPS it’s sensible to set WriteTimeout to a value greater than ReadTimeout.
+-- he idea of WriteTimeout is generally not to prevent long- running handlers, but to prevent the data that the 
+   handler returns from taking too long to write.
+-- By default, Go allows a maximum header length of 1MB. There’s a gotcha to point out here: Go always adds an 
+   additional 4096 bytes of headroom to the figure you set. If you need MaxHeaderBytes 
+   to be a precise or very low number you’ll need to factor this in.
 
 ┌────────────┐
   Templating 
