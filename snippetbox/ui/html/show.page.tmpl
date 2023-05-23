@@ -13,8 +13,8 @@
   </div>
   <pre><code>{{.Content}}</code></pre>
   <div class='metadata'>
-    <time>Created: {{.Created}}</time>
-    <time>Expires: {{.Expires}}</time>
+    <time>{{.Created | humanDate | printf "Created: %s"}}</time> <!-- tow  lines are the same -->
+    <time>Expires: {{humanDate .Expires}}</time>  
   </div>
 </div>
 {{end}}

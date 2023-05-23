@@ -36,7 +36,8 @@ func (app *application) render(w http.ResponseWriter, r *http.Request, name stri
 	// make a ‘trial’ render by writing the template into a buffer. If this fails, we can respond to the user with an
 	// error message. But if it works, we can then write the contents of the buffer to our http.ResponseWriter.
 	buf := new(bytes.Buffer)
-	err := ts.Execute(buf, td)
+
+	err := ts.Execute(buf, app.addDefaultData(td, r))
 	if err != nil {
 		app.serverError(w, err)
 		return
