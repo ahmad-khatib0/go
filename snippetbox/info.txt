@@ -64,3 +64,21 @@ http.HandleFunc("/snippet/create", createSnippet)
    you to specify default content if the template being invoked doesn’t exist in the current template set.
 
 
+-- If you run the go mod verify command from your terminal, this will verify that the checksums of the downloaded packages 
+   on your machine match the entries in go.sum, so you can be confident that they haven’t been altered.
+-- If someone else needs to download all the dependencies for the project — which they can do by running go mod download 
+   get an error if there is any mismatch between the dependencies they are downloading and the checksums in the file.they will
+-- go get github.com/foo/bar@none , prefixing it wi @none will remove this unwanted package 
+
+-- The parseTime=true is a driver-specific param which instructs our driver to convert SQL TIME and DATE fields to Go time.Time objects.
+-- The sql.Open() function returns a sql.DB object. This isn’t a database connection — it’s a pool of many connections. 
+   Go manages these connections as needed, automatically opening and closing connections to the database via the drive
+-- The connection pool is safe for concurrent access, so you can use it from web application handlers safely.
+
+-- _ "github.com/go-sql-driver/mysql" 
+
+      Notice how the import path for our driver is prefixed with an underscore? This is because our main.go file doesn’t
+      actually use anything in the mysql package. So if we try to import it normally the Go compiler will raise an error.
+      However, we need the driver’s init() function to run so that it can register itself with the database/sql package. 
+      The trick to getting around this is to alias the package name to the blank identifier. This is standard practice 
+      for most of Go’s SQL drivers.
