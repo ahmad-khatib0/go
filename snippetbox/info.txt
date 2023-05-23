@@ -52,6 +52,9 @@ http.HandleFunc("/snippet/create", createSnippet)
 
 -- Ports 0-1023 are restricted and (typically) can only be used by services which have root privileges
 
+--  Go’s HTTP server assumes that the effect of any panic is isolated to the goroutine serving
+    the active HTTP request (remember, every request is handled in it’s own goroutine).
+
 ┌────────────┐
   Templating 
 └────────────┘
