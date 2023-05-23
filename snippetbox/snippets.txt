@@ -25,3 +25,22 @@ SELECT INSERT ON
     -- Important: Make sure to swap 'pass' with a password of your own choosing.
 ALTER
     USER 'web'@'localhost' IDENTIFIED BY 'pass';
+
+
+{{with .Foo}} C1 {{else}} C2 {{end}}
+- If .Foo is not empty, then set dot to the value of .Foo and render the content C1, otherwise render the content C2.
+
+{{range .Foo}} C1 {{else}} C2 {{end}}
+- If the length of .Foo is greater than zero then loop over each element, setting dot to the value of each element and 
+   rendering the content C1. If the length of .Foo is zero then render the content C2. The underlying type of .Foo 
+   must be an array, slice, map, or channel.
+
+{{eq .Foo .Bar}}                Yields true if .Foo is equal to .Bar
+{{ne .Foo .Bar}}                Yields true if .Foo is not equal to .Bar
+{{not .Foo}}                    Yields the boolean negation of .Foo
+{{or .Foo .Bar}}                Yields .Foo if .Foo is not empty; otherwise yields .Bar
+{{index .Foo i}}                Yields the value of .Foo at index i. The underlying type of .Foo must be a map, slice or array.
+{{len .Foo}}                    Yields the length of .Foo as an integer.
+{{$bar := len .Foo}}            Assign the length of .Foo to the template variable $bar
+{{printf "%s-%s" .Foo .Bar}}    Yields a formatted string containing the .Foo and .Bar values. Works in the same way as
+                                fmt.Sprintf().

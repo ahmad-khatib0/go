@@ -63,6 +63,7 @@ http.HandleFunc("/snippet/create", createSnippet)
 -- Go also provides a {{block}}...{{end}} action, This acts like the {{template}} action, except it allows 
    you to specify default content if the template being invoked doesn’t exist in the current template set.
 
+-- t Go’s html/template package allows you to pass in one — and only one — item of dynamic data when rendering a template
 
 -- If you run the go mod verify command from your terminal, this will verify that the checksums of the downloaded packages 
    on your machine match the entries in go.sum, so you can be confident that they haven’t been altered.
@@ -95,3 +96,17 @@ http.HandleFunc("/snippet/create", createSnippet)
     INT maps to int; BIGINT maps to int64.
     DECIMAL and NUMERIC map to float.
     TIME, DATE and TIMESTAMP map to time.Time.
+
+-- the default limit for MySQL is 151. So leaving SetMaxOpenConns() totally unlimited or setting the total maximum of
+    open and idle connections to greater than 151 may result in your database returning a "too many connections" error 
+    under high load. To prevent this error from happening, you’d need to set the total maximum of open and idle 
+    connections to comfortably below 151.
+
+-- Prepared statements exist on database connections. So, because Go uses a pool of many database connections, what 
+    actually happens is that the first time a prepared statement (i.e. the sql.Stmt object) is used it gets created 
+    on a particular database connection. The sql.Stmt object then remembers which connection in the pool was used.
+    The next time, the sql.Stmt object will attempt to use the same database connection again. If that connection is 
+    closed or in use (i.e. not idle) the statement will be re-prepared on another connection.
+    Under heavy load, it’s possible that a large amount of prepared statements will be created on multiple connections. 
+    This can lead to statements being prepared and re-prepared more often than you would expect — or even running into 
+    server-side limits on the number of statements (in MySQL the default maximum is 16,382 prepared statements).
