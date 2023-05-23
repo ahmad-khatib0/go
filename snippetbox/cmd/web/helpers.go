@@ -45,3 +45,8 @@ func (app *application) render(w http.ResponseWriter, r *http.Request, name stri
 
 	buf.WriteTo(w)
 }
+
+// session, or zero if the request is from an unauthenticated user.
+func (app *application) authenticatedUser(r *http.Request) int {
+	return app.session.GetInt(r, "userID")
+}

@@ -106,6 +106,8 @@ http.HandleFunc("/snippet/create", createSnippet)
    get an error if there is any mismatch between the dependencies they are downloading and the checksums in the file.they will
 -- go get github.com/foo/bar@none , prefixing it wi @none will remove this unwanted package 
 
+--  The {{if ...}} action considers empty values (false, 0, any nil pointer or interface value, 
+    and any array, slice, map, or string of length zero) to be false.
 
 
 ┌──────────┐
