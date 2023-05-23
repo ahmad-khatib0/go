@@ -54,6 +54,7 @@ func main() {
 
 	session := sessions.New([]byte(*secret)) //  initialize a new session manager,
 	session.Lifetime = 12 * time.Hour
+	session.Secure = true
 
 	app := &application{
 		errorLog:      errorLog,
@@ -71,7 +72,7 @@ func main() {
 
 	// Ports 0-1023 are restricted and (typically) can only be used by services which have root privileges
 	infoLog.Printf("Starting server on :4000")
-	err = srv.ListenAndServe()
+	err = srv.ListenAndServeTLS("./tls/cert.pem", "./tls/key.pem")
 	// second param needs: Handler , and mux implement a Handler type also, so its staticfied
 
 	errorLog.Fatal(err)
