@@ -87,6 +87,32 @@ http.HandleFunc("/snippet/create", createSnippet)
    additional 4096 bytes of headroom to the figure you set. If you need MaxHeaderBytes 
    to be a precise or very low number you’ll need to factor this in.
 
+    ------------- Security -----------------
+-- CSRF, it’s a form of cross-domain attack where a malicious third-party website sends 
+   state-changing HTTP requests to your website., it goes like this: 
+   A - A user logs into our application. Our session cookie is set to persist for 12 hours,
+       so they will remain logged in even if they navigate away from the application.
+   B - The user then goes to a malicious website which contains some code that sends a request to POST 
+       /snippets/create to add a new snippet to our database.
+   C - Since the user is still logged in to our application, the request is 
+       processed with their privileges. Completely unknown to them,
+
+-- D - One mitigation that we can take to prevent CSRF attacks is to make sure that the SameSite attribute is set 
+       on our session cookie. By default the golangcollege/sessions package that we’re using always sets SameSite=Lax 
+       on the session cookie, which means that session cookie won’t be sent by the user’s browser for cross-site usage, 
+       apart from when the usage is deemed to be a safe request which doesn’t change the state of the target application.
+       
+-- E - Using SameSite=Strict will block the session cookie being sent by the user’s browser for all cross-site usage. 
+       This includes when a user clicks on an external link to your application, meaning that after clicking the link they 
+       will initially be treated as ‘not logged in’ even if they have an active session containing their "userID" value.
+
+-- F - To mitigate the risk of CSRF for all users we’ll also need to implement some form of token check_Prevention_Cheat_Sheet
+       pattern,  In this pattern a random CSRF token is generated and sent to the user in a CSRF cookie. This CSRF token 
+       is then added to a hidden field in each form that’s vulnerable to CSRF. When the form is submitted, both packages 
+       use some middleware to check that the hidden field value and cookie value match.
+
+-- G - The SameSite attribute is only supported by 71% of browsers worldwide
+
 ┌────────────┐
   Templating 
 └────────────┘

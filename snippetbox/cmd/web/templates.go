@@ -8,10 +8,12 @@ import (
 
 	"github.com/Ahmadkhatib0/go/snippetbox/pkg/forms"
 	"github.com/Ahmadkhatib0/go/snippetbox/pkg/models"
+	"github.com/justinas/nosurf"
 )
 
 type templateData struct {
 	AuthenticatedUser int
+	CSRFToken         string
 	CurrentYear       int
 	Flash             string
 	Form              *forms.Form
@@ -64,6 +66,7 @@ func (app *application) addDefaultData(td *templateData, r *http.Request) *templ
 		td = &templateData{}
 	}
 
+	td.CSRFToken = nosurf.Token(r)
 	td.AuthenticatedUser = app.authenticatedUser(r)
 	td.CurrentYear = time.Now().Year()
 	td.Flash = app.session.PopString(r, "flash") // Add the flash message to the template data, if one exists.
