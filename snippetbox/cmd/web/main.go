@@ -7,8 +7,10 @@ import (
 	"log"
 	"net/http"
 	"os"
+	"time"
 
 	"github.com/Ahmadkhatib0/go/snippetbox/pkg/models/mysql"
+	"github.com/golangcollege/sessions"
 
 	_ "github.com/go-sql-driver/mysql"
 )
@@ -17,6 +19,7 @@ type application struct {
 	errorLog      *log.Logger
 	infoLog       *log.Logger
 	snippets      *mysql.SnippetModel
+	session       *sessions.Session
 	templateCache map[string]*template.Template
 }
 
@@ -27,6 +30,9 @@ func main() {
 	// value and assigns it to the addr variable. You need to call this *before* you use the addr variable
 	// otherwise it will always contain the default value of ":4000"
 	dsn := flag.String("dsn", "web:pass@/snippetbox?parseTime=true", "MySQL database connection")
+
+	// Secret for http sessions. Must be 32 bytes long.
+	secret := flag.String("secret", "s6Ndh+pPbnzHbS*+9Pk8qGWhTzbpa@ge", "Secret key ")
 
 	flag.Parse()
 
@@ -46,10 +52,14 @@ func main() {
 		errorLog.Fatal(err)
 	}
 
+	session := sessions.New([]byte(*secret)) //  initialize a new session manager,
+	session.Lifetime = 12 * time.Hour
+
 	app := &application{
 		errorLog:      errorLog,
 		infoLog:       infoLog,
 		snippets:      &mysql.SnippetModel{DB: db},
+		session:       session,
 		templateCache: templateCache,
 	}
 
