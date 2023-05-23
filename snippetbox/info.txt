@@ -70,15 +70,28 @@ http.HandleFunc("/snippet/create", createSnippet)
    get an error if there is any mismatch between the dependencies they are downloading and the checksums in the file.they will
 -- go get github.com/foo/bar@none , prefixing it wi @none will remove this unwanted package 
 
--- The parseTime=true is a driver-specific param which instructs our driver to convert SQL TIME and DATE fields to Go time.Time objects.
--- The sql.Open() function returns a sql.DB object. This isn’t a database connection — it’s a pool of many connections. 
-   Go manages these connections as needed, automatically opening and closing connections to the database via the drive
--- The connection pool is safe for concurrent access, so you can use it from web application handlers safely.
 
+
+┌──────────┐
+  Database 
+└──────────┘
+-- we need to use the parseTime=true parameter in our DSN to force it to convert TIME and DATE fields to
+   time.Time. Otherwise it returns these as []byte objects
+   
 -- _ "github.com/go-sql-driver/mysql" 
-
       Notice how the import path for our driver is prefixed with an underscore? This is because our main.go file doesn’t
       actually use anything in the mysql package. So if we try to import it normally the Go compiler will raise an error.
       However, we need the driver’s init() function to run so that it can register itself with the database/sql package. 
       The trick to getting around this is to alias the package name to the blank identifier. This is standard practice 
       for most of Go’s SQL drivers.
+
+  DB.Query() is used for SELECT queries which return multiple rows.
+  DB.QueryRow() is used for SELECT queries which return a single row.
+  DB.Exec() is used for statements which don’t return rows (like INSERT and DELETE).
+
+-- In Type Conversions when using row.Scan()
+    CHAR, VARCHAR and TEXT map to string.
+    BOOLEAN maps to bool.
+    INT maps to int; BIGINT maps to int64.
+    DECIMAL and NUMERIC map to float.
+    TIME, DATE and TIMESTAMP map to time.Time.
