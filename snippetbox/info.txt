@@ -113,3 +113,10 @@ http.HandleFunc("/snippet/create", createSnippet)
     Under heavy load, it’s possible that a large amount of prepared statements will be created on multiple connections. 
     This can lead to statements being prepared and re-prepared more often than you would expect — or even running into 
     server-side limits on the number of statements (in MySQL the default maximum is 16,382 prepared statements).
+
+
+┌────────┐
+  Go Mod 
+└────────┘
+-- Because the justinas/alice package doesn’t have any semantically-versioned releases available, the ‘version’ identifier 
+   in the go.mod file is the datetime of the latest commit followed by the first 12 characters of the commit hash.
