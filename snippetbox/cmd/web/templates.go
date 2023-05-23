@@ -12,6 +12,7 @@ import (
 
 type templateData struct {
 	CurrentYear int
+	Flash       string
 	Form        *forms.Form
 	Snippet     *models.Snippet
 	Snippets    []*models.Snippet
@@ -63,6 +64,8 @@ func (app *application) addDefaultData(td *templateData, r *http.Request) *templ
 	}
 
 	td.CurrentYear = time.Now().Year()
+	td.Flash = app.session.PopString(r, "flash") // Add the flash message to the template data, if one exists.
+
 	return td
 }
 
