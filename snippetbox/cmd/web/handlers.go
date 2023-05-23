@@ -62,11 +62,20 @@ func (app *application) createSnippet(w http.ResponseWriter, r *http.Request) {
 	// 	return
 	// }
 
-	title := "O snail"
-	content := "O snail\nClimb Mount Fuji,\nBut slowly, slowly!\n\n– Kobayashi"
-	expires := "7"
+	r.Body = http.MaxBytesReader(w, r.Body, 4096) // Limit the request body size to 4096 bytes
+
+	err := r.ParseForm()
+	if err != nil {
+		app.clientError(w, http.StatusBadRequest)
+		return
+	}
+
+	title := r.PostForm.Get("title")
+	content := r.PostForm.Get("content")
+	expires := r.PostForm.Get("expires")
 
 	id, err := app.snippets.Insert(title, content, expires)
+
 	if err != nil {
 		app.serverError(w, err)
 		return

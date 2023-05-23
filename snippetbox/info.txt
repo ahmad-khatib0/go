@@ -55,6 +55,14 @@ http.HandleFunc("/snippet/create", createSnippet)
 --  Go’s HTTP server assumes that the effect of any panic is isolated to the goroutine serving
     the active HTTP request (remember, every request is handled in it’s own goroutine).
 
+
+-- r.PostForm.Get("checkbox-values")  only returns the the first value, In this case you’ll need to work 
+   with the r.PostForm:    for i, item := range r.PostForm["items"] { 
+                              fmt.Fprintf(w, "%d: Item %s\n", i, item) 
+                           }
+--  Unless you’re sending multipart data (i.e. your form has the enctype="multipart/form-data" attribute) then POST,
+    PUT and PATCH request bodies are limited to 10MB. If this is exceeded then r.ParseForm() will return an error.
+
 ┌────────────┐
   Templating 
 └────────────┘
@@ -120,3 +128,4 @@ http.HandleFunc("/snippet/create", createSnippet)
 └────────┘
 -- Because the justinas/alice package doesn’t have any semantically-versioned releases available, the ‘version’ identifier 
    in the go.mod file is the datetime of the latest commit followed by the first 12 characters of the commit hash.
+   
