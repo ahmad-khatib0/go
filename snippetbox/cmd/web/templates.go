@@ -3,19 +3,18 @@ package main
 import (
 	"html/template"
 	"net/http"
-	"net/url"
 	"path/filepath"
 	"time"
 
+	"github.com/Ahmadkhatib0/go/snippetbox/pkg/forms"
 	"github.com/Ahmadkhatib0/go/snippetbox/pkg/models"
 )
 
 type templateData struct {
 	CurrentYear int
+	Form        *forms.Form
 	Snippet     *models.Snippet
 	Snippets    []*models.Snippet
-	FormData    url.Values
-	FormErrors  map[string]string
 }
 
 func newTemplateCache(dir string) (map[string]*template.Template, error) {

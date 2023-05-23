@@ -61,6 +61,10 @@ ALTER
    rendering the content C1. If the length of .Foo is zero then render the content C2. The underlying type of .Foo 
    must be an array, slice, map, or channel.
 
+{{$exp := or (.FormData.Get "expires") "365"}}
+# we used () parenth to group the .FormData.Get method and its params in order to pass its output to the or action 
+
+
 {{eq .Foo .Bar}}                Yields true if .Foo is equal to .Bar
 {{ne .Foo .Bar}}                Yields true if .Foo is not equal to .Bar
 {{not .Foo}}                    Yields the boolean negation of .Foo
@@ -70,3 +74,5 @@ ALTER
 {{$bar := len .Foo}}            Assign the length of .Foo to the template variable $bar
 {{printf "%s-%s" .Foo .Bar}}    Yields a formatted string containing the .Foo and .Bar values. Works in the same way as
                                 fmt.Sprintf().
+
+
