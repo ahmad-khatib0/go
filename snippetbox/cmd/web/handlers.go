@@ -2,17 +2,16 @@ package main
 
 import (
 	"fmt"
-	"log"
 	"net/http"
 	"strconv"
 	"text/template"
 )
 
-func home(w http.ResponseWriter, r *http.Request) {
+func (app *application) Home(w http.ResponseWriter, r *http.Request) {
 	// Check if the current request URL path exactly matches "/". If it doesn't the http.NotFound()
 	// function to send a 404 response to the client. becauase you can not changing the catch-all behavior
 	if r.URL.Path != "/" {
-		http.NotFound(w, r)
+		app.notFound(w)
 		return
 	}
 
@@ -26,19 +25,25 @@ func home(w http.ResponseWriter, r *http.Request) {
 	ts, err := template.ParseFiles(files...)
 	//  store the templates in a template set.
 
+	if err != nil {
+		app.errorLog.Println(err.Error())
+		app.serverError(w, err)
+		return
+	}
+
 	err = ts.Execute(w, nil)
 	if err != nil {
-		log.Println(err.Error())
-		http.Error(w, "Internal Server Error", 500)
+		app.errorLog.Println(err.Error())
+		app.serverError(w, err)
 	}
 
 }
 
 // Add a showSnippet handler function.
-func showSnippet(w http.ResponseWriter, r *http.Request) {
+func (app *application) ShowSnippet(w http.ResponseWriter, r *http.Request) {
 	id, err := strconv.Atoi(r.URL.Query().Get("id"))
 	if err != nil || id < 1 {
-		http.NotFound(w, r)
+		app.notFound(w)
 		return
 	}
 
@@ -46,7 +51,7 @@ func showSnippet(w http.ResponseWriter, r *http.Request) {
 }
 
 // Add a createSnippet handler function.
-func createSnippet(w http.ResponseWriter, r *http.Request) {
+func (app *application) CreateSnippet(w http.ResponseWriter, r *http.Request) {
 	if r.Method != "POST" {
 
 		w.Header().Set("Allow", "POST")
@@ -56,7 +61,7 @@ func createSnippet(w http.ResponseWriter, r *http.Request) {
 		// remove header like so.. because Del() method doesn’t remove system-generated headers
 
 		// w.WriteHeader(405)
-		http.Error(w, "Method Not Allowed", 405)
+		app.clientError(w, http.StatusMethodNotAllowed)
 		// http.Error calls the w.WriteHeader() and .Write() methods behind-the-scenes for us
 		return
 	}

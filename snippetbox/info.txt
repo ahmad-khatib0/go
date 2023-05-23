@@ -50,6 +50,8 @@ http.HandleFunc("/snippet/create", createSnippet)
    since the user last requested it, then http.FileServer will send a 304 Not Modified status code instead 
    of the file itself. This helps reduce latency and processing overhead for both the client and server.
 
+-- Ports 0-1023 are restricted and (typically) can only be used by services which have root privileges
+
 ┌────────────┐
   Templating 
 └────────────┘

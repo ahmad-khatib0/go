@@ -10,3 +10,11 @@ w.Header().Del("Cache-Control")
 
 // Retrieve the first value for the "Cache-Control" header.
 w.Header().Get("Cache-Control")
+
+mux := http.NewServeMux()
+
+mux.Handle("/", http.HandlerFunc(home))  # this is equivalent to: 
+mux.HandleFunc("/", home)                # 
+
+we could redirect the stdout and stderr streams to on-disk files when starting the application like so:
+go run cmd/web/* >>/tmp/info.log 2>>/tmp/error.log 
