@@ -4,6 +4,8 @@ import (
 	"fmt"
 	"net/http"
 	"strconv"
+	"strings"
+	"unicode/utf8"
 
 	"github.com/Ahmadkhatib0/go/snippetbox/pkg/models"
 )
@@ -63,7 +65,6 @@ func (app *application) createSnippet(w http.ResponseWriter, r *http.Request) {
 	// }
 
 	r.Body = http.MaxBytesReader(w, r.Body, 4096) // Limit the request body size to 4096 bytes
-
 	err := r.ParseForm()
 	if err != nil {
 		app.clientError(w, http.StatusBadRequest)
@@ -73,6 +74,27 @@ func (app *application) createSnippet(w http.ResponseWriter, r *http.Request) {
 	title := r.PostForm.Get("title")
 	content := r.PostForm.Get("content")
 	expires := r.PostForm.Get("expires")
+
+	errors := make(map[string]string)
+
+	if strings.TrimSpace(title) == "" {
+		errors["title"] = "This field cannot be blank"
+	} else if utf8.RuneCountInString(title) > 100 {
+		errors["title"] = "This field is too long (maximum is 100 characters)"
+	}
+	// Check that the Content field isn't blank.
+	if strings.TrimSpace(content) == "" {
+		errors["content"] = "This field cannot be blank"
+	}
+
+	if len(errors) > 0 {
+		// re-display the create.page.template passing in errors and previously submitted data
+		app.render(w, r, "create.page.tmpl", &templateData{
+			FormErrors: errors,
+			FormData:   r.PostForm,
+		})
+		return
+	}
 
 	id, err := app.snippets.Insert(title, content, expires)
 

@@ -63,6 +63,8 @@ http.HandleFunc("/snippet/create", createSnippet)
 --  Unless you’re sending multipart data (i.e. your form has the enctype="multipart/form-data" attribute) then POST,
     PUT and PATCH request bodies are limited to 10MB. If this is exceeded then r.ParseForm() will return an error.
 
+--  the string "Zoë" has 3 characters but a length of 4 bytes because of the umlauted ë character.
+
 ┌────────────┐
   Templating 
 └────────────┘
