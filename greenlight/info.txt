@@ -59,3 +59,12 @@ There are two common approaches to do API versioning:
     force the data to be represented as a string in the JSON output:  `json:"runtime,omitempty,string"` 
 -- Behind the scenes time.Time is actually a struct, but it has a MarshalJSON() method which outputs a 
    RFC 3339 format representation of itself. This is what gets called whenever a time.Time value is encoded to JSON.
+
+-- Go’s http.Server may still automatically generate and send plain-text HTTP responses. These
+   scenarios include when:
+      The HTTP request specifies an unsupported HTTP protocol version.
+      The HTTP request contains a missing or invalid Host header, or multiple Host headers.
+      The HTTP request contains an invalid header name or value.
+      The HTTP request contains an unsupported Transfer-Encoding header.
+      The size of the HTTP request headers exceeds the server’s MaxHeaderBytes setting.
+      The client makes a HTTP request to a HTTPS server.
