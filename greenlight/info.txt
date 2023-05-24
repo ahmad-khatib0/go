@@ -1,3 +1,9 @@
+┌─────────────┐
+ INFORMATION 
+└─────────────┘
+-- The rule about pointers vs. values for receivers is that value methods can be invoked on
+     pointers and values, but pointer methods can only be invoked on pointers.
+
 1- The bin directory will contain our compiled application binaries, ready for deployment to a production server.
 
 2- The cmd/api directory will contain the application-specific code for our Greenlight API application. This 
@@ -51,4 +57,5 @@ There are two common approaches to do API versioning:
    tag — like this: json:",omitempty" . Notice that the leading comma is still required.
 -- Less-frequently-used, struct tag directive is string . You can use this on individual struct fields to 
     force the data to be represented as a string in the JSON output:  `json:"runtime,omitempty,string"` 
-
+-- Behind the scenes time.Time is actually a struct, but it has a MarshalJSON() method which outputs a 
+   RFC 3339 format representation of itself. This is what gets called whenever a time.Time value is encoded to JSON.
