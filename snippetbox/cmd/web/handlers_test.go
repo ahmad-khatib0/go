@@ -92,3 +92,17 @@ func TestShowSnippet(t *testing.T) {
 	}
 
 }
+
+func TestSignupUser(t *testing.T) {
+	app := newTestApplication(t)
+
+	ts := newTestServer(t, app.routes())
+	defer ts.Close()
+
+	_, _, body := ts.get(t, "/user/signup")
+	csrfToken := extractCSRFToken(t, body)
+
+	t.Log(csrfToken)
+}
+
+// Log the CSRF token value in our test output.

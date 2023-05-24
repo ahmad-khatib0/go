@@ -1,11 +1,14 @@
 package main
 
 import (
+	"fmt"
+	"html"
 	"io/ioutil"
 	"log"
 	"net/http"
 	"net/http/cookiejar"
 	"net/http/httptest"
+	"regexp"
 	"testing"
 	"time"
 
@@ -76,4 +79,28 @@ func (ts *testServer) get(t *testing.T, urlPath string) (int, http.Header, []byt
 	}
 
 	return rs.StatusCode, rs.Header, body
+}
+
+var csrfTokenRX = regexp.MustCompile(`<input type='hidden' name='csrf_token' value='{{.CSRFToken}}'>`)
+
+func extractCSRFToken(t *testing.T, body []byte) string {
+	// Use the FindSubmatch method to extract the token from the HTML body. Note that this
+	// returns an array with the entire matched pattern in the first position, and the values of any
+	// captured data in the subsequent  positions.
+
+	// fmt.Println(body)
+	fmt.Println(string(body))
+	fmt.Println(csrfTokenRX)
+
+	matches := csrfTokenRX.FindSubmatch(body)
+	fmt.Println(matches)
+	if len(matches) < 2 {
+		t.Fatal("no csrf token found in body")
+	}
+
+	// why using UnescapeString?  Go’s html/template package automatically escapes all dynamically rendered
+	// data... including our CSRF token. Because the CSRF token is a base64 encoded string it
+	// potentially includes the + character, and this will be escaped to &#43;. So after extracting the
+	// token from the HTML we need to run it through html.UnescapeString() to get the original token value.
+	return html.UnescapeString(string(matches[1]))
 }

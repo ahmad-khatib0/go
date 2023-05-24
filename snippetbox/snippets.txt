@@ -95,7 +95,9 @@ ALTER
 
 
 Testing 
--- go test -v -run="^TestPing$" ./cmd/web/     for running sepecific test 
+-- go test -v -run="^TestPing$" ./cmd/web/     for running specific test 
 
 -- go run cmd/web/!(*_test).go   :to get around test files when running an application (in bash)
 -- go test -v -run="^TestHumanDate$/^UTC|CET$" ./cmd/web   :limit testing to some specific sub-tests.
+
+-- go test -v -run="TestSignupUser" -count=1 ./cmd/web/    :disable cache if any
