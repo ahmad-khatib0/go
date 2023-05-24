@@ -59,6 +59,8 @@ There are two common approaches to do API versioning:
     force the data to be represented as a string in the JSON output:  `json:"runtime,omitempty,string"` 
 -- Behind the scenes time.Time is actually a struct, but it has a MarshalJSON() method which outputs a 
    RFC 3339 format representation of itself. This is what gets called whenever a time.Time value is encoded to JSON.
+-- json.Unmarshal() requires about 80% more memory (B/op) than json.Decoder , as well as
+   being a tiny bit slower (ns/op).
 
 -- Go’s http.Server may still automatically generate and send plain-text HTTP responses. These
    scenarios include when:
