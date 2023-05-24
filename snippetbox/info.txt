@@ -1,4 +1,4 @@
- NOTE: could not apply the  TestSignupUser, and csrfTokenTest from this book
+ NOTE: could not apply the  TestSignupUser, and extractCSRFToken from this book
 
 ┌──────┐
   HTTP 

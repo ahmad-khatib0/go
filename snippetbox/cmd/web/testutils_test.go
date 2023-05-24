@@ -1,7 +1,6 @@
 package main
 
 import (
-	"fmt"
 	"html"
 	"io/ioutil"
 	"log"
@@ -89,12 +88,7 @@ func extractCSRFToken(t *testing.T, body []byte) string {
 	// returns an array with the entire matched pattern in the first position, and the values of any
 	// captured data in the subsequent  positions.
 
-	// fmt.Println(body)
-	fmt.Println(string(body))
-	fmt.Println(csrfTokenRX)
-
 	matches := csrfTokenRX.FindSubmatch(body)
-	fmt.Println(matches)
 	if len(matches) < 2 {
 		t.Fatal("no csrf token found in body")
 	}

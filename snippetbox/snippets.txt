@@ -101,3 +101,13 @@ Testing
 -- go test -v -run="^TestHumanDate$/^UTC|CET$" ./cmd/web   :limit testing to some specific sub-tests.
 
 -- go test -v -run="TestSignupUser" -count=1 ./cmd/web/    :disable cache if any
+
+-- 1- run:   go test -coverprofile=/tmp/profile.out ./...
+-- 2- then:  go tool cover -func=/tmp/profile.out             to see covered tests
+-- or an html file:    go tool cover -html=/tmp/profile.out
+
+-- $ go test -covermode=count -coverprofile=/tmp/profile.out ./...
+-- $ go tool cover -html=/tmp/profile.out
+-- this makes the coverage profile record exact num of times that each statement is executed 
+    during the tests. If you’re running some of your tests in parallel, you should use the 
+    -covermode=atomic flag instead to ensure an accurate count.
