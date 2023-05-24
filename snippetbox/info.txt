@@ -181,3 +181,10 @@ http.HandleFunc("/snippet/create", createSnippet)
 -- Because the justinas/alice package doesn’t have any semantically-versioned releases available, the ‘version’ identifier 
    in the go.mod file is the datetime of the latest commit followed by the first 12 characters of the commit hash.
    
+
+
+┌─────────┐
+  Testing 
+└─────────┘
+-  you can use the -failfast flag to stop the tests running after the first failure, if you want
+-  go run cmd/web/!(*_test).go   :to get around test files when running an application (in bash)
