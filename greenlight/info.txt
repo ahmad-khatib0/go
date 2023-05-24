@@ -23,3 +23,32 @@ There are two common approaches to do API versioning:
       convey the API version, like Accept: application/vnd.greenlight-v1 .
 --  curl -i -X OPTIONS localhost:4000/v1/healthcheck    :will show supported methods for this endpoint
 
+-- about the go types that are mapped to JSON data types during encoding:
+   1- Go time.Time values (which are actually a struct behind the scenes) will be encoded as a
+      JSON string in RFC 3339 format like "2020-11-08T06:27:59+01:00" , rather than as a JSON object.
+   2- A []byte slice will be encoded as a base64-encoded JSON string, rather than as a JSON array. So,
+      for example, a byte slice of []byte{'h','e','l','l','o'} would appear as "aGVsbG8=" in the JSON 
+      output. The base64 encoding uses padding and the standard character set.
+   3- Encoding of nested objects is supported. So, for example, if you have a slice of 
+      structs in Go that will encode to an array of objects in JSON.
+   4- hannels, functions and complex number types cannot be encoded. If you try to do so,
+      you’ll get a json.UnsupportedTypeError error at runtime.
+   5- Any pointer values will encode as the value pointed to. Likewise, interface{} values will
+      encode as the value contained in the interface.
+
+-- When we call json.NewEncoder(w).Encode(data) the JSON is created and written to the 
+   http.ResponseWriter in a single step, which means there’s no opportunity to set HTTP
+   response headers conditionally based on whether the Encode() method returns an error or not.
+
+-- The - (hyphen) directive can be used when you never want a particular struct field to appear in the output
+   In contrast the omitempty directive hides a field in the JSON output if and only if the struct
+   field value is empty, where empty is defined as being: 
+    1-- Equal to false , 0 , or ""  
+    2--  An empty array , slice or map  
+    3-- A nil pointer or a nil interface value
+    
+-- If you want to use omitempty and not change the key name then you can leave it blank in the struct 
+   tag — like this: json:",omitempty" . Notice that the leading comma is still required.
+-- Less-frequently-used, struct tag directive is string . You can use this on individual struct fields to 
+    force the data to be represented as a string in the JSON output:  `json:"runtime,omitempty,string"` 
+
