@@ -35,11 +35,27 @@ mux.HandleFunc("/", home)                #
         })
       }
 
+
+--  ----------- Context ---------
+ +-----------------------------------------------------------------------+
+ | ctx := r.Context()                                                    |
+ | ctx = context.WithValue(ctx, "user", &models.User{Name: "Bob Jones"}) |
+ | r = r.WithContext(ctx)                                                |
+ +-----------------------------------------------------------------------+
+-- 1- we use the r.Context() method to retrieve the existing context from a request and assign it to the ctx variable 
+-- 2- we use the context.WithValue() method to create a new copy of the existing context,
+      with a *models.User struct added to it
+-- 3- we use the r.WithContext() method to create a copy of the request containing our new context.
+-- 4- It’s important to be clear that we don’t actually update the context for a request directly. What 
+      we’re do is create a new copy of the http.Request object with our new context in it.
+
 --  ----------- TLS -------------
 --  go run /usr/local/go/src/crypto/tls/generate_cert.go --rsa-bits=2048 --host=localhost
 
 we could redirect the stdout and stderr streams to on-disk files when starting the application like so:
 go run cmd/web/* >>/tmp/info.log 2>>/tmp/error.log 
+
+
 
 ┌──────────┐
   Database 

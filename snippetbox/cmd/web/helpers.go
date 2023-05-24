@@ -5,6 +5,8 @@ import (
 	"fmt"
 	"net/http"
 	"runtime/debug"
+
+	"github.com/Ahmadkhatib0/go/snippetbox/pkg/models"
 )
 
 // The serverError helper writes an error message and stack trace to the errorLog
@@ -46,7 +48,13 @@ func (app *application) render(w http.ResponseWriter, r *http.Request, name stri
 	buf.WriteTo(w)
 }
 
-// session, or zero if the request is from an unauthenticated user.
-func (app *application) authenticatedUser(r *http.Request) int {
-	return app.session.GetInt(r, "userID")
+func (app *application) authenticatedUser(r *http.Request) *models.User {
+	// with this type casting, If there is a *models.User struct in the request context with the key contextKeyUser,
+	// then we know that the request is coming from an authenticated-and-valid user,
+	user, ok := r.Context().Value(contextKeyUser).(*models.User)
+	if !ok {
+		return nil
+	}
+
+	return user
 }

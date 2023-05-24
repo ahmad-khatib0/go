@@ -16,6 +16,11 @@ import (
 	_ "github.com/go-sql-driver/mysql"
 )
 
+// we used it like so to avoid naming collision, because maybe some 3th parties are using the same key
+var contextKeyUser = contextKey("user")
+
+type contextKey string
+
 type application struct {
 	errorLog      *log.Logger
 	infoLog       *log.Logger
