@@ -1,3 +1,4 @@
+ NOTE: could not apply the  TestSignupUser, and csrfTokenTest from this book
 
 ┌──────┐
   HTTP 
@@ -173,6 +174,10 @@ http.HandleFunc("/snippet/create", createSnippet)
     Under heavy load, it’s possible that a large amount of prepared statements will be created on multiple connections. 
     This can lead to statements being prepared and re-prepared more often than you would expect — or even running into 
     server-side limits on the number of statements (in MySQL the default maximum is 16,382 prepared statements).
+
+-- The Go tool ignores any directories called testdata, so these scripts will be ignored when compiling 
+   your application. And The Go tool also ignores any directories or files which have names that begin
+   with an _ or . character.
 
 
 ┌────────┐
