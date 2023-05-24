@@ -7,6 +7,10 @@ import (
 	"net/http/cookiejar"
 	"net/http/httptest"
 	"testing"
+	"time"
+
+	"github.com/Ahmadkhatib0/go/snippetbox/pkg/models/mock"
+	"github.com/golangcollege/sessions"
 )
 
 // testServer type which anonymously embeds a httptest.Server instance.
@@ -16,9 +20,25 @@ type testServer struct {
 
 // newTestApplication() returns an instance of our application struct containing mocked dependencies.
 func newTestApplication(t *testing.T) *application {
+
+	templateCache, err := newTemplateCache("./../../ui/html/")
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	session := sessions.New([]byte("3dSm5MnygFHh7XidAtbskXrjbwfoJcbJ"))
+	session.Lifetime = 12 * time.Hour
+	session.Secure = true
+
+	// the reason for mocking these and writing to ioutil.Discard is to avoid clogging
+	// up our test output with unnecessary log messages when we run go test -v.
 	return &application{
-		errorLog: log.New(ioutil.Discard, "", 0),
-		infoLog:  log.New(ioutil.Discard, "", 0),
+		errorLog:      log.New(ioutil.Discard, "", 0),
+		infoLog:       log.New(ioutil.Discard, "", 0),
+		session:       session,
+		templateCache: templateCache,
+		snippets:      &mock.SnippetModel{},
+		users:         &mock.UserModel{},
 	}
 }
 
