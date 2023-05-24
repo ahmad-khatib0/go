@@ -186,5 +186,12 @@ http.HandleFunc("/snippet/create", createSnippet)
 ┌─────────┐
   Testing 
 └─────────┘
--  you can use the -failfast flag to stop the tests running after the first failure, if you want
--  go run cmd/web/!(*_test).go   :to get around test files when running an application (in bash)
+--  you can use the -failfast flag to stop the tests running after the first failure, if you want 
+
+--  Tests marked using t.Parallel() will be run in parallel with — and only with — other parallel tests
+--  By default, the maximum number of tests that will be run simultaneously is the current value of 
+    GOMAXPROCS. You can override this by setting a specific value via the -parallel flag like so: 
+    go test -parallel 4 ./...
+    
+-- If you’re testing a HTTP (not HTTPS) server you should use the 
+   httptest.NewServer() function to create the test server instead.
