@@ -70,3 +70,12 @@ There are two common approaches to do API versioning:
       The HTTP request contains an unsupported Transfer-Encoding header.
       The size of the HTTP request headers exceeds the server’s MaxHeaderBytes setting.
       The client makes a HTTP request to a HTTPS server.
+
+
+
+┌──────────┐
+  Database 
+└──────────┘
+-- By default PostgreSQL has a hard limit of 100 open connections
+-- MySQL will automatically close any connections which haven’t been used for 8 hours
+-- Once every second Go runs a background cleanup operation to remove expired connections from the pool.

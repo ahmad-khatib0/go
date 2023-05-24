@@ -1,0 +1,41 @@
+┌──────────┐
+  Database 
+└──────────┘
+
+SELECT current_user;                         # show current user
+CREATE DATABASE greenlight;    
+\?                                           # show list of all flowing similliar commands
+\c greenlight                                # connect to db
+\l                                           # list dbs 
+\dt                                          # list tables 
+\du                                          # list users
+
+CREATE ROLE greenlight WITH LOGIN PASSWORD 'pa55word';     # creating user 
+
+CREATE EXTENSION IF NOT EXISTS citext;                     
+# add an extension eg, this extension adds a case-insensitive character string type to PostgreSQL
+# for example it can be used to store user email addresses
+
+migrate create -seq -ext=.sql -dir=./migrations create_movies_table
+# The -seq flag indicates that we want to use sequential numbering like 0001, 0002, ...
+
+migrate -path=./migrations -database=$EXAMPLE_DSN version
+# see which migration version your database is currently on
+
+migrate -path=./migrations -database=$EXAMPLE_DSN goto 1
+# migrate up or down to a specific version
+
+migrate -path=./migrations -database =$EXAMPLE_DSN down 1
+# to roll-back by a specific number of migrations
+
+$ migrate -source="s3://<bucket>/<path>" -database=$EXAMPLE_DSN up
+$ migrate -source="github://owner/repo/path#ref" -database=$EXAMPLE_DSN up
+$ migrate -source="github://user:personal-access-token@owner/repo/path#ref" -database=$EXAMPLE_DSN up
+# migrate supports reading migration files from remote sources 
+
+# type bigserial is a 64-bit auto-incrementing integer starting at 1
+# type text[] which is an array of zero-or-more text values. It’s important to 
+  note that arrays in PostgreSQL are themselves queryable and indexable,
+
+
+
