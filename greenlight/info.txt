@@ -87,6 +87,7 @@ There are two common approaches to do API versioning:
 -- Once every second Go runs a background cleanup operation to remove expired connections from the pool.
 
 -- PostgreSQL doesn’t have unsigned integers
+-- it’s not possible to use placeholder parameters for column names or SQL keywords (including ASC and DESC ).
 
  ┌─────────────────────────────────────────────────────────────────────────────────────────────┐
    -- smallint, smallserial                int16 (-32768 to 32767)                             
