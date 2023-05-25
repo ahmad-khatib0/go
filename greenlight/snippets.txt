@@ -28,6 +28,10 @@ migrate -path=./migrations -database=$EXAMPLE_DSN goto 1
 migrate -path=./migrations -database =$EXAMPLE_DSN down 1
 # to roll-back by a specific number of migrations
 
+migrate -path=./migrations -database=$EXAMPLE_DSN force + number
+# to fix in case if a previous migration failed 
+ 
+
 $ migrate -source="s3://<bucket>/<path>" -database=$EXAMPLE_DSN up
 $ migrate -source="github://owner/repo/path#ref" -database=$EXAMPLE_DSN up
 $ migrate -source="github://user:personal-access-token@owner/repo/path#ref" -database=$EXAMPLE_DSN up

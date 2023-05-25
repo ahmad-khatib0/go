@@ -108,9 +108,16 @@ There are two common approaches to do API versioning:
 -- PostgreSQL doesn’t have unsigned integers
 -- it’s not possible to use placeholder parameters for column names or SQL keywords (including ASC and DESC ).
 
+-- the type citext (case-insensitive text). This type stores text data exactly as it is 
+   inputted — without changing the case in any way — but comparisons against the data are 
+   always case-insensitive... including lookups on associated indexes.
+-- the type bytea (binary string). In this column we’ll store a one-way hash of the user’s
+   password generated using bcrypt — not the plaintext password itself.
+
  ┌─────────────────────────────────────────────────────────────────────────────────────────────┐
    -- smallint, smallserial                int16 (-32768 to 32767)                             
    -- integer, serial                      int32 (-2147483648 to 2147483647)                   
    -- bigint, bigserial                    int64 (-9223372036854775808 to 9223372036854775807) 
  └─────────────────────────────────────────────────────────────────────────────────────────────┘
+
 
