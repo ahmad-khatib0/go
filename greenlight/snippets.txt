@@ -48,6 +48,30 @@ $ migrate -source="github://user:personal-access-token@owner/repo/path#ref" -dat
     UPDATE movies SET title = $1, year = $2, runtime = $3, genres = $4, version = uuid_generate_v4()
     WHERE id = $5 AND version = $6  RETURNING version
 
+-- SELECT id, created_at, title, year, runtime, genres, version FROM movies
+   WHERE (to_tsvector('simple', title) @@ plainto_tsquery('simple', $1) OR $1 = '')
+   AND (genres @> $2 OR $2 = '{}')         
+   ORDER BY id
+
+# The to_tsvector('simple', title) function takes a movie title and splits it into lexemes. We specify the 
+  simple configuration, which means that the lexemes are just lowercase versions of the words in the title
+  For example, the movie title "The Breakfast Club"  would be split into the lexemes 'breakfast' 'club' 'the' 
+# The plainto_tsquery('simple', $1) function takes a search value and turns it into a formatted query 
+  term that PostgreSQL full-text search can understand. It normalizes the search value strips any special characters,
+  and inserts the and operator & between the words: eg:  "The Club"  => 'the' & 'club' .
+# The @@ operator is the matches operator In our statement we are using it to check whether the generated query 
+  term matches the lexemes, eg:  'the' & 'club'  will  match rows which contain both lexemes 'the' and 'club'
+
+
+additional: 
+ 1-  SELECT id, created_at, title, year, runtime, genres, version FROM movies
+      WHERE (STRPOS(LOWER(title), LOWER($1)) > 0 OR $1 = '')
+      AND (genres @> $2 OR $2 = '{}')
+      ORDER BY id
+ 2-  SELECT id, created_at, title, year, runtime, genres, version FROM movies
+      WHERE (title ILIKE $1 OR $1 = '')
+      AND (genres @> $2 OR $2 = '{}')
+      ORDER BY id
 
 ┌──────┐
   HTTP 

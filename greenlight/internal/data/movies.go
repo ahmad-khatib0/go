@@ -143,11 +143,12 @@ func (m MovieModel) GetAll(title string, genres []string, filters Filters) ([]*M
 	// ‘contains’ operator for PostgreSQL arrays, and this condition will return true if each value
 	// in the placeholder parameter $2 appears in the database genres field or the placeholder
 	// parameter contains an empty array.
-	query := `SELECT id, created_at, title, year, runtime, genres, version
-						FROM movies
-						WHERE (LOWER(title) = LOWER($1) OR $1 = '')
-						AND (genres @> $2 OR $2 = '{}')
-						ORDER BY id`
+	query := `
+					SELECT id, created_at, title, year, runtime, genres, version
+					FROM movies
+					WHERE (to_tsvector('simple', title) @@ plainto_tsquery('simple', $1) OR $1 = '')
+					AND (genres @> $2 OR $2 = '{}')
+					ORDER BY id`
 
 	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
 	defer cancel()
