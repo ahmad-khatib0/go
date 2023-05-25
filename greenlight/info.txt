@@ -62,6 +62,12 @@ There are two common approaches to do API versioning:
 -- json.Unmarshal() requires about 80% more memory (B/op) than json.Decoder , as well as
    being a tiny bit slower (ns/op).
 
+
+-- When the client explicitly supplies a field in the JSON request with the value null . In this case,
+   our handler will ignore the field and treat it like it hasn’t been supplied. so there is no way to 
+   determine the difference between the client not supplying a key/value pair in the JSON, 
+   or supplying it with the value null .
+
 -- Go’s http.Server may still automatically generate and send plain-text HTTP responses. These
    scenarios include when:
       The HTTP request specifies an unsupported HTTP protocol version.
