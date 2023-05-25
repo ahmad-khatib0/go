@@ -139,21 +139,27 @@ func (m MovieModel) Delete(id int64) error {
 }
 
 func (m MovieModel) GetAll(title string, genres []string, filters Filters) ([]*Movie, error) {
-	// Construct the SQL query to retrieve all movie records.
+	// The (genres @> $2 OR $2 = '{}') condition works in the same way. The @> symbol is the
+	// ‘contains’ operator for PostgreSQL arrays, and this condition will return true if each value
+	// in the placeholder parameter $2 appears in the database genres field or the placeholder
+	// parameter contains an empty array.
 	query := `SELECT id, created_at, title, year, runtime, genres, version
-						FROM movies ORDER BY id`
+						FROM movies
+						WHERE (LOWER(title) = LOWER($1) OR $1 = '')
+						AND (genres @> $2 OR $2 = '{}')
+						ORDER BY id`
 
 	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
 	defer cancel()
 
-	rows, err := m.DB.QueryContext(ctx, query)
+	rows, err := m.DB.QueryContext(ctx, query, title, pq.Array(genres))
 	if err != nil {
 		return nil, err
 	}
 
 	defer rows.Close()
-	movies := []*Movie{}
 
+	movies := []*Movie{}
 	for rows.Next() {
 		var movie Movie
 		err := rows.Scan(
@@ -175,9 +181,7 @@ func (m MovieModel) GetAll(title string, genres []string, filters Filters) ([]*M
 	if err = rows.Err(); err != nil {
 		return nil, err
 	}
-
 	return movies, nil
-
 }
 
 func ValidateMovie(v *validator.Validator, movie *Movie) {
