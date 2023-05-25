@@ -175,7 +175,6 @@ func (app *application) deleteMovieHandler(w http.ResponseWriter, r *http.Reques
 }
 
 func (app *application) listMoviesHandler(w http.ResponseWriter, r *http.Request) {
-	// Embed the new Filters struct.
 	var input struct {
 		Title  string
 		Genres []string
@@ -187,11 +186,8 @@ func (app *application) listMoviesHandler(w http.ResponseWriter, r *http.Request
 
 	input.Title = app.readString(qs, "title", "")
 	input.Genres = app.readCSV(qs, "genres", []string{})
-
-	// Read the page and page_size query string values into the embedded struct.
 	input.Filters.Page = app.readInt(qs, "page", 1, v)
 	input.Filters.PageSize = app.readInt(qs, "page_size", 20, v)
-
 	input.Filters.Sort = app.readString(qs, "sort", "id")
 	input.Filters.SortSafelist = []string{"id", "title", "year", "runtime", "-id", "-title", "-year", "-runtime"}
 
@@ -200,5 +196,14 @@ func (app *application) listMoviesHandler(w http.ResponseWriter, r *http.Request
 		return
 	}
 
-	fmt.Fprintf(w, "%+v\n", input)
+	movies, err := app.models.Movies.GetAll(input.Title, input.Genres, input.Filters)
+	if err != nil {
+		app.serverErrorResponse(w, r, err)
+		return
+	}
+
+	err = app.writeJSON(w, http.StatusOK, envelope{"movies": movies}, nil)
+	if err != nil {
+		app.serverErrorResponse(w, r, err)
+	}
 }
