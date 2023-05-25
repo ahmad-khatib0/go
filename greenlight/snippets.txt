@@ -43,3 +43,14 @@ $ migrate -source="github://user:personal-access-token@owner/repo/path#ref" -dat
  stmt := "UPDATE foo SET bar = $1 + $2 WHERE bar = $1"
     err := db.Exec(stmt, 123, 456)
     if err != nil { ... }
+
+--  PostgreSQL has a UUID type and the uuid-ossp extension which you could use for this purpose like so:
+    UPDATE movies SET title = $1, year = $2, runtime = $3, genres = $4, version = uuid_generate_v4()
+    WHERE id = $5 AND version = $6  RETURNING version
+
+
+┌──────┐
+  HTTP 
+└──────┘
+xargs -I % -P8 curl -X PATCH -d '{"runtime": "97 mins"}' "localhost:4000/v1/movies/4" < <(printf '%s\n' {1..8})
+# sends a bunch of concurrent requests to an endpoint
