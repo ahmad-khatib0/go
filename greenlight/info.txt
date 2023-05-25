@@ -19,6 +19,21 @@
 5- The remote directory will contain the configuration files and setup scripts for our production server.
 
 
+ ┌─────────────────────────────────────────────────────────────────────────────────────────────────────┐
+
+  -- Signal                   Description                                Keyboard           Catchable 
+
+  SIGINT                    Interrupt from keyboard                     Ctrl+C               Yes      
+
+  SIGQUIT                   Quit from keyboard                          Ctrl+\               Yes      
+
+  SIGKILL                   Kill process (terminate immediately)         --                   No      
+
+  SIGTERM                   Terminate process in orderly manner          --                  Yes      
+
+ └─────────────────────────────────────────────────────────────────────────────────────────────────────┘
+ 
+
 ┌──────┐
  HTTP 
 └──────┘
