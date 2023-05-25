@@ -77,6 +77,11 @@ additional:
       AND (genres @> $2 OR $2 = '{}')
       ORDER BY id
 
+
+SELECT *, encode(password_hash, 'escape') FROM users
+# convert the bytea stored values to string 
+
+
 ┌──────┐
   HTTP 
 └──────┘
