@@ -143,3 +143,21 @@ func (app *application) readInt(qs url.Values, key string, defaultValue int, v *
 	}
 	return i
 }
+
+// The background() helper accepts an arbitrary function as a parameter.
+func (app *application) background(fn func()) {
+	go func() {
+		// Recover any panic. that may occurres by long code, or third party packages
+		// instead of terminating the application
+		defer func() {
+			if err := recover(); err != nil {
+				app.logger.PrintError(fmt.Errorf("%s", err), nil)
+			}
+		}()
+
+		// NOTE: The code running in the background goroutine forms a closure over the user and app variables. It’s
+		// important to be aware that these ‘closed over’ variables are not scoped to the background goroutine,
+		// which means that any changes you make to them will be reflected in the rest of your codebase.
+		fn()
+	}()
+}
