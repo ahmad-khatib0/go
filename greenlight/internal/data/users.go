@@ -32,6 +32,7 @@ type UserModel struct {
 
 var (
 	ErrDuplicateEmail = errors.New("duplicate email")
+	AnonymousUser     = &User{}
 )
 
 func (m UserModel) Insert(user *User) error {
@@ -113,6 +114,10 @@ func (m UserModel) Update(user *User) error {
 	}
 
 	return nil
+}
+
+func (u *User) IsAnonymous() bool {
+	return u == AnonymousUser
 }
 
 // Set() method calculates the bcrypt hash of a plaintext password, and stores both
