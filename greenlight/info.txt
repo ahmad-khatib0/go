@@ -120,6 +120,9 @@ There are two common approaches to do API versioning:
    -- bigint, bigserial                    int64 (-9223372036854775808 to 9223372036854775807) 
  └─────────────────────────────────────────────────────────────────────────────────────────────┘
 
+-- PRIMARY KEY (user_id, permission_id) sets a composite primary key
+## Setting this as the primary key essentially means that the same user/permission combination can only 
+   appear once in the table and cannot be duplicated
 
 
 ┌────────────┐
