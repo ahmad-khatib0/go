@@ -93,6 +93,30 @@ There are two common approaches to do API versioning:
 -- If your API endpoint requires credentials (cookies or HTTP basic authentication) you should also set an
    Access-Control-Allow-Credentials: true header in your responses. If you don’t set this header, then the 
    web browser will prevent any cross-origin responses with credentials from being read by JavaScript.
+-- Origin — As we saw previously, this lets our API know what origin the preflight request is coming from.
+
+-- Access-Control-Request-Headers won’t list all the headers that the real request will use. Only 
+    headers that are not CORS-safe or forbidden will be listed. If there are no such headers,
+    then Access-Control-Request-Headers may be omitted from the preflight request entirely.
+--  preflight requests always have three components: the HTTP method OPTIONS , an Origin header,
+    and an Access-Control-Request-Method header. If any one of these pieces is missing,
+    we know that it is not a preflight request
+
+-- cross-origin requests are classified as ‘simple’ when all the following conditions are met:
+   1- The request HTTP method is one of the three CORS-safe methods: HEAD , GET or POST .
+   2- The request headers are all either forbidden headers or one of the four CORS-safe headers:
+          Accept    ||  Accept-Language   ||  Content-Language  ||   Content-Type
+   3- The value for the Content-Type header (if set) is one of:
+      application/x-www-form-urlencoded   ||   multipart/form-data    ||   text/plain
+   
+  ... When a cross-origin request doesn’t meet these conditions, then the web browser will trigger an 
+        initial ‘preflight’ request before the real request. The purpose of this preflight
+        request is to determine whether the real cross-origin request will be permitted or not
+
+-- browsers may impose a hard maximum on how long the headers can be cached for. The MDN documentation says:
+        Firefox caps this at 24 hours (86400 seconds).
+        Chromium (prior to v76) caps at 10 minutes (600 seconds).
+        Chromium (starting in v76) caps at 2 hours (7200 seconds).
 
 -- Go’s http.Server may still automatically generate and send plain-text HTTP responses. These
    scenarios include when:
