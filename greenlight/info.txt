@@ -87,6 +87,13 @@ There are two common approaches to do API versioning:
    determine the difference between the client not supplying a key/value pair in the JSON, 
    or supplying it with the value null .
 
+--  As a rule of thumb: If your code makes a decision about what to return based on the content of a 
+    request header, you should include that header name in your Vary response header — 
+    even if the request didn’t include that header.
+-- If your API endpoint requires credentials (cookies or HTTP basic authentication) you should also set an
+   Access-Control-Allow-Credentials: true header in your responses. If you don’t set this header, then the 
+   web browser will prevent any cross-origin responses with credentials from being read by JavaScript.
+
 -- Go’s http.Server may still automatically generate and send plain-text HTTP responses. These
    scenarios include when:
       The HTTP request specifies an unsupported HTTP protocol version.
@@ -95,7 +102,27 @@ There are two common approaches to do API versioning:
       The HTTP request contains an unsupported Transfer-Encoding header.
       The size of the HTTP request headers exceeds the server’s MaxHeaderBytes setting.
       The client makes a HTTP request to a HTTPS server.
+      
 
++-------------------------------------------------------------------------------------------------------+
+|                                                                                                       |
+| CORS                                                                                                  |
+|                                                                                                       |
+| URL A               URL B                    Same origin?     Reason                                  | 
+|                                                                                                       |
+| https://foo.com/a   http://foo.com/a         No               Different scheme (http vs https)        |
+|                                                                                                       |
+| http://foo.com/a    http://www.foo.com/a     No               Different host (foo.com vs www.foo.com) |
+|                                                                                                       |
+| http://foo.com/a    http://foo.com:443/a     No               Different port (no port vs 443)         |
+|                                                                                                       |
+| http://foo.com/a    http://foo.com/b         Yes              Only the path is different              |
+|                                                                                                       |
+| http://foo.com/a    http://foo.com/a?b=c     Yes              Only the query string is different      |
+|                                                                                                       |
+| http://foo.com/a#b  http://foo.com/a#c       Yes              Only the fragment is different          |
+|                                                                                                       |
++-------------------------------------------------------------------------------------------------------+
 
 
 ┌──────────┐
@@ -128,24 +155,24 @@ There are two common approaches to do API versioning:
 ┌────────────┐
   Templating 
 └────────────┘
- +---------------------------------------------------------------------------------------------------------------+
- | GO:EMBED RULES                                                                                                |
- |                                                                                                               |
- | -- You can only use the //go:embed directive on global variables at package level,                            |
- | not within functions or methods                                                                               |
- |                                                                                                               |
- | -- //go:embed "<path>"   : the path should be relative to the source code file containing the directive       |
- |                                                                                                               |
- | -- Paths cannot contain . or .. elements, nor may they begin or end with a / . This essentially               |
- |    restricts you to only embedding files that are contained in the same directory                             |
- |    (or a subdirectory) as the source code which has the //go:embed directive.                                 |
- |                                                                                                               |
- | -- If the path is for a directory, then all files in the directory are recursively embedded, except for files |
- | with names that begin with . or _ . If you want to include these files you                                    |
- | should use the * wildcard character in the path, like //go:embed "templates/*"                                |
- |                                                                                                               |
- | -- You can specify multiple directories and files in one directive. For example:                              |
- | //go:embed "images" "styles/css" "favicon.ico" .                                                              |
- |                                                                                                               |
- | -- The path separator should always be a forward slash, even on Windows machines.                             |
- +---------------------------------------------------------------------------------------------------------------+
++---------------------------------------------------------------------------------------------------------------+
+| GO:EMBED RULES                                                                                                |
+|                                                                                                               |
+| -- You can only use the //go:embed directive on global variables at package level,                            |
+| not within functions or methods                                                                               |
+|                                                                                                               |
+| -- //go:embed "<path>"   : the path should be relative to the source code file containing the directive       |
+|                                                                                                               |
+| -- Paths cannot contain . or .. elements, nor may they begin or end with a / . This essentially               |
+|    restricts you to only embedding files that are contained in the same directory                             |
+|    (or a subdirectory) as the source code which has the //go:embed directive.                                 |
+|                                                                                                               |
+| -- If the path is for a directory, then all files in the directory are recursively embedded, except for files |
+| with names that begin with . or _ . If you want to include these files you                                    |
+| should use the * wildcard character in the path, like //go:embed "templates/*"                                |
+|                                                                                                               |
+| -- You can specify multiple directories and files in one directive. For example:                              |
+| //go:embed "images" "styles/css" "favicon.ico" .                                                              |
+|                                                                                                               |
+| -- The path separator should always be a forward slash, even on Windows machines.                             |
++---------------------------------------------------------------------------------------------------------------+
