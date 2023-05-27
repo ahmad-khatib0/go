@@ -11,8 +11,8 @@ import (
 	"time"
 
 	"github.com/Ahmadkhatib0/go/greenlight/internal/data"
-	"github.com/Ahmadkhatib0/go/greenlight/internal/validator"
 	"github.com/felixge/httpsnoop"
+	"github.com/pascaldekloe/jwt"
 	"github.com/tomasen/realip"
 	"golang.org/x/time/rate"
 )
@@ -89,13 +89,8 @@ func (app *application) rateLimit(next http.Handler) http.Handler {
 
 func (app *application) authenticate(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		// Add the "Vary: Authorization" header to the response. This indicates to any
-		// caches that the response may vary based on the value of the Authorization header in the request.
 		w.Header().Add("Vary", "Authorization")
 		authorizationHeader := r.Header.Get("Authorization")
-		// If there is no Authorization header found, use the contextSetUser() helper
-		// that we just made to add the AnonymousUser to the request context. Then we
-		// call the next handler in the chain and return without executing any of the code below.
 		if authorizationHeader == "" {
 			r = app.contextSetUser(r, data.AnonymousUser)
 			next.ServeHTTP(w, r)
@@ -107,14 +102,44 @@ func (app *application) authenticate(next http.Handler) http.Handler {
 			app.invalidAuthenticationTokenResponse(w, r)
 			return
 		}
+
 		token := headerParts[1]
-		v := validator.New()
-		if data.ValidateTokenPlaintext(v, token); !v.Valid() {
+		// Parse the JWT and extract the claims. This will return an error if the JWT contents doesn't
+		// match the signature (i.e. the token has been tampered with) or the algorithm isn't valid.
+		claims, err := jwt.HMACCheck([]byte(token), []byte(app.config.jwt.secret))
+		if err != nil {
 			app.invalidAuthenticationTokenResponse(w, r)
 			return
 		}
 
-		user, err := app.models.Users.GetForToken(data.ScopeAuthentication, token)
+		// Check if the JWT is still valid at this moment in time.
+		if !claims.Valid(time.Now()) {
+			app.invalidAuthenticationTokenResponse(w, r)
+			return
+		}
+
+		// Check that the issuer is our application.
+		if claims.Issuer != "greenlight.alexedwards.net" {
+			app.invalidAuthenticationTokenResponse(w, r)
+			return
+		}
+
+		// Check that our application is in the expected audiences for the JWT.
+		if !claims.AcceptAudience("greenlight.alexedwards.net") {
+			app.invalidAuthenticationTokenResponse(w, r)
+			return
+		}
+
+		// At this point, we know that the JWT is all OK and we can trust the data in it.
+		// We extract the user ID from the claims subject and convert it from a string into an int64.
+		userID, err := strconv.ParseInt(claims.Subject, 10, 64)
+		if err != nil {
+			app.serverErrorResponse(w, r, err)
+			return
+		}
+
+		// Lookup the user record from the database.
+		user, err := app.models.Users.Get(userID)
 		if err != nil {
 			switch {
 			case errors.Is(err, data.ErrRecordNotFound):
@@ -125,10 +150,11 @@ func (app *application) authenticate(next http.Handler) http.Handler {
 			return
 		}
 
+		// Add the user record to the request context and continue as normal.
 		r = app.contextSetUser(r, user)
 		next.ServeHTTP(w, r)
-
 	})
+
 }
 
 func (app *application) requireActivatedUser(next http.HandlerFunc) http.HandlerFunc {
