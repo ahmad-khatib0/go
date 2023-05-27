@@ -70,6 +70,7 @@ vendor:
 # ==================================================================================== #
 #
 current_time = $(shell date --iso-8601=seconds)
+git_description = $(shell git describe --always --dirty)
 linker_flags = '-s -X main.buildTime=${current_time}'
 
 ## build/api: build the cmd/api application
@@ -78,6 +79,7 @@ build/api:
 	@echo 'Building cmd/api...'
 	# -ldflags="-s"   to reduce the binary size
 	# using the -X linker flag to ‘burn in’ the current time to our main.buildTime variable 
+	@echo 'Building cmd/api...'
 	go build -ldflags=${linker_flags} -o=./bin/api ./cmd/api
 	GOOS=linux GOARCH=amd64 go build -ldflags=${linker_flags} -o=./bin/linux_amd64/api ./cmd/api
 

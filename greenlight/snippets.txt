@@ -102,3 +102,6 @@ $ go build -a -o=/bin/foo ./cmd/foo            # Force all packages to be rebuil
 
 $ go clean -cache                              # Remove everything from the build cache
 
+$ git describe --always --dirty                
+# get a ‘human-readable’ descriptor of repo status, --dirty means that the descriptor 
+# will be suffixed with "-dirty" if there are any uncommitted changes in the repository
