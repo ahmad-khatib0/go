@@ -283,3 +283,6 @@ $ rsync -rP --delete ./remote/setup greenlight@45.55.49.87:~
 19- add a caddyfile  
 20- add the caddyfile to the deploy rule, and re run the deploy rule   
 21- navigate to an endpoint to test running without port number
+
+22- replace the ip with the domain name and register an A record in you server 
+    that bridges your ip with the domain name,  and then re run deploy

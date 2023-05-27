@@ -1,6 +1,12 @@
+# Set the email address that should be used to contact you if there is a problem with
+# your TLS certificates.
+
+{
+  email you@example.com
+}
 
 # forward the traffic to the port 4000
-http://45.55.49.87 {
+greenlight.alexedwards.net {
   respond /debug/* "Not Permitted" 403
   reverse_proxy localhost:4000
 }

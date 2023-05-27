@@ -110,6 +110,12 @@ $ git describe --always --dirty
 ┌────────────┐
   Deployment 
 └────────────┘
+$ ssh -L :9999:45.55.49.87:4000 greenlight@45.55.49.87
+# open an SSH tunnel between port 4000 on the droplet and port 9999 on your local machine 
+# so then you can use the browser to visit the restricted endpoint for example: http://localhost:9999/debug/vars
+
+
+
 If you’re not planning to run your application behind a reverse proxy, and want to listen for
 requests directly on port 80 or 443, you’ll need to set up your unit file so that the service has
 the CAP_NET_BIND_SERVICE capability (which will allow it to bind to a restricted port). For example:
