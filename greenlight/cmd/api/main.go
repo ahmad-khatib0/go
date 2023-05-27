@@ -22,8 +22,10 @@ import (
 
 // build variable to hold the executable binary build time. Note that this
 // must be a string type, as the -X linker flag will only work with string variables.
-var buildTime string
-var version string
+var (
+	buildTime string
+	version   string
+)
 
 type config struct {
 	port int
