@@ -279,3 +279,7 @@ $ rsync -rP --delete ./remote/setup greenlight@45.55.49.87:~
 16- ps -U greenlight                     list the running processes for our greenlight user if you want
 17- sudo ufw delete allow 4000/tcp       delete the allowed port
 18- sudo journalctl -u api               output api logs if you want 
+
+19- add a caddyfile  
+20- add the caddyfile to the deploy rule, and re run the deploy rule   
+21- navigate to an endpoint to test running without port number
