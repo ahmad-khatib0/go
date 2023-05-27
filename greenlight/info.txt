@@ -237,3 +237,29 @@ Note: It’s important to point out that there’s no easy way to verify that th
 -- like most other reverse proxies, Caddy adds an X-Forwarded-For header to 
    each request. This header will contain the real IP address for the client.
 
+---------- setup process ------------------------
+1- first add the instance, or droplet or .... online, 
+
+2- prepare connect to it with ssh 
+
+3- add the setup script 
+
+4- rsync -rP --delete ./remote/setup root@45.55.49.87:/root     
+#   -r means recursively,  
+#   -P display progress of the transfer
+#   --delete  delete any extraneous files from destination directory on the droplet
+
+5- ssh -t root@45.55.49.87 "bash /root/setup/01.sh"
+#   -t flag to force pseudo-terminal allocation, which is useful when executing 
+#   screen-based programs on a remote machine.
+  IMPORTANT: While this script is running you will get a message saying: A new version of configuration 
+    file /etc/ssh/sshd_config is available, but the version installed currently has been locally modified.
+    This is because Digital Ocean automatically makes some adaptations to the sshd_config file, including
+    disabling password-based access when you are using SSH keys for authentication.  
+    select keep the local version currently installed and then <Ok> to continue.
+    
+6- ssh greenlight@45.55.49.87           # connect again 
+
+7- want addetional configuration or settings ? so created another file like so for example: 
+$ rsync -rP --delete ./remote/setup greenlight@45.55.49.87:~
+  ssh -t greenlight@45.55.49.87 "sudo bash /home/greenlight/setup/02.sh"

@@ -84,6 +84,16 @@ build/api:
 	GOOS=linux GOARCH=amd64 go build -ldflags=${linker_flags} -o=./bin/linux_amd64/api ./cmd/api
 
 
+# ==================================================================================== #
+# 		PRODUCTION
+# ==================================================================================== #
+production_host_ip = '45.55.49.87'
+
+## production/connect: connect to the production server
+.PHONY: production/connect
+production/connect:
+	ssh greenlight@${production_host_ip}
+
 # A phony target is one that is not really the name of a file; rather it is just a name for a rule 
 # to be executed. so i.g if you have the run/api command above, and you have for example a folder that has 
 # the same path (i.g  run/api/main.go.... ) than make will not success in executing this rule, and will see
