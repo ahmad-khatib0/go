@@ -272,3 +272,10 @@ $ rsync -rP --delete ./remote/setup greenlight@45.55.49.87:~
 
 11-  ./api -port=4000 -db-dsn=$GREENLIGHT_DB_DSN -env=production
 12- make sure to navigate to an endpoint to see it running correctly
+
+13- add the unit file (api.service)
+14- run the production deploy rule again (after adding logic of managing this unit file)
+15- sudo systemctl status api            reconnect to the server, and check api status 
+16- ps -U greenlight                     list the running processes for our greenlight user if you want
+17- sudo ufw delete allow 4000/tcp       delete the allowed port
+18- sudo journalctl -u api               output api logs if you want 

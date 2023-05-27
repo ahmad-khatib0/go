@@ -105,3 +105,31 @@ $ go clean -cache                              # Remove everything from the buil
 $ git describe --always --dirty                
 # get a ‘human-readable’ descriptor of repo status, --dirty means that the descriptor 
 # will be suffixed with "-dirty" if there are any uncommitted changes in the repository
+
+
+┌────────────┐
+  Deployment 
+└────────────┘
+If you’re not planning to run your application behind a reverse proxy, and want to listen for
+requests directly on port 80 or 443, you’ll need to set up your unit file so that the service has
+the CAP_NET_BIND_SERVICE capability (which will allow it to bind to a restricted port). For example:
+[Unit]
+Description=Greenlight API service
+After=postgresql.service
+After=network-online.target
+Wants=network-online.target
+StartLimitIntervalSec=600
+StartLimitBurst=5
+[Service]
+Type=exec
+User=greenlight
+Group=greenlight
+CapabilityBoundingSet=CAP_NET_BIND_SERVICE
+AmbientCapabilities=CAP_NET_BIND_SERVICE
+EnvironmentFile=/etc/environment
+WorkingDirectory=/home/greenlight
+ExecStart=/home/greenlight/api -port=80 -db-dsn=${GREENLIGHT_DB_DSN} -env=production
+Restart=on-failure
+RestartSec=5
+[Install]
+WantedBy=multi-user.target

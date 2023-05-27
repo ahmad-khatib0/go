@@ -99,7 +99,14 @@ production/connect:
 production/deploy/api:
 	rsync -P ./bin/linux_amd64/api greenlight@${production_host_ip}:~
 	rsync -rP --delete ./migrations greenlight@${production_host_ip}:~
-	ssh -t greenlight@${production_host_ip} 'migrate -path ~/migrations -database $$GREENLIGHT_DB_DSN up'
+	rsync -P ./remote/production/api.service greenlight@${production_host_ip}:~
+	ssh -t greenlight@${production_host_ip} '\
+	migrate -path ~/migrations -database $$GREENLIGHT_DB_DSN up \
+	&& sudo mv ~/api.service /etc/systemd/system/ \
+	&& sudo systemctl enable api \
+	&& sudo systemctl restart api \
+	'
+	
 # -t flag to run these database migrations on our server as the greenlight user
 # we used $$ to escape the first dollar,,,, It’s also important to note that we’re surrounding this 
 # command with single quotes. If we used double quotes, it would be an interpreted string and we 
