@@ -128,6 +128,108 @@ There are two common approaches to do API versioning:
       The client makes a HTTP request to a HTTPS server.
 
 
+var nilSlice []string
+emptySlice := []string{}
+m := map[string][]string{
+  "nilSlice":     nilSlice,
+  "emptySlice":   emptySlice,
+}                                   
+# Will encode to the following JSON:   {"emptySlice":[],"nilSlice":null}
+
+
+# Using omitempty on a zero-valued struct doesn’t work
+s := struct {
+    Foo struct {
+       Bar string   `json:",omitempty"`
+    } `json:",omitempty"`
+}{}                                   # will encode as:          {"Foo":{}}
+
+# to get around that: making the field a pointer to a struct, which works because omitempty
+  considers nil pointers to be empty
+  s := struct {
+    Foo *struct {
+      Bar string `json:",omitempty"`
+    } `json:",omitempty"`
+  }{}                                # will encode like:         {}
+
+# Using omitempty on a zero-value time.Time doesn’t work:
+# because the time.Time type is a struct behind the scenes and, and omitempty never considers structs 
+# to be empty. Instead, the string "0001-01-01T00:00:00Z" will appear in the JSON (which is the value 
+  returned by calling the MarshalJSON() method on a zero-value time.Time)
+  s := struct {
+    Foo time.Time `json:",omitempty"`
+  }{}                                # will encode like:         {"Foo":"0001-01-01T00:00:00Z"}
+
+
+# Non-ASCII punctuation characters aren’t supported in struct tags:
+  s := struct {
+      CostUSD string `json:"cost $"` // This is OK.
+      CostEUR string `json:"cost €"` // This contains the non-ASCII punctuation character € and will be ignored.
+}{
+  CostUSD: "100.00",
+  CostEUR: "100.00",
+}
+# this will be encoded as:           {"cost $":"100.00","CostEUR":"100.00"}
+
+
+# Integer, time.Time and net.IP values can be used as map keys: 
+m := map[int]string{
+    123: "foo",
+    456_000: "bar",
+}                                    
+# this will be encoded as:           {"123":"foo","456000":"bar"}
+
+
+
+# Angle brackets and ampersands in strings are escaped
+s := []string{ "<foo>",   "bar & baz",  }
+# this  will encode as:              ["\u003cfoo\u003e","bar \u0026 baz"]
+# This is to prevent some web browsers from accidentally interpreting a JSON response as HTML
+
+
+# Trailing zeroes are removed from floats
+s := []float64{ 123.0,     456.100,        789.990, }
+# this will be encoded as:           [123,456.1,789.99]
+
+
+# Working with pre-computed JSON
+m := struct { Person string }{ Person: `{"name": "Alice", "age": 21}`, }
+
+#  {"Person":  "{\"name\": \"Alice\", \"age\": 21}"  }
+# so Go will treat it just like any other string or []byte slice during encoding
+
+
+
+-- Decoding into an interface{} type can be useful in situations where: 
+    You don’t know in advance exactly what you’re decoding.
+    You need to decode JSON arrays which contain items with different JSON types.
+    The key/value pair in a JSON object doesn’t always contain values with the same JSON type.
+
+
+# Decoding a JSON number to an interface{}
+  js := `10` // This JSON number is an integer.
+  var n interface{}
+  
+  err := json.NewDecoder(strings.NewReader(js)).Decode(&n)
+  fmt.Printf("type: %T; value: %v\n", n, n)                 // =>  type: float64; value: 10
+# to fix this behavior 
+
+dec := json.NewDecoder(strings.NewReader(js))
+dec.UseNumber()                // Call the UseNumber() method on the decoder before using it.
+err := dec.Decode(&n)
+
+// Type assert the interface{} value to a json.Number, then call the Int64() to get the number as a Go int64.
+nInt64, err := n.(json.Number).Int64()
+
+// Likewise, you can use the String() method to get the number as a Go string.
+nString := n.(json.Number).String()
+
+fmt.Printf("type: %T; value: %v\n", n, n)              # type: json.Number; value: 10
+fmt.Printf("type: %T; value: %v\n", nInt64, nInt64)    # type: int64; value: 10
+fmt.Printf("type: %T; value: %v\n", nString, nString)  # type: string; value: 10
+
+
+
 +---------------------------------------------------------------------------------------------------------+
 | "expvar" PACKAGE STATES                                                                                 |
 |                                                                                                         |
