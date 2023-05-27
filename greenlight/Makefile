@@ -94,6 +94,19 @@ production_host_ip = '45.55.49.87'
 production/connect:
 	ssh greenlight@${production_host_ip}
 
+## production/deploy/api: deploy the api to production
+.PHONY: production/deploy/api
+production/deploy/api:
+	rsync -P ./bin/linux_amd64/api greenlight@${production_host_ip}:~
+	rsync -rP --delete ./migrations greenlight@${production_host_ip}:~
+	ssh -t greenlight@${production_host_ip} 'migrate -path ~/migrations -database $$GREENLIGHT_DB_DSN up'
+# -t flag to run these database migrations on our server as the greenlight user
+# we used $$ to escape the first dollar,,,, It’s also important to note that we’re surrounding this 
+# command with single quotes. If we used double quotes, it would be an interpreted string and we 
+# would need to use an additional escape character \ like so:
+# "migrate -path ~/migrations -database \$$GREENLIGHT_DB_DSN up"
+
+
 # A phony target is one that is not really the name of a file; rather it is just a name for a rule 
 # to be executed. so i.g if you have the run/api command above, and you have for example a folder that has 
 # the same path (i.g  run/api/main.go.... ) than make will not success in executing this rule, and will see

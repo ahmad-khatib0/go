@@ -263,3 +263,12 @@ Note: It’s important to point out that there’s no easy way to verify that th
 7- want addetional configuration or settings ? so created another file like so for example: 
 $ rsync -rP --delete ./remote/setup greenlight@45.55.49.87:~
   ssh -t greenlight@45.55.49.87 "sudo bash /home/greenlight/setup/02.sh"
+
+8- run the deploy rule in the makefile to publish the binaries and migrations 
+9- verify that they've sent, and the migration ran against the db by connecting to it,
+
+10- sudo ufw allow 4000/tcp
+#   to relax this temporarily to allow incoming requests on port 4000
+
+11-  ./api -port=4000 -db-dsn=$GREENLIGHT_DB_DSN -env=production
+12- make sure to navigate to an endpoint to see it running correctly
