@@ -87,3 +87,18 @@ SELECT *, encode(password_hash, 'escape') FROM users
 └──────┘
 xargs -I % -P8 curl -X PATCH -d '{"runtime": "97 mins"}' "localhost:4000/v1/movies/4" < <(printf '%s\n' {1..8})
 # sends a bunch of concurrent requests to an endpoint
+
+
+
+┌────┐
+  GO 
+└────┘
+$ go tool dist list
+# see a list of all the operating system/architecture combinations that Go supports
+
+$ GOOS=linux GOARCH=amd64 go build {args}      # override the default binary format when building
+
+$ go build -a -o=/bin/foo ./cmd/foo            # Force all packages to be rebuilt
+
+$ go clean -cache                              # Remove everything from the build cache
+

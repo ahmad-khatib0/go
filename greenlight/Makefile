@@ -64,6 +64,22 @@ vendor:
 	@echo 'Vendoring dependencies...'
 	go mod vendor
 
+
+# ==================================================================================== #
+#  		BUILD
+# ==================================================================================== #
+## build/api: build the cmd/api application
+.PHONY: build/api
+build/api:
+	@echo 'Building cmd/api...'
+	# -ldflags="-s"   to reduce the binary size
+	go build -ldflags='-s' -o=./bin/api ./cmd/api
+	GOOS=linux GOARCH=amd64 go build -ldflags='-s' -o=./bin/linux_amd64/api ./cmd/api
+	
+
+
+
+
 # A phony target is one that is not really the name of a file; rather it is just a name for a rule 
 # to be executed. so i.g if you have the run/api command above, and you have for example a folder that has 
 # the same path (i.g  run/api/main.go.... ) than make will not success in executing this rule, and will see

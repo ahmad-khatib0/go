@@ -15,6 +15,7 @@ tmp/
 #books-library/db-data/*
 books-library/backend/vueapi
 /websockets/vigilate/vigilate
+greenlight/bin/*
 
 /concurrency/5-subscription-service/db-data
 /concurrency/5-subscription-service/myapp
