@@ -3,7 +3,7 @@ package mail
 import (
 	"testing"
 
-	"github.com/Ahmadkhatib0/go/simple-bank/util"
+	"github.com/ahmad-khatib0/go/simple-bank/util"
 	"github.com/stretchr/testify/require"
 )
 

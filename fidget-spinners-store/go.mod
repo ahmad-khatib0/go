@@ -1,4 +1,4 @@
-module github.com/Ahmadkhatib0/go/fidget-spinners-store
+module github.com/ahmad-khatib0/go/fidget-spinners-store
 
 go 1.16
 

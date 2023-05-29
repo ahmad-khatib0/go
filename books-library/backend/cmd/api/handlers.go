@@ -9,7 +9,7 @@ import (
 	"strconv"
 	"time"
 
-	"github.com/Ahmadkhatib0/go/books-library/internal/data"
+	"github.com/ahmad-khatib0/go/books-library/internal/data"
 	"github.com/go-chi/chi"
 	"github.com/mozillazg/go-slugify"
 )

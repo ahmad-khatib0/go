@@ -1,4 +1,4 @@
-module github.com/Ahmadkhatib0/mongo
+module github.com/ahmad-khatib0/mongo
 
 go 1.19
 

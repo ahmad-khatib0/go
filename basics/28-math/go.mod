@@ -1,4 +1,4 @@
-module github.com/Ahmadkhatib0/math
+module github.com/ahmad-khatib0/math
 
 go 1.19
 

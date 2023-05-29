@@ -7,7 +7,7 @@ import (
 	"strings"
 	"time"
 
-	"github.com/Ahmadkhatib0/go/websockets/vigilate/internal/helpers"
+	"github.com/ahmad-khatib0/go/websockets/vigilate/internal/helpers"
 	"github.com/justinas/nosurf"
 )
 

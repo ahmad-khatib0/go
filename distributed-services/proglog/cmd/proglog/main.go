@@ -7,8 +7,8 @@ import (
 	"path"
 	"syscall"
 
-	"github.com/Ahmadkhatib0/go/distributed-services/proglog/internal/agent"
-	"github.com/Ahmadkhatib0/go/distributed-services/proglog/internal/config"
+	"github.com/ahmad-khatib0/go/distributed-services/proglog/internal/agent"
+	"github.com/ahmad-khatib0/go/distributed-services/proglog/internal/config"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 )

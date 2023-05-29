@@ -10,8 +10,8 @@ import (
 	"sync"
 	"time"
 
-	"github.com/Ahmadkhatib0/go/greenlight/internal/data"
-	"github.com/Ahmadkhatib0/go/greenlight/internal/validator"
+	"github.com/ahmad-khatib0/go/greenlight/internal/data"
+	"github.com/ahmad-khatib0/go/greenlight/internal/validator"
 	"github.com/felixge/httpsnoop"
 	"github.com/tomasen/realip"
 	"golang.org/x/time/rate"

@@ -3,7 +3,7 @@ package mock
 import (
 	"time"
 
-	"github.com/Ahmadkhatib0/go/snippetbox/pkg/models"
+	"github.com/ahmad-khatib0/go/snippetbox/pkg/models"
 )
 
 var mockUser = &models.User{

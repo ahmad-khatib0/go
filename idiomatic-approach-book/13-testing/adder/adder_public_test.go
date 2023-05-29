@@ -3,7 +3,7 @@ package adder_test
 import (
 	"testing"
 
-	"github.com/Ahmadkhatib0/go/idiomatic-approach-book/testing/adder"
+	"github.com/ahmad-khatib0/go/idiomatic-approach-book/testing/adder"
 )
 
 func TestAddNumbers(t *testing.T) {

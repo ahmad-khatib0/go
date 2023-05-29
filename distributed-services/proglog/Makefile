@@ -51,4 +51,4 @@ gencert:
 
 TAG ?= 0.0.1
 build-docker:
-	docker build -t github.com/ahmadkhatib0/go/distributed-services/proglog:$(TAG) .
+	docker build -t github.com/ahmad-khatib0/go/distributed-services/proglog:$(TAG) .

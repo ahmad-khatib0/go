@@ -10,8 +10,8 @@ import (
 	"os"
 	"time"
 
-	"github.com/Ahmadkhatib0/go/snippetbox/pkg/models"
-	"github.com/Ahmadkhatib0/go/snippetbox/pkg/models/mysql"
+	"github.com/ahmad-khatib0/go/snippetbox/pkg/models"
+	"github.com/ahmad-khatib0/go/snippetbox/pkg/models/mysql"
 	"github.com/golangcollege/sessions"
 
 	_ "github.com/go-sql-driver/mysql"

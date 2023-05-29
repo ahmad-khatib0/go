@@ -1,4 +1,4 @@
-module github.com/Ahmadkhatib0/go/distributed-services/proglog
+module github.com/ahmad-khatib0/go/distributed-services/proglog
 
 go 1.19
 

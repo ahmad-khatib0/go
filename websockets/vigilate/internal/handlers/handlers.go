@@ -8,13 +8,13 @@ import (
 	"runtime/debug"
 	"strconv"
 
-	"github.com/Ahmadkhatib0/go/websockets/vigilate/internal/config"
-	"github.com/Ahmadkhatib0/go/websockets/vigilate/internal/driver"
-	"github.com/Ahmadkhatib0/go/websockets/vigilate/internal/helpers"
-	"github.com/Ahmadkhatib0/go/websockets/vigilate/internal/models"
-	"github.com/Ahmadkhatib0/go/websockets/vigilate/internal/repository"
-	"github.com/Ahmadkhatib0/go/websockets/vigilate/internal/repository/dbrepo"
 	"github.com/CloudyKit/jet/v6"
+	"github.com/ahmad-khatib0/go/websockets/vigilate/internal/config"
+	"github.com/ahmad-khatib0/go/websockets/vigilate/internal/driver"
+	"github.com/ahmad-khatib0/go/websockets/vigilate/internal/helpers"
+	"github.com/ahmad-khatib0/go/websockets/vigilate/internal/models"
+	"github.com/ahmad-khatib0/go/websockets/vigilate/internal/repository"
+	"github.com/ahmad-khatib0/go/websockets/vigilate/internal/repository/dbrepo"
 	"github.com/go-chi/chi/v5"
 )
 

@@ -13,7 +13,7 @@ import (
 	"github.com/hashicorp/raft"
 	"google.golang.org/protobuf/proto"
 
-	api "github.com/Ahmadkhatib0/go/distributed-services/proglog/api/v1"
+	api "github.com/ahmad-khatib0/go/distributed-services/proglog/api/v1"
 	raftboltdb "github.com/hashicorp/raft-boltdb"
 )
 

@@ -1,4 +1,4 @@
-module github.com/Ahmadkhatib0/mod
+module github.com/ahmad-khatib0/mod
 
 go 1.19
 

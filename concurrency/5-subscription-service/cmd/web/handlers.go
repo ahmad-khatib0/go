@@ -7,7 +7,7 @@ import (
 	"strconv"
 	"time"
 
-	"github.com/Ahmadkhatib0/go/concurrency/5-subscription-service/data"
+	"github.com/ahmad-khatib0/go/concurrency/5-subscription-service/data"
 	"github.com/phpdave11/gofpdf"
 	"github.com/phpdave11/gofpdf/contrib/gofpdi"
 )

@@ -5,7 +5,7 @@ import (
 	"log"
 	"sync"
 
-	"github.com/Ahmadkhatib0/go/concurrency/5-subscription-service/data"
+	"github.com/ahmad-khatib0/go/concurrency/5-subscription-service/data"
 	"github.com/alexedwards/scs/v2"
 )
 

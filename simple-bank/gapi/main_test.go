@@ -6,10 +6,10 @@ import (
 	"testing"
 	"time"
 
-	db "github.com/Ahmadkhatib0/go/simple-bank/db/sqlc"
-	"github.com/Ahmadkhatib0/go/simple-bank/token"
-	"github.com/Ahmadkhatib0/go/simple-bank/util"
-	"github.com/Ahmadkhatib0/go/simple-bank/worker"
+	db "github.com/ahmad-khatib0/go/simple-bank/db/sqlc"
+	"github.com/ahmad-khatib0/go/simple-bank/token"
+	"github.com/ahmad-khatib0/go/simple-bank/util"
+	"github.com/ahmad-khatib0/go/simple-bank/worker"
 	"github.com/stretchr/testify/require"
 	"google.golang.org/grpc/metadata"
 )

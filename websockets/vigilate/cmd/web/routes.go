@@ -3,7 +3,7 @@ package main
 import (
 	"net/http"
 
-	"github.com/Ahmadkhatib0/go/websockets/vigilate/internal/handlers"
+	"github.com/ahmad-khatib0/go/websockets/vigilate/internal/handlers"
 	"github.com/go-chi/chi/v5"
 )
 

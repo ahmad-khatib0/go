@@ -4,11 +4,11 @@ import (
 	"net"
 	"testing"
 
-	"github.com/Ahmadkhatib0/go/distributed-services/proglog/internal/config"
-	"github.com/Ahmadkhatib0/go/distributed-services/proglog/internal/loadbalance"
-	"github.com/Ahmadkhatib0/go/distributed-services/proglog/internal/server"
+	"github.com/ahmad-khatib0/go/distributed-services/proglog/internal/config"
+	"github.com/ahmad-khatib0/go/distributed-services/proglog/internal/loadbalance"
+	"github.com/ahmad-khatib0/go/distributed-services/proglog/internal/server"
 
-	api "github.com/Ahmadkhatib0/go/distributed-services/proglog/api/v1"
+	api "github.com/ahmad-khatib0/go/distributed-services/proglog/api/v1"
 	"github.com/stretchr/testify/require"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/attributes"

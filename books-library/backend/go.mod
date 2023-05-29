@@ -1,4 +1,4 @@
-module github.com/Ahmadkhatib0/go/books-library
+module github.com/ahmad-khatib0/go/books-library
 
 go 1.19
 

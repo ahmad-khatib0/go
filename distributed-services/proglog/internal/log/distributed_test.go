@@ -9,8 +9,8 @@ import (
 	"testing"
 	"time"
 
-	api "github.com/Ahmadkhatib0/go/distributed-services/proglog/api/v1"
-	"github.com/Ahmadkhatib0/go/distributed-services/proglog/internal/log"
+	api "github.com/ahmad-khatib0/go/distributed-services/proglog/api/v1"
+	"github.com/ahmad-khatib0/go/distributed-services/proglog/internal/log"
 	"github.com/hashicorp/raft"
 	"github.com/stretchr/testify/require"
 	"github.com/travisjeffery/go-dynaport"

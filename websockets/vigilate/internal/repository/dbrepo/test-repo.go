@@ -1,7 +1,7 @@
 package dbrepo
 
 import (
-	"github.com/Ahmadkhatib0/go/websockets/vigilate/internal/models"
+	"github.com/ahmad-khatib0/go/websockets/vigilate/internal/models"
 )
 
 // AllUsers returns all users

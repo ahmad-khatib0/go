@@ -10,7 +10,7 @@ import (
 	"strings"
 	"sync"
 
-	api "github.com/Ahmadkhatib0/go/distributed-services/proglog/api/v1"
+	api "github.com/ahmad-khatib0/go/distributed-services/proglog/api/v1"
 )
 
 type Log struct {

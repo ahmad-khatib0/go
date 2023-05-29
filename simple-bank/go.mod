@@ -1,4 +1,4 @@
-module github.com/Ahmadkhatib0/go/simple-bank
+module github.com/ahmad-khatib0/go/simple-bank
 
 go 1.19
 

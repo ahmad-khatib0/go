@@ -10,11 +10,11 @@ import (
 	"strings"
 	"time"
 
-	"github.com/Ahmadkhatib0/go/websockets/vigilate/internal/certificateutils"
-	"github.com/Ahmadkhatib0/go/websockets/vigilate/internal/channeldata"
-	"github.com/Ahmadkhatib0/go/websockets/vigilate/internal/helpers"
-	"github.com/Ahmadkhatib0/go/websockets/vigilate/internal/models"
-	"github.com/Ahmadkhatib0/go/websockets/vigilate/internal/sms"
+	"github.com/ahmad-khatib0/go/websockets/vigilate/internal/certificateutils"
+	"github.com/ahmad-khatib0/go/websockets/vigilate/internal/channeldata"
+	"github.com/ahmad-khatib0/go/websockets/vigilate/internal/helpers"
+	"github.com/ahmad-khatib0/go/websockets/vigilate/internal/models"
+	"github.com/ahmad-khatib0/go/websockets/vigilate/internal/sms"
 	"github.com/go-chi/chi/v5"
 )
 

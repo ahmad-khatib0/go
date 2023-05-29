@@ -9,8 +9,8 @@ import (
 	"strings"
 	"time"
 
-	"github.com/Ahmadkhatib0/go/websockets/vigilate/internal/helpers"
-	"github.com/Ahmadkhatib0/go/websockets/vigilate/internal/models"
+	"github.com/ahmad-khatib0/go/websockets/vigilate/internal/helpers"
+	"github.com/ahmad-khatib0/go/websockets/vigilate/internal/models"
 )
 
 // LoginScreen shows the home (login) screen

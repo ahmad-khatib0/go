@@ -5,7 +5,7 @@ import (
 	"testing"
 	"time"
 
-	. "github.com/Ahmadkhatib0/go/distributed-services/proglog/internal/discovery"
+	. "github.com/ahmad-khatib0/go/distributed-services/proglog/internal/discovery"
 	"github.com/hashicorp/serf/serf"
 	"github.com/stretchr/testify/require"
 	"github.com/travisjeffery/go-dynaport" // for getting free ports, dynamically.

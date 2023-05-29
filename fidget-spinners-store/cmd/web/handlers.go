@@ -8,10 +8,10 @@ import (
 	"strconv"
 	"time"
 
-	"github.com/Ahmadkhatib0/go/fidget-spinners-store/internal/cards"
-	"github.com/Ahmadkhatib0/go/fidget-spinners-store/internal/encryption"
-	"github.com/Ahmadkhatib0/go/fidget-spinners-store/internal/models"
-	"github.com/Ahmadkhatib0/go/fidget-spinners-store/internal/urlsigner"
+	"github.com/ahmad-khatib0/go/fidget-spinners-store/internal/cards"
+	"github.com/ahmad-khatib0/go/fidget-spinners-store/internal/encryption"
+	"github.com/ahmad-khatib0/go/fidget-spinners-store/internal/models"
+	"github.com/ahmad-khatib0/go/fidget-spinners-store/internal/urlsigner"
 	"github.com/go-chi/chi/v5"
 )
 

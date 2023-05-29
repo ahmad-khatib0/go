@@ -1,4 +1,4 @@
-module github.com/Ahmadkhatib0/go/idiomatic-approach-book/reflect/reflect_performance
+module github.com/ahmad-khatib0/go/idiomatic-approach-book/reflect/reflect_performance
 
 go 1.19
 

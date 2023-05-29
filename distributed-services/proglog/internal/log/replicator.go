@@ -4,7 +4,7 @@ package log
 // 	"context"
 // 	"sync"
 
-// 	api "github.com/Ahmadkhatib0/go/distributed-services/proglog/api/v1"
+// 	api "github.com/ahmad-khatib0/go/distributed-services/proglog/api/v1"
 // 	"go.uber.org/zap"
 // 	"google.golang.org/grpc"
 // )

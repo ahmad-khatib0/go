@@ -8,10 +8,10 @@ import (
 	"runtime/debug"
 	"time"
 
-	"github.com/Ahmadkhatib0/go/websockets/vigilate/internal/config"
-	"github.com/Ahmadkhatib0/go/websockets/vigilate/internal/models"
-	"github.com/Ahmadkhatib0/go/websockets/vigilate/internal/templates"
 	"github.com/CloudyKit/jet/v6"
+	"github.com/ahmad-khatib0/go/websockets/vigilate/internal/config"
+	"github.com/ahmad-khatib0/go/websockets/vigilate/internal/models"
+	"github.com/ahmad-khatib0/go/websockets/vigilate/internal/templates"
 	"github.com/justinas/nosurf"
 )
 

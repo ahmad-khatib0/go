@@ -8,9 +8,9 @@ import (
 	"runtime"
 	"time"
 
-	"github.com/Ahmadkhatib0/go/websockets/vigilate/internal/config"
-	"github.com/Ahmadkhatib0/go/websockets/vigilate/internal/handlers"
-	"github.com/Ahmadkhatib0/go/websockets/vigilate/internal/models"
+	"github.com/ahmad-khatib0/go/websockets/vigilate/internal/config"
+	"github.com/ahmad-khatib0/go/websockets/vigilate/internal/handlers"
+	"github.com/ahmad-khatib0/go/websockets/vigilate/internal/models"
 	"github.com/alexedwards/scs/v2"
 	"github.com/pusher/pusher-http-go"
 )

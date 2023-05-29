@@ -1,4 +1,4 @@
-module github.com/Ahmadkhatib0/go/concurrency/4-channels/sleeping-barber
+module github.com/ahmad-khatib0/go/concurrency/4-channels/sleeping-barber
 
 go 1.19
 
