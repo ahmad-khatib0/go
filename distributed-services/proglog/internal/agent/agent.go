@@ -101,9 +101,14 @@ func (a *Agent) setupLog() error {
 	//  configure the distributed log’s Raft to use our multiplexed listener
 	logConfig := log.Config{}
 	logConfig.Raft.StreamLayer = log.NewStreamLayer(raftLn, a.Config.ServerTLSConfig, a.Config.PeerTLSConfig)
+
+	rpcAddr, err := a.Config.RPCAddr()
+	if err != nil {
+		return err
+	}
+	logConfig.Raft.BindAddr = rpcAddr
 	logConfig.Raft.LocalID = raft.ServerID(a.Config.NodeName)
 	logConfig.Raft.Bootstrap = a.Config.Bootstrap
-	var err error
 
 	// configure and create the distributed log
 	a.log, err = log.NewDistributedLog(a.Config.DataDir, logConfig)
@@ -114,6 +119,7 @@ func (a *Agent) setupLog() error {
 	if a.Config.Bootstrap {
 		err = a.log.WaitForLeader(3 * time.Second)
 	}
+
 	return err
 }
 
