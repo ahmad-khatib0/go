@@ -324,3 +324,15 @@ You update the state with a slice of resolver.Address to inform the load balance
 
 - kind create cluster          #  create a Kind cluster
 - kubectl cluster-info         # verify that Kind created your cluster and configured kubectl to use it
+
+-- kind load docker-image github.com/ahmadkhatib0/go/distributed-services/proglog:0.0.1
+
+-- Helm is the package manager for Kubernetes that enables you to distribute and install services in Kubernetes.
+   Helm packages are called charts. A chart defines all resources needed to run a service in a Kubernetes cluster
+-- A release is a instance of running a chart. Each time you install a chart into Kubernetes, Helm creates a release
+
+-- helm create proglog          
+-- helm template proglog                     # check out the resources Helm would create with the example chart
+-- rm proglog/templates/**/*.yaml proglog/templates/NOTES.txt
+
+
