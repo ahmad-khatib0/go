@@ -13,6 +13,7 @@ import (
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/credentials"
+	"google.golang.org/grpc/health"
 	"google.golang.org/grpc/peer"
 	"google.golang.org/grpc/status"
 
@@ -23,6 +24,7 @@ import (
 	grpc_ctxtags "github.com/grpc-ecosystem/go-grpc-middleware/tags"
 	"go.uber.org/zap"
 	"go.uber.org/zap/zapcore"
+	healthpb "google.golang.org/grpc/health/grpc_health_v1"
 )
 
 type Config struct {
@@ -89,6 +91,13 @@ func NewGRPCServer(config *Config, opts ...grpc.ServerOption) (*grpc.Server, err
 	)
 
 	gsrv := grpc.NewServer(opts...)
+
+	// create a service that supports the health check protocol. We set its serving status as
+	// serving so that the probe knows the service is alive and ready to accept connections.
+	hsrv := health.NewServer()
+	hsrv.SetServingStatus("", healthpb.HealthCheckResponse_SERVING)
+	healthpb.RegisterHealthServer(gsrv, hsrv)
+
 	srv, err := newgrpcServer(config)
 	if err != nil {
 		return nil, err

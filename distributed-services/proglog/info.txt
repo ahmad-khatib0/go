@@ -335,4 +335,34 @@ You update the state with a slice of resolver.Address to inform the load balance
 -- helm template proglog                     # check out the resources Helm would create with the example chart
 -- rm proglog/templates/**/*.yaml proglog/templates/NOTES.txt
 
+StatefulSets in Kubernetes: 
+-- You use StatefulSets to manage stateful applications in Kubernetes, like our service that persists 
+   a log. You need a StatefulSet for any service that requires one or more of the following:
 
+• Stable, unique network identifiers—each node in our service requires unique node names as identifiers.
+
+• Stable, persistent storage—our service expects the data its written to persist across restarts.
+
+• Ordered, graceful deployment and scaling—our service needs initial node
+  to bootstrap the cluster and join subsequent nodes to its cluster.
+  
+• Ordered, automated rolling updates—we always want our cluster to have a leader, and when we roll 
+  the leader we want to give the cluster enough time to elect a new leader before rolling the next node.
+
+-- Kubernetes uses probes to know whether it needs to act on a container to improve your service’s reliability. 
+   There are three types of probes:
+    • Liveness probes signal that the container is alive, otherwise Kubernetes will restart the container. 
+      Kubernetes calls the liveness probe throughout the container’s lifetime.
+
+    • Readiness probes check that the container is ready to accept traffic, otherwise Kubernetes will remove the pod 
+      from the service load balancers.  Kubernetes calls the readiness probe throughout the container’s lifetime.
+
+    • Startup probes signal when the container application has started and Kubernetes can begin probing for liveness 
+      and readiness. Distributed services often need to go through service discovery and join in consensus with the 
+      cluster before they’re initialized. If we had a liveness probe that failed before our service finished 
+      initializing, our service would continually restart. After startup, Kubernetes doesn’t call this probe again.
+ 
+   You have three ways of running probes:
+    • Making an HTTP request against a server;
+    • Opening a TCP socket against a server; and
+    • Running a command in the container to check it's health
