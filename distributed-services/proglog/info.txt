@@ -1,7 +1,22 @@
+┌──────────────────────┐
+  --- PROTOCOL BUFFERS 
+└──────────────────────┘
+    Protocol buffers (also known as protobuf), which is Google’s language and platform-neutral extensible 
+    mechanism for structur- ing and serializing data. The advantages of using protobuf are that it:
+    +----------------------------------+
+    | • Guarantees type-safety;        |
+    | • Prevents schema-violations;    |
+    | • Enables fast serialization;    |
+    | • Offers backward compatibility. |
+    +----------------------------------+
+    Protocol buffers are good for communicating between two systems (such as microservices), 
+    which is why Google used protobuf when building gRPC to develop a high-perfor-mance
+    remote procedure call (RPC) framework.
 
-+------+
-| gRPC |
-+------+
+--- in proto buffers we specify a package name for two reasons:
+      because this protobuf package name is used as the package name in the generated Go code and 
+      because it prevents name clashes between protocol message types that have the same name.
+
 1- each RPC line is an endpoint in that service, The requests 
    and responses are messages that the compiler turns into Go structs,   
 2- ConsumeStream—a server-side streaming RPC where the client sends a
