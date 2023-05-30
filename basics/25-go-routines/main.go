@@ -5,7 +5,6 @@ import (
 	"log"
 	"net/http"
 	"sync"
-	// "time"
 )
 
 var (
@@ -18,16 +17,17 @@ var signals = []string{"test"} // pointer
 func main() {
 	// go greeter("hello")
 	// greeter("world")
-	websitelist := []string{
+	websiteList := []string{
 		"https://lco.dev",
 		"https://go.dev",
 		"https://google.com",
 		"https://fb.com",
 		"https://github.com",
 	}
-	for _, web := range websitelist {
+
+	for _, web := range websiteList {
 		go getStatusCode(web)
-		wg.Add(1) // 1 becuase its one job
+		wg.Add(1) // 1 because its one job
 	}
 
 	wg.Wait() // will make sure that main func will not be ended before finishing the goroutines

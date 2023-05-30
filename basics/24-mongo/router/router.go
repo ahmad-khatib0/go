@@ -1,7 +1,7 @@
 package router
 
 import (
-	controller "github.com/ahmad-khatib0/mongo/controllers"
+	controller "github.com/ahmad-khatib0/go/basics/mongo/controllers"
 	"github.com/gorilla/mux"
 )
 

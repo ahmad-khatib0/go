@@ -21,9 +21,9 @@ func main() {
 func EncodeJson() {
 
 	lcoCourses := []course{
-		{"ReactJS Bootcamp", 299, "LearnCodeOnline.in", "abc123", []string{"web-dev", "js"}},
-		{"MERN Bootcamp", 199, "LearnCodeOnline.in", "bcd123", []string{"full-stack", "js"}},
-		{"Angular Bootcamp", 299, "LearnCodeOnline.in", "hit123", nil},
+		{"ReactJS BootCamp", 299, "LearnCodeOnline.in", "abc123", []string{"web-dev", "js"}},
+		{"MERN BootCamp", 199, "LearnCodeOnline.in", "bcd123", []string{"full-stack", "js"}},
+		{"Angular BootCamp", 299, "LearnCodeOnline.in", "hit123", nil},
 	}
 
 	finalJson, _ := json.MarshalIndent(lcoCourses, "", "\t")
@@ -32,17 +32,17 @@ func EncodeJson() {
 
 func DecodeJson() {
 	data := []byte(`
-        {
-                "coursename": "ReactJS Bootcamp",
-                "Price": 299,
-                "website": "LearnCodeOnline.in",
-                "Tags": [ "web-dev", "js" ]
-        }
-
+			{
+				"coursename": "ReactJS BootCamp",
+				"Price": 299,
+				"website": "LearnCodeOnline.in",
+				"Tags": [ "web-dev", "js" ]
+			}
   `)
 
 	var lcoCourse course
 	isJsonValid := json.Valid(data)
+
 	if isJsonValid {
 		json.Unmarshal(data, &lcoCourse)
 		fmt.Printf("%#v\n", lcoCourse)
@@ -55,7 +55,6 @@ func DecodeJson() {
 	fmt.Printf("%#v\n", onlineData)
 
 	for k, v := range onlineData {
-
 		fmt.Printf("key is %v and value is %v , type is: %T\n", k, v, v)
 	}
 }

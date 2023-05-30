@@ -15,5 +15,5 @@ func main() {
 	fmt.Println("value of actual pointer is: ", *ptr) // 33 , invoking that created pointer's value
 
 	*ptr = *ptr + 2
-	fmt.Println("new value is: ", myPointer) // 35 becuase myPointer references that ptr
+	fmt.Println("new value is: ", myPointer) // 35 because myPointer references that ptr
 }

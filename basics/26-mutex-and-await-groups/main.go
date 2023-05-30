@@ -5,10 +5,10 @@ import (
 	"sync"
 )
 
-// race condetion is happening when you are writting to the same memory location by tow or more
+// race condition is happening when you are writing to the same memory location by tow or more
 // goroutines at the same time, which will cause many issues, or which is shouldn't happening
 func main() {
-	fmt.Println("Race Condetion in golang")
+	fmt.Println("Race Condition in golang")
 
 	wg := &sync.WaitGroup{}
 	mut := &sync.RWMutex{}
@@ -18,7 +18,8 @@ func main() {
 	// mut.RUnlock()
 
 	wg.Add(4)
-	// wg.Add(1) // intstead of adding one each time for each function
+	// wg.Add(1) // instead of adding one each time for each function
+
 	go func(wg *sync.WaitGroup, m *sync.RWMutex) {
 		fmt.Println("routine number 1")
 		// so this is saying whenever we work on memory , just lock it and don't allow other job to use it

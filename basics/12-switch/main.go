@@ -14,7 +14,7 @@ func main() {
 	switch diceNumber {
 	case 1:
 		fmt.Println("value is 1")
-		fallthrough // this if it matched, it will run the case 2 also
+		fallthrough // matched case 1? will run the case 2 also
 	case 2:
 		fmt.Println("value is 2")
 	case 3:

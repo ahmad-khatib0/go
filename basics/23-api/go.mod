@@ -1,4 +1,4 @@
-module github.com/ahmad-khatib0/api
+module github.com/ahmad-khatib0/go/basics/api
 
 go 1.19
 

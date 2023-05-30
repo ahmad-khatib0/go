@@ -4,17 +4,17 @@ import "fmt"
 
 func main() {
 
-	days := []string{"Sunaday", "Monday", "Wednesday", "Friday", "Saturday"}
+	days := []string{"Sunday", "Monday", "Wednesday", "Friday", "Saturday"}
 
 	for d := 0; d < len(days); d++ {
 		fmt.Println(days[d])
 	}
 
-	for i := range days { // i is the index not the value
+	for i := range days {
 		fmt.Println(days[i])
 	}
 
-	for i, val := range days { // i is the index not the value
+	for i, val := range days {
 		fmt.Printf("index is %v and value is %v\n ", i, val)
 	}
 
@@ -39,5 +39,5 @@ func main() {
 	}
 
 jumpToMe:
-	fmt.Println("jumpped to it inside the for loop and it will break the loop after jumpping")
+	fmt.Println("this printed by using the goto keyword inside a for loop")
 }

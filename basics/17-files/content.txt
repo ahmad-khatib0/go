@@ -1,1 +1,1 @@
-Plcae this inside a file with golang
+Place this sentence inside a file using go

@@ -11,8 +11,8 @@ func main() {
 	fmt.Println("hello")
 	loopDefers() // will run or will be logged out before the previous defers ,
 
-	// defers will be placed just at the end of the function,, multiple defers will execute in the reverse order,
-	// or last in first out
+	// defers will be placed just at the end of the function
+	// multiple defers will execute in the reverse order, or last in first out
 }
 
 func loopDefers() {

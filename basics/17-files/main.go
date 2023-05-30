@@ -8,7 +8,7 @@ import (
 
 func main() {
 
-	content := "Plcae this inside a file with golang"
+	content := "Place this sentence inside a file using go"
 	file, err := os.Create("./content.txt")
 
 	checkErrors(err)

@@ -39,7 +39,7 @@ func getReq() {
 }
 
 func postReq() {
-	const myurl = "http://localhost:8000/post"
+	const myUrl = "http://localhost:8000/post"
 
 	requestBody := strings.NewReader(`
 		{
@@ -49,7 +49,7 @@ func postReq() {
 		}
 	`)
 
-	response, err := http.Post(myurl, "application/json", requestBody)
+	response, err := http.Post(myUrl, "application/json", requestBody)
 
 	if err != nil {
 		panic(err)
@@ -63,14 +63,14 @@ func postReq() {
 
 func postForm() {
 
-	const myurl = "http://localhost:8000/postform"
+	const myUrl = "http://localhost:8000/postform"
 
 	data := url.Values{}
-	data.Add("firstname", "ahmad")
-	data.Add("lastname", "programmer")
+	data.Add("firstName", "ahmad")
+	data.Add("lastName", "programmer")
 	data.Add("email", "ahmad@test.com")
 
-	res, err := http.PostForm(myurl, data)
+	res, err := http.PostForm(myUrl, data)
 	if err != nil {
 		panic(err)
 	}

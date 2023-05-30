@@ -17,7 +17,7 @@ func main() {
 
 	fmt.Println("user status: ", result)
 
-	// assing a variable and make a condetion
+	// assign a variable and make a condition
 	if num := 4; num < 10 {
 		fmt.Println("number is less than 4")
 	} else {
