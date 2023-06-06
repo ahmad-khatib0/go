@@ -30,7 +30,6 @@ func (app *application) SendMail(from, to, subject, tmpl string, data interface{
 
 	formattedMessage := tpl.String()
 
-
 	templateToRender = fmt.Sprintf("templates/%s.plain.tmpl", tmpl)
 	t, err = template.New("email-plain").ParseFS(emailTemplateFS, templateToRender)
 	if err != nil {
@@ -62,9 +61,7 @@ func (app *application) SendMail(from, to, subject, tmpl string, data interface{
 	}
 
 	email := mail.NewMSG()
-	email.SetFrom(from).
-		AddTo(to).
-		SetSubject(subject)
+	email.SetFrom(from).AddTo(to).SetSubject(subject)
 
 	email.SetBody(mail.TextHTML, formattedMessage)
 	email.AddAlternative(mail.TextPlain, plainMessage)

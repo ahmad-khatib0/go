@@ -277,7 +277,7 @@ ALTER TABLE public.users ALTER COLUMN id ADD GENERATED ALWAYS AS IDENTITY (
 	return nil
 }
 
-// insertData inserts a minimal amout of test data into the test database
+// insertData inserts a minimal amount of test data into the test database
 func insertData(db *sql.DB) error {
 	// insert one author
 	stmt := `

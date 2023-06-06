@@ -33,7 +33,7 @@ func main() {
 	// this is the first way, second way is using the makefile (make start)
 	environment := os.Getenv("ENV")
 
-	db, err := driver.ConnectPostrges(dsn)
+	db, err := driver.ConnectPostgres(dsn)
 	if err != nil {
 		log.Fatal("Can not connect to database")
 	}

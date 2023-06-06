@@ -6,9 +6,9 @@ import (
 	"io/ioutil"
 	"net/http"
 
+	"github.com/ahmad-khatib0/go/idiomatic-approach-book/context_values/identity"
+	"github.com/ahmad-khatib0/go/idiomatic-approach-book/context_values/tracker"
 	"github.com/go-chi/chi"
-	"github.com/learning-go-book/context_values/identity"
-	"github.com/learning-go-book/context_values/tracker"
 )
 
 func main() {

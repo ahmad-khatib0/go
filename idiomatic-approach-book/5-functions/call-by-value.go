@@ -2,7 +2,7 @@ package main
 
 import "fmt"
 
-func main() {
+func callByValue() {
 	p := person{}
 	i := 2
 	s := "hello"

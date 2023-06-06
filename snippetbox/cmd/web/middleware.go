@@ -14,7 +14,7 @@ func secureHeaders(next http.Handler) http.Handler {
 		w.Header().Set("X-XSS-Protection", "1; mode=block")
 		w.Header().Set("X-Frame-Options", "deny")
 		// they essentially instruct the user’s web browser to implement some additional security measures to help prevent
-		// XSS and Clickjacking attacks. It’s good practice to include them unless you have a specific reason for not doing so.
+		// XSS and click-jacking attacks. It’s good practice to include them unless you have a specific reason for not doing so.
 
 		next.ServeHTTP(w, r)
 	})
@@ -54,7 +54,7 @@ func (app *application) recoverPanic(next http.Handler) http.Handler {
 func (app *application) requireAuthenticatedUser(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		if app.authenticatedUser(r) == nil {
-			http.Redirect(w, r, "/user/login", 302)
+			http.Redirect(w, r, "/user/login", http.StatusFound)
 			return
 		}
 

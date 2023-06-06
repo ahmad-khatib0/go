@@ -18,6 +18,8 @@ use ./books-library/backend
 
 use ./concurrency/1-basic
 
+use ./concurrency/2-race_conditions-mutexes-channels/producer-consumer
+
 use ./concurrency/2-race_conditions-mutexes-channels/bank-balance-calculator
 
 use ./concurrency/3-the-dining-philosophers
@@ -37,3 +39,48 @@ use ./distributed-services/proglog
 use ./snippetbox
 
 use ./greenlight
+
+use (
+	./basics/01-hello
+	./basics/02-variables
+	./basics/03-userinput
+	./basics/04-conversion
+	./basics/05-time
+	./basics/06-pointers
+	./basics/07-arrays
+	./basics/08-slices
+	./basics/09-maps
+	./basics/10-structs
+	./basics/11-ifelse
+	./basics/12-switch
+	./basics/13-loops
+	./basics/14-functions
+	./basics/15-methods
+	./basics/16-defer
+	./basics/17-files
+	./basics/18-web-requests
+	./basics/19-urls
+	./basics/20-web-server
+	./basics/21-json
+	./basics/22-mod
+	./basics/23-api
+	./basics/24-mongo
+	./basics/25-go-routines
+	./basics/26-mutex-and-await-groups
+	./basics/27-channels
+	./basics/28-math
+	./idiomatic-approach-book/1-basics
+	./idiomatic-approach-book/10-concurrency
+	./idiomatic-approach-book/12-context/context_values
+	./idiomatic-approach-book/14-reflect-unsafe-cgo/cgo
+	./idiomatic-approach-book/14-reflect-unsafe-cgo/reflect/filter
+	./idiomatic-approach-book/14-reflect-unsafe-cgo/unsafe
+	./idiomatic-approach-book/2-primitive-types-and-declarations
+	./idiomatic-approach-book/3-composite-types
+	./idiomatic-approach-book/4-block-shadows-control-strucures
+	./idiomatic-approach-book/5-functions
+	./idiomatic-approach-book/6-pointers
+	./idiomatic-approach-book/7-types-methods-interfaces
+	./idiomatic-approach-book/9-modules-packages-imports
+	./idiomatic-approach-book/9-modules-packages-imports/formatter
+)

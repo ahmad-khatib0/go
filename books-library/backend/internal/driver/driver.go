@@ -23,7 +23,7 @@ const (
 )
 
 // dsn means data source name
-func ConnectPostrges(dsn string) (*DB, error) {
+func ConnectPostgres(dsn string) (*DB, error) {
 	d, err := sql.Open("pgx", dsn)
 	if err != nil {
 		return nil, err

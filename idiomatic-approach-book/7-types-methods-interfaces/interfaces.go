@@ -9,16 +9,6 @@ import (
 	"net/http"
 )
 
-func main() {
-	fmt.Println("interfaces")
-	c := Client{L: LogicProvider{}}
-	c.Progeram()
-
-	theAnyType()
-	typeAssertion()
-	usingTypeAssertionAndSwitches()
-}
-
 type LogicProvider struct{}
 
 func (lp LogicProvider) Process(data string) string {
@@ -33,7 +23,7 @@ type Client struct {
 	L Logic
 }
 
-func (c Client) Progeram() {
+func (c Client) Program() {
 	fmt.Println(c.L.Process("data passed to process"))
 }
 
@@ -244,4 +234,14 @@ type HandlerFunc func(http.ResponseWriter, *http.Request)
 
 func (f HandlerFunc) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	f(w, r)
+}
+
+func main2() {
+	fmt.Println("interfaces")
+	c := Client{L: LogicProvider{}}
+	c.Program()
+
+	theAnyType()
+	typeAssertion()
+	usingTypeAssertionAndSwitches()
 }

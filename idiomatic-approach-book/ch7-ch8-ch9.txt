@@ -122,7 +122,7 @@ Library management in Go is based around three concepts:
    first time the package is referenced by another package.
 -- an alias is just another name for a type. If you want to add new methods or change the fields 
    in an aliased struct, you must add them to the original type.
--- github.com/learning-go-book/formatter v0.0.0-20200921021027-5abc380940ae
+-- github.com/ahmad-khatib0/go/idiomatic-approach-book/formatter v0.0.0-20200921021027-5abc380940ae
    Go makes up a pseudo_version because this package has no tag specified 
 -- The go.mod file is automatically updated to include the module path that contains the package and
    the version of the module. The go.sum file is updated with two entries: one with the module, its version,
@@ -137,7 +137,7 @@ Library management in Go is based around three concepts:
    indirect dependency, but it specifies an older version than what’s installed in your project. This
    happens when you explicitly update an indirect dependency with go get or downgrade a dependency’s version.
 -- To upgrade to the bug patch release for the current minor version, 
-   use the command go get -u=patch github.com/learning-go-book/simpletax
+   use the command go get -u=patch github.com/ahmad-khatib0/go/idiomatic-approach-book/simpletax
 -- In order to ensure that a module always builds with identical dependencies, some organizations like to
    keep copies of their dependencies inside their module. This is known as vendoring
 

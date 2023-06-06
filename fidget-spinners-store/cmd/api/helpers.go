@@ -9,7 +9,7 @@ import (
 	"golang.org/x/crypto/bcrypt"
 )
 
-// writeJSON writes aribtrary data out as JSON
+// writeJSON writes arbitrary data out as JSON
 func (app *application) writeJSON(w http.ResponseWriter, status int, data interface{}, headers ...http.Header) error {
 	out, err := json.MarshalIndent(data, "", "\t")
 	if err != nil {

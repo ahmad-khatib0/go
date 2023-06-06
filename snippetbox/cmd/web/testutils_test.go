@@ -2,7 +2,7 @@ package main
 
 import (
 	"html"
-	"io/ioutil"
+	"io"
 	"log"
 	"net/http"
 	"net/http/cookiejar"
@@ -36,8 +36,8 @@ func newTestApplication(t *testing.T) *application {
 	// the reason for mocking these and writing to ioutil.Discard is to avoid clogging
 	// up our test output with unnecessary log messages when we run go test -v.
 	return &application{
-		errorLog:      log.New(ioutil.Discard, "", 0),
-		infoLog:       log.New(ioutil.Discard, "", 0),
+		errorLog:      log.New(io.Discard, "", 0),
+		infoLog:       log.New(io.Discard, "", 0),
 		session:       session,
 		templateCache: templateCache,
 		snippets:      &mock.SnippetModel{},
@@ -73,7 +73,7 @@ func (ts *testServer) get(t *testing.T, urlPath string) (int, http.Header, []byt
 
 	defer rs.Body.Close()
 
-	body, err := ioutil.ReadAll(rs.Body)
+	body, err := io.ReadAll(rs.Body)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -107,7 +107,7 @@ func (ts *testServer) postForm(t *testing.T, urlPath string, form url.Values) (i
 	}
 	defer rs.Body.Close()
 
-	body, err := ioutil.ReadAll(rs.Body)
+	body, err := io.ReadAll(rs.Body)
 	if err != nil {
 		t.Fatal(err)
 	}

@@ -1,5 +1,5 @@
 // Package money provides various utilities to make it easy to manage money.
-package money
+package main
 
 // Money represents the combination of an amount of money
 // and the currency the money is in.

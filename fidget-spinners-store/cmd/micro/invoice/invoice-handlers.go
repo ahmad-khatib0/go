@@ -40,7 +40,7 @@ func (app *application) CreateAndSendInvoice(w http.ResponseWriter, r *http.Requ
 	}
 
 	// create mail attachment
-	attachments := []string {
+	attachments := []string{
 		fmt.Sprintf("./invoices/%d.pdf", order.ID),
 	}
 
@@ -51,7 +51,7 @@ func (app *application) CreateAndSendInvoice(w http.ResponseWriter, r *http.Requ
 		return
 	}
 
-	// send reponse
+	// send response
 	var resp struct {
 		Error   bool   `json:"error"`
 		Message string `json:"message"`
@@ -91,7 +91,7 @@ func (app *application) createInvoicePDF(order Order) error {
 	pdf.CellFormat(20, 8, fmt.Sprintf("%d", order.Quantity), "", 0, "C", false, 0, "")
 
 	pdf.SetX(185)
-	pdf.CellFormat(20, 8, fmt.Sprintf("$%.2f", float32(order.Amount / 100.0)), "", 0, "R", false, 0, "")
+	pdf.CellFormat(20, 8, fmt.Sprintf("$%.2f", float32(order.Amount/100.0)), "", 0, "R", false, 0, "")
 
 	invoicePath := fmt.Sprintf("./invoices/%d.pdf", order.ID)
 	err := pdf.OutputFileAndClose(invoicePath)

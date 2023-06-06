@@ -5,7 +5,7 @@ import (
 	"log"
 	"os"
 
-	"github.com/learning-go-book/formatter"
+	"github.com/ahmad-khatib0/go/idiomatic-approach-book/modules-packages-imports/formatter"
 	"github.com/shopspring/decimal"
 )
 

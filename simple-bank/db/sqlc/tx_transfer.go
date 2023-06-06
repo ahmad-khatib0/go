@@ -51,6 +51,11 @@ func (store *SQLStore) TransferTx(ctx context.Context, arg TransferTxParams) (Tr
 			return err
 		}
 
+		// NOTE: the best defense against deadlocks is to avoid them by making sure that our application always
+		// acquire locks in a consistent order.  For example, in our case, we can easily change our code so that
+		// it always updates the account with smaller ID first.  So here we check if arg.FromAccountID is less
+		// than arg.ToAccountID then the from-account should be updated before the to-account.
+		// Else, the to-account should be updated before the from-account.
 		if arg.FromAccountID < arg.ToAccountID {
 			result.FromAccount, result.ToAccount, err = addMoney(ctx, q, arg.FromAccountID, -arg.Amount, arg.ToAccountID, arg.Amount)
 		} else {
@@ -76,6 +81,7 @@ func addMoney(
 		Amount: amount1,
 	})
 	if err != nil {
+		// NOE: this syntax is like returning:  return account1, account2, err
 		return
 	}
 

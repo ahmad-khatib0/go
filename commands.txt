@@ -10,9 +10,12 @@ go mod graph                                         # list which dependencies a
 go mod edit -go 1.7                                  # change variety of things in the mod file, in a terminal manner
 go mod vendor                                        # git dependencies to a folder instead of from 
                                                        global go folder, this is like the node_modules , 
-go run -mod=vendor main.go                         # run from the vendor folder directlly 
-go run --race .                                    # check where you have race condetions 
-go list -m -versions github.com/learning-go-book/simpletax  #  see what versions of the module are available
+go run -mod=vendor main.go                           # run from the vendor folder directlly 
+go run --race .                                      # check where you have race condetions 
+
+go list -m -versions github.com/ahmad-khatib0/go/idiomatic-approach-book/simpletax  
+#  see what versions of the module are available
+
 go test -v -cover -coverprofile=c.out                # output test coverage to a file
 go tool cover -html=c.out                            # opens browser with coverage details 
 go test -bench=.                                     # run all benchmarks in a directory 

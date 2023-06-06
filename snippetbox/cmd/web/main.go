@@ -111,7 +111,7 @@ func main() {
 	// Ports 0-1023 are restricted and (typically) can only be used by services which have root privileges
 	infoLog.Printf("Starting server on :4000")
 	err = srv.ListenAndServeTLS("./tls/cert.pem", "./tls/key.pem")
-	// second param needs: Handler , and mux implement a Handler type also, so its staticfied
+	// second param needs: Handler , and mux implement a Handler type also, so its stratified
 
 	errorLog.Fatal(err)
 }

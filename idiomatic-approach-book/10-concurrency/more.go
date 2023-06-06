@@ -6,10 +6,6 @@ import (
 	"time"
 )
 
-func main() {
-
-}
-
 // Time Out Code
 
 func timeLimit() (int, error) {

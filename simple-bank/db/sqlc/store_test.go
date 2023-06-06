@@ -115,6 +115,8 @@ func TestTransferTx(t *testing.T) {
 	require.Equal(t, account2.Balance+int64(n)*amount, updatedAccount2.Balance)
 }
 
+// The idea is to have 5 transactions that send money from account 1 to account 2,
+// and another 5 transactions that send money in reverse direction, from account 2 to account 1.
 func TestTransferTxDeadlock(t *testing.T) {
 	store := NewStore(testDB)
 

@@ -1,4 +1,4 @@
-package dependencyInjection
+package main
 
 import (
 	"errors"
@@ -86,13 +86,13 @@ func NewSimpleLogic(l Logger, ds DataStore) SimpleLogic {
 }
 
 // Our controller needs business logic that says hello, so we define an interface for that:
-type Logic interface {
+type LogicInterface interface {
 	SayHello(userID string) (string, error)
 }
 
 type Controller struct {
 	l     Logger
-	logic Logic
+	logic LogicInterface
 }
 
 func (c Controller) HandleGreeting(w http.ResponseWriter, r *http.Request) {
@@ -107,14 +107,14 @@ func (c Controller) HandleGreeting(w http.ResponseWriter, r *http.Request) {
 	w.Write([]byte(message))
 }
 
-func NewController(l Logger, logic Logic) Controller {
+func NewController(l Logger, logic LogicInterface) Controller {
 	return Controller{
 		l:     l,
 		logic: logic,
 	}
 }
 
-func main() {
+func main1() {
 	// The main function is the only part of the code that knows what all the concrete types actually are.
 	// If we want to swap in different implementations, this is the only place that needs to change
 	l := LoggerAdapter(LogOutput)

@@ -11,22 +11,23 @@ sqlc generate
 │                        -- name: DeleteAccount :exec                          |
 | exec this means that this auto generated func doesn't return anything        │
 ╰──────────────────────────────────────────────────────────────────────────────╯
-      ──────────────────────────────── mysql ────────────────────────────
-    ╭─────────────────────────────────────────────────────────────── ------╮
-    │ select @@transaction_isolation   # mysql show isolation level        │
-    │ select @@global.transaction_isolation   # mysql show isolation level │
-    ╰───────────────────────────────────────────────────────────────-------╯
-          ╭──────────────────────────────────────────────────────────╮
-          │ set session transaction isolation level read uncommitted │
-          ╰──────────────────────────────────────────────────────────╯
- 
-     ──────────────────────────────── postgres ────────────────────────────
-                      ╭──────────────────────────────────╮
-                      │ show transaction isolation level │
-                      ╰──────────────────────────────────╯
-               ╭────────────────────────────────────────────────╮
-               │ set transaction isolation level repetable read │
-               ╰────────────────────────────────────────────────╯
+──────────────────────────────── mysql ────────────────────────────
+╭─────────────────────────────────────────────────────────────── ------╮
+│ select @@transaction_isolation   # mysql show isolation level        │
+│ select @@global.transaction_isolation   # mysql show isolation level │
+╰───────────────────────────────────────────────────────────────-------╯
+╭──────────────────────────────────────────────────────────╮
+│ set session transaction isolation level read uncommitted │
+╰──────────────────────────────────────────────────────────╯
+
+──────────────────────────────── postgres ────────────────────────────
+╭──────────────────────────────────╮
+│ show transaction isolation level │
+╰──────────────────────────────────╯
+╭────────────────────────────────────────────────╮
+│ set transaction isolation level repeatable read│
+╰────────────────────────────────────────────────╯
 
 Postgres uses a dependencies checking mechanism to detect potential read phenomena and stop them 
 by throwing out an error. MySQL, on the other hand, chooses to use locking mechanism to achieve similar result.
+

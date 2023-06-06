@@ -69,7 +69,7 @@ ALTER
     USER 'web'@'localhost' IDENTIFIED BY 'pass';
 
 ┌────────────┐
-  Templating 
+  Templates 
 └────────────┘
 {{with .Foo}} C1 {{else}} C2 {{end}}
 - If .Foo is not empty, then set dot to the value of .Foo and render the content C1, otherwise render the content C2.

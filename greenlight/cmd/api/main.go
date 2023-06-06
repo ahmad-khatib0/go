@@ -166,5 +166,3 @@ func openDB(cfg config) (*sql.DB, error) {
 
 	return db, nil
 }
-
-// Return the sql.DB connection pool.
