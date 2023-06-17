@@ -20,6 +20,9 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
+// eqCreateUserParamsMatcher is a custom implementation of a matcher
+// this created to solve the problem of having same two identical passwords that
+// return completely two different hashes in TestCreateUserAPI and createUser
 type eqCreateUserParamsMatcher struct {
 	arg      db.CreateUserParams
 	password string

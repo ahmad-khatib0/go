@@ -114,7 +114,7 @@ func TestConfig_SubscribeToPlan(t *testing.T) {
 		Active:    1,
 	})
 
-	handler := http.HandlerFunc(testApp.SubcribeToPlan)
+	handler := http.HandlerFunc(testApp.SubscribeToPlan)
 	handler.ServeHTTP(rr, req)
 
 	testApp.Wait.Wait()

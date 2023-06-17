@@ -1,13 +1,19 @@
 {
   "cSpell.words": [
+    "bigserial",
     "GOPATH",
     "GOROOT",
     "Greenlight",
     "khatib0",
+    "middlewares",
+    "Paylaod",
     "signup",
+    "snippetbox",
     "struct",
     "structs",
     "subslice",
-    "subslices"
+    "subslices",
+    "vigilate",
+    "websockets"
   ]
 }

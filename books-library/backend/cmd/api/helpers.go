@@ -19,7 +19,7 @@ func (app *application) readJSON(w http.ResponseWriter, r *http.Request, data in
 	}
 
 	err = dec.Decode(&struct{}{}) // make sure that Body only has a single Jason
-	// value, in other words, we don't want to separate Jason files in the same body
+	// value, in other words, we don't want to separate Json files in the same body
 	if err != io.EOF {
 		return errors.New("body must have a single json value ")
 	}
@@ -69,7 +69,7 @@ func (app *application) errorJSON(w http.ResponseWriter, err error, status ...in
 	var customError error
 	switch {
 	case strings.Contains(err.Error(), "SQLSTATE 23505"):
-		customError = errors.New("dublicate value violates constraints")
+		customError = errors.New("duplicate value violates constraints")
 		statusCode = http.StatusForbidden
 
 	case strings.Contains(err.Error(), "SQLSTATE 22001"):

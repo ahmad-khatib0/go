@@ -80,11 +80,11 @@ func main() {
 	go func() {
 		for {
 			// get a random number with average arrival rate
-			randomMillseconds := rand.Int() % (2 * arrivalRate)
+			randomMilliseconds := rand.Int() % (2 * arrivalRate)
 			select {
 			case <-shopClosing:
 				return
-			case <-time.After(time.Millisecond * time.Duration(randomMillseconds)):
+			case <-time.After(time.Millisecond * time.Duration(randomMilliseconds)):
 				shop.addClient(fmt.Sprintf("Client #%d", i))
 				i++
 			}

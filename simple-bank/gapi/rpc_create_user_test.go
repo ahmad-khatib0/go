@@ -195,6 +195,11 @@ func TestCreateUserAPI(t *testing.T) {
 		tc := testCases[i]
 
 		t.Run(tc.name, func(t *testing.T) {
+			// NOTE: we used two controllers here instead of one, because internally
+			// There’s a locking mechanism in the controller every time it checks for a matching function call.
+			// So when the CreateUserTx function is being checked for matching arguments, the mock
+			// controller will be locked, That’s why when we call the AfterCreate() callback function,
+			//  It can no longer acquire the lock to record the call to the mock task distributor.
 			storeCtrl := gomock.NewController(t)
 			defer storeCtrl.Finish()
 			store := mockdb.NewMockStore(storeCtrl)

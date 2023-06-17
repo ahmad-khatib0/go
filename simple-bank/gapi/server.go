@@ -12,6 +12,9 @@ import (
 
 // Server serves gRPC requests for our banking service.
 type Server struct {
+	// pb.UnimplementedSimpleBankServerIts main purpose is to enable forward compatibility, Which means that the
+	// server can already accept the calls to the CreateUser and LoginUser RPCs before they are
+	// actually implemented. Then we can gradually add their real implementations later.
 	pb.UnimplementedSimpleBankServer
 	config          util.Config
 	store           db.Store

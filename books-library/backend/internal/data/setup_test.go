@@ -14,8 +14,6 @@ import (
 	"github.com/ory/dockertest/v3/docker"
 )
 
-// IMPORTANT -- change the values below to ones that work for your system. The only value you should have to
-// worry about is port; if you have something using port 5433, change it to some other value (an unused port)
 var (
 	host     = "localhost"
 	user     = "postgres"
@@ -56,6 +54,7 @@ func TestMain(m *testing.M) {
 		},
 	}
 
+	// pulls an image, creates a container based on it and runs it
 	resource, err = pool.RunWithOptions(&opts)
 	if err != nil {
 		_ = pool.Purge(resource)

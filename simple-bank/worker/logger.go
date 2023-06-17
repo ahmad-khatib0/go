@@ -15,6 +15,7 @@ func NewLogger() *Logger {
 }
 
 func (logger *Logger) Print(level zerolog.Level, args ...interface{}) {
+	// sprint merges the interfaces as a string
 	log.WithLevel(level).Msg(fmt.Sprint(args...))
 }
 

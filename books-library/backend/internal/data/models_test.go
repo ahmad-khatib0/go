@@ -43,6 +43,6 @@ func TestBook_GetOneBySlug(t *testing.T) {
 
 	_, err = models.Book.GetOneBySlug("bad-slug")
 	if err == nil {
-		t.Error("did not get an error when attemting to fetch non existing book")
+		t.Error("did not get an error when attempting to fetch non existing book")
 	}
 }

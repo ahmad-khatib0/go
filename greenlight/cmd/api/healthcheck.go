@@ -4,7 +4,7 @@ import (
 	"net/http"
 )
 
-func (app *application) healthcheckHandler(w http.ResponseWriter, r *http.Request) {
+func (app *application) healthCheckHandler(w http.ResponseWriter, r *http.Request) {
 	// we're using a raw string literal (enclosed with backticks) We also use the %q verb to
 	// wrap the interpolated values in double-quotes.
 	// js := `{"status": "available", "environment": %q, "version": %q}`

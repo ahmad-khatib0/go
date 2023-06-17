@@ -2,7 +2,7 @@ package data
 
 import (
 	"context"
-	"crypto/sha256"
+	"crypto/sha512"
 	"database/sql"
 	"errors"
 	"time"
@@ -176,9 +176,9 @@ func ValidateUser(v *validator.Validator, user *User) {
 }
 
 func (m UserModel) GetForToken(tokenScope, tokenPlaintext string) (*User, error) {
-	// Calculate the SHA-256 hash of the plaintext token provided by the client.
+	// Calculate the SHA-512 hash of the plaintext token provided by the client.
 	// Remember that this returns a byte *array* with length 32, not a slice.
-	tokenHash := sha256.Sum256([]byte(tokenPlaintext))
+	tokenHash := sha512.Sum512([]byte(tokenPlaintext))
 	query := `SELECT 
 							users.id, 
 							users.created_at, 

@@ -19,7 +19,7 @@ import (
 // 	wg.Add(2)
 
 // 	go updateMessage("Hello universe")
-// 	go updateMessage("Hello cosoms")
+// 	go updateMessage("Hello cosmos")
 // 	wg.Wait()
 
 // 	fmt.Println(msg)
@@ -40,11 +40,11 @@ import (
 // func raceCondition() {
 // 	msg = "hello world"
 
-// 	var muxtex sync.Mutex
+// 	var mutex sync.Mutex
 // 	wg.Add(2)
 
-// 	go updateMessage("Hello universe", &muxtex)
-// 	go updateMessage("Hello cosoms", &muxtex)
+// 	go updateMessage("Hello universe", &mutex)
+// 	go updateMessage("Hello cosmos", &mutex)
 // 	wg.Wait()
 
 // 	fmt.Println(msg)

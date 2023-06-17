@@ -230,6 +230,14 @@ fmt.Printf("type: %T; value: %v\n", nString, nString)  # type: string; value: 10
 
 
 
+
+   1- Use json.Decoder if your data is coming from an io.Reader stream, or you need to decode multiple 
+      values from a stream of data.
+   2- Use json.Unmarshal if you already have the JSON data in memory.
+   
+For the case of reading from an HTTP request, pick json.Decoder since you're obviously reading from a stream.
+
+
 +---------------------------------------------------------------------------------------------------------+
 | "expvar" PACKAGE STATES                                                                                 |
 |                                                                                                         |

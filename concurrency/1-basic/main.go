@@ -6,7 +6,7 @@ import (
 )
 
 func printSomething(s string, wg *sync.WaitGroup) {
-	defer wg.Done() // &wg to decrease the number of 9 on each item by one
+	defer wg.Done() // Done to decrease the number of 9 on each item by one
 	fmt.Println(s)
 }
 

@@ -5,6 +5,8 @@ import "context"
 type CreateUserTxParams struct {
 	CreateUserParams
 	AfterCreate func(user User) error
+	// This function will be executed after the user is inserted, inside the same transaction.
+	// And its output error will be used to decide whether to commit or rollback the transaction.
 }
 
 type CreateUserTxResult struct {
@@ -22,6 +24,7 @@ func (store *SQLStore) CreateUserTx(ctx context.Context, arg CreateUserTxParams)
 			return err
 		}
 
+		// the transaction will be rolled back if the an error occurred  here or above
 		return arg.AfterCreate(result.User)
 	})
 

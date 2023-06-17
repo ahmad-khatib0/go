@@ -53,6 +53,9 @@ func main() {
 	}
 
 	taskDistributor := worker.NewRedisTaskDistributor(redisOpt)
+	// What we want is to be able to serve both gRPC and HTTP requests at the same time.  But we can’t just call
+	// both functions in the same go routine, Since the first server will block the second one.  So here if
+	// we run the gRPC server on the main go routine, Then we have to run the HTTP gateway server on another one.
 	go runTaskProcessor(config, redisOpt, store)
 	go runGatewayServer(config, store, taskDistributor)
 	runGrpcServer(config, store, taskDistributor)
@@ -88,8 +91,10 @@ func runGrpcServer(config util.Config, store db.Store, taskDistributor worker.Ta
 	}
 
 	gprcLogger := grpc.UnaryInterceptor(gapi.GrpcLogger)
-	grpcServer := grpc.NewServer(gprcLogger)
+	grpcServer := grpc.NewServer(gprcLogger) // you can add multiple interceptors
 	pb.RegisterSimpleBankServer(grpcServer, server)
+
+	// it allows the gRPC client to easily explore what RPCs are available on the server, and how to call them.
 	reflection.Register(grpcServer)
 
 	listener, err := net.Listen("tcp", config.GRPCServerAddress)
@@ -104,12 +109,14 @@ func runGrpcServer(config util.Config, store db.Store, taskDistributor worker.Ta
 	}
 }
 
+// runGatewayServer() start the grpc-gateway plugin
 func runGatewayServer(config util.Config, store db.Store, taskDistributor worker.TaskDistributor) {
 	server, err := gapi.NewServer(config, store, taskDistributor)
 	if err != nil {
 		log.Fatal().Err(err).Msg("cannot create server")
 	}
 
+	// these options added in order to keep the body response fields as snake_case
 	jsonOption := runtime.WithMarshalerOption(runtime.MIMEWildcard, &runtime.JSONPb{
 		MarshalOptions: protojson.MarshalOptions{
 			UseProtoNames: true,
@@ -129,7 +136,10 @@ func runGatewayServer(config util.Config, store db.Store, taskDistributor worker
 		log.Fatal().Err(err).Msg("cannot register handler server")
 	}
 
+	// This mux will actually receive HTTP requests from clients.  So in order to convert
+	// them into gRPC format, we will have to reroute them to the gRPC mux we created before.
 	mux := http.NewServeMux()
+	// Pass in a single slash as the first argument to cover all routes,
 	mux.Handle("/", grpcMux)
 
 	statikFS, err := fs.New()

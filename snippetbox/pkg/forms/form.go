@@ -31,14 +31,14 @@ func (f *Form) Required(fields ...string) {
 	}
 }
 
-func (f *Form) MaxLength(field string, maxLenght int) {
+func (f *Form) MaxLength(field string, maxLength int) {
 	value := f.Get(field)
 	if strings.TrimSpace(value) == "" {
 		return
 	}
 
-	if utf8.RuneCountInString(value) > maxLenght {
-		f.Errors.Add(field, fmt.Sprintf("This field is too long (max length is %d)", maxLenght))
+	if utf8.RuneCountInString(value) > maxLength {
+		f.Errors.Add(field, fmt.Sprintf("This field is too long (max length is %d)", maxLength))
 	}
 }
 

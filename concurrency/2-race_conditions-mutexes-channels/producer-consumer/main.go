@@ -10,7 +10,7 @@ import (
 
 // +------------------------------------------------------------------------------------------------+
 // | with mutex , once we use the go keyword, we can not to talk to that routine , we can only wait |
-// | for it to finishو, but with channels we can to talk to that routine, and exchange data with it |
+// | for it to finish, but with channels we can to talk to that routine, and exchange data with it |
 // +------------------------------------------------------------------------------------------------+
 
 const NumberOfPizzas = 10

@@ -162,7 +162,7 @@ func (app *Config) ActivateAccount(w http.ResponseWriter, r *http.Request) {
 	http.Redirect(w, r, "/login", http.StatusSeeOther)
 }
 
-func (app *Config) SubcribeToPlan(w http.ResponseWriter, r *http.Request) {
+func (app *Config) SubscribeToPlan(w http.ResponseWriter, r *http.Request) {
 	// get the id of the plan that is chosen
 	id := r.URL.Query().Get("id")
 

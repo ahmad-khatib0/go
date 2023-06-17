@@ -15,7 +15,8 @@ type JWTMaker struct {
 	secretKey string
 }
 
-// NewJWTMaker creates a new JWTMaker
+// NewJWTMaker creates a new JWTMaker ,, By returning the interface, we will make sure
+// that our JWTMaker must implement the token maker interface.
 func NewJWTMaker(secretKey string) (Maker, error) {
 	if len(secretKey) < minSecretKeySize {
 		return nil, fmt.Errorf("invalid key size: must be at least %d characters", minSecretKeySize)
@@ -37,8 +38,14 @@ func (maker *JWTMaker) CreateToken(username string, duration time.Duration) (str
 
 // VerifyToken checks if the token is valid or not
 func (maker *JWTMaker) VerifyToken(token string) (*Payload, error) {
+
+	// What is a key function? basically, it’s a function that receives the parsed but unverified token,
+	// You should verify its header to make sure that the signing algorithm matches with what you normally
+	// use to sign the tokens.  Then if it matches, you return the key so that jwt-go can use it to verify
+	// the token.  This step is very important to prevent the trivial attack mechanism
 	keyFunc := func(token *jwt.Token) (interface{}, error) {
 		_, ok := token.Method.(*jwt.SigningMethodHMAC)
+		//the algorithm of the token doesn’t match with our signing algorithm
 		if !ok {
 			return nil, ErrInvalidToken
 		}

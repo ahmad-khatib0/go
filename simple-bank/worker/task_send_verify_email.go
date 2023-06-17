@@ -13,6 +13,8 @@ import (
 
 const TaskSendVerifyEmail = "task:send_verify_email"
 
+// PayloadSendVerifyEmail This struct will contain all data of the task that we want
+// to store in Redis, And later, the worker will be able to retrieve it from the queue.
 type PayloadSendVerifyEmail struct {
 	Username string `json:"username"`
 }
@@ -28,6 +30,7 @@ func (distributor *RedisTaskDistributor) DistributeTaskSendVerifyEmail(
 	}
 
 	task := asynq.NewTask(TaskSendVerifyEmail, jsonPayload, opts...)
+	// send this task to a redis queue
 	info, err := distributor.client.EnqueueContext(ctx, task)
 	if err != nil {
 		return fmt.Errorf("failed to enqueue task: %w", err)
@@ -39,6 +42,8 @@ func (distributor *RedisTaskDistributor) DistributeTaskSendVerifyEmail(
 }
 
 func (processor *RedisTaskProcessor) ProcessTaskSendVerifyEmail(ctx context.Context, task *asynq.Task) error {
+	// Asynq has already taken care of the core part, which is pulling the task from Redis,
+	// And feed it to the background worker to process it via the task parameter of this handler function.
 	var payload PayloadSendVerifyEmail
 	if err := json.Unmarshal(task.Payload(), &payload); err != nil {
 		return fmt.Errorf("failed to unmarshal payload: %w", asynq.SkipRetry)

@@ -15,6 +15,7 @@ const (
 	QueueDefault  = "default"
 )
 
+// TaskProcessor the task processor. It will pick up the tasks from the Redis queue and process them.
 type TaskProcessor interface {
 	Start() error
 	ProcessTaskSendVerifyEmail(ctx context.Context, task *asynq.Task) error
@@ -55,6 +56,7 @@ func NewRedisTaskProcessor(redisOpt asynq.RedisClientOpt, store db.Store, mailer
 func (processor *RedisTaskProcessor) Start() error {
 	mux := asynq.NewServeMux()
 
+	// resister teh task
 	mux.HandleFunc(TaskSendVerifyEmail, processor.ProcessTaskSendVerifyEmail)
 
 	return processor.server.Start(mux)

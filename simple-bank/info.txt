@@ -31,3 +31,35 @@ sqlc generate
 Postgres uses a dependencies checking mechanism to detect potential read phenomena and stop them 
 by throwing out an error. MySQL, on the other hand, chooses to use locking mechanism to achieve similar result.
 
+
+
+what is the google directory in the proto folder? 
+If you are using protoc to generate stubs, you need to ensure the required dependencies are available
+   to the compiler at compile time. These can be found by manually cloning and copying the relevant 
+   files from the googleapis repository, and providing them to protoc when running. The files you will need are:
+   google/api/annotations.proto
+   google/api/field_behavior.proto
+   google/api/http.proto
+   google/api/httpbody.proto
+
+working with the grpc-gateway: 
+1- add the tools directory and the proto/google directory  
+2- define the structure of the request as shown in the service_simple_bank.proto
+3- register the setup options as shown in the main file,
+4- run the make proto process
+5- now the serve will handle calls from http clients or grpc clients at the same time
+
+generate api documentation 
+1- clone the swagger-ui repo 
+2- copy all dist files to doc/swagger
+3- update swagger-initializer.js to point to the generated yaml api file
+4- register a static file server to point to this folder
+
+
+Embed static front-end files inside Golang backend server's binary using statik
+1- add the path to the tools file
+2- add the command to proto make
+3- import the doc/statik (the generated folder) to the main file,
+4- register it in the main func as a fileServer and visit localhost/swagger
+5- add an option field that contains a summary and description of the api endpoints in service_simple_bank file
+
