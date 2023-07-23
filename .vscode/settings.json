@@ -3,6 +3,7 @@
     "bigserial",
     "GOPATH",
     "GOROOT",
+    "GOSTRIPE",
     "Greenlight",
     "khatib0",
     "middlewares",
@@ -14,6 +15,7 @@
     "subslice",
     "subslices",
     "vigilate",
+    "waitgroup",
     "websockets"
   ]
 }
