@@ -9,7 +9,7 @@ func main() {
 
 	// var fruitList = []string{} //or
 	var fruitList = []string{"tomatoes", "peach", "apple"}
-	fmt.Printf("the value of slice is: %T", fruitList) //string[]
+	fmt.Printf("the value of slice is: %T \n", fruitList) //string[]
 
 	fruitList = append(fruitList, "Banana", "Mango") // add
 	fmt.Println("value is now after adding is: ", fruitList)
