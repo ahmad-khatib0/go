@@ -13,8 +13,7 @@ type singletonDatabase struct {
 	capitals map[string]int
 }
 
-func (db *singletonDatabase) GetPopulation(
-	name string) int {
+func (db *singletonDatabase) GetPopulation(name string) int {
 	return db.capitals[name]
 }
 
@@ -66,7 +65,7 @@ func readData(path string) (map[string]int, error) {
 func GetTotalPopulation(cities []string) int {
 	result := 0
 	for _, city := range cities {
-		result += GetSingletonDatabase().GetPopulation(city)
+		result += GetSingletonDatabase().GetPopulation(city) // DIP situation
 	}
 	return result
 }

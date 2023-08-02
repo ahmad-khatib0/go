@@ -13,8 +13,7 @@ type singletonDatabase struct {
 	capitals map[string]int
 }
 
-func (db *singletonDatabase) GetPopulation(
-	name string) int {
+func (db *singletonDatabase) GetPopulation(name string) int {
 	return db.capitals[name]
 }
 
