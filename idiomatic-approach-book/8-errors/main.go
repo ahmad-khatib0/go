@@ -59,7 +59,7 @@ func main() {
 		fmt.Println(coder.Code())
 	}
 
-	// doPanic(os.Args[0]) // prints stacketrace
+	// doPanic(os.Args[0]) // prints stacktrace
 	for _, val := range []int{1, 2, 0, 6} {
 		div60Recover(val) //  60 \n 30 \n runtime error: integer divide by zero \n 10
 	}

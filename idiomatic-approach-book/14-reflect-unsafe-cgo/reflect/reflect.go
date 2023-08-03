@@ -140,7 +140,7 @@ func checkIfInterfaceValueIsNil() {
 }
 
 // using reflect to make filtering function
-func Filterering(slice interface{}, filter interface{}) interface{} {
+func Filtering(slice interface{}, filter interface{}) interface{} {
 	sv := reflect.ValueOf(slice)
 	fv := reflect.ValueOf(filter)
 
