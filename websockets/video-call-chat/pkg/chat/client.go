@@ -50,6 +50,7 @@ func (c *Client) readPump() {
 			if websocket.IsUnexpectedCloseError(err, websocket.CloseGoingAway, websocket.CloseAbnormalClosure) {
 				log.Printf("error websocket connection:  %v", err)
 			}
+			break
 		}
 
 		msg = bytes.TrimSpace(bytes.Replace(msg, newLine, space, -1))

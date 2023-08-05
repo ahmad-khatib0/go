@@ -15,7 +15,7 @@ self.addEventListener('install', (e) => {
         '/font/v.woff2',
         '/stylesheets/main.css',
         '/stylesheets/fonts.css',
-        '/stylesheets/bulma/css/bulma.min.css',
+        // '/stylesheets/bulma/css/bulma.min.css',
       ])
     })
   )
