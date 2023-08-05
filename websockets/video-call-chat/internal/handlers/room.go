@@ -8,8 +8,8 @@ import (
 
 	"github.com/ahmad-khatib0/go/websockets/video-call-chat/pkg/chat"
 	w "github.com/ahmad-khatib0/go/websockets/video-call-chat/pkg/webrtc"
-	"github.com/gofiber/contrib/websocket"
 	"github.com/gofiber/fiber/v2"
+	"github.com/gofiber/websocket/v2"
 	"github.com/google/uuid"
 	"github.com/pion/webrtc/v3"
 )
