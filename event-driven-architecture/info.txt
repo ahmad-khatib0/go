@@ -1,0 +1,81 @@
+Three different uses or patterns exist that can be called EDA individually or altogether, as follows:
+  • Event notifications
+  • Event-carried state transfer
+  • Event sourcing
+
+
+-- Queues are referred to by a variety of terms, including bus, channel, stream, topic, and others. The
+    exact term given to a queue will depend on its use, purpose, and sometimes vendor. Because events
+    are frequently—but not always—organized in a first-in, first-out (FIFO) fashion,
+
+Message queues
+  The defining characteristic of a message queue is its lack of event retention. All events put into a
+  message queue have a limited lifetime. After the events have been consumed or have expired, they are discarded.
+
+
+
+The complexity of the problem domain can be reduced by breaking the domain into subdomains so
+  that we’re dealing with more manageable chunks of the problem. Each new domain we identify falls
+  into one of three types:
+
+  • Core domains: Critical components of the application that are unique or provide a competitive
+      advantage to the business. These get the most focus, the most money, and the best developers.
+      A core domain is not always obvious and can evolve or change with the business.
+
+  • Supporting domains: The utility components that provide functionality that supports the
+      core business. You might consider using an off-the-shelf solution if what is being provided and
+      developed by a team is not specific enough to the business.
+
+  • Generic domains: Components that are unrelated to the core business but necessary for it to
+      function. Email, payment processing, reporting, and other common commodity solutions fall
+      into this domain type. It wouldn’t make sense to devote teams to develop this functionality
+      when so many solutions exist.
+
+
+••Upstream patterns:
+ Open host service: This context provides an exposed contract that downstream contexts may connect to
+ 
+ Event publisher: This context publishes integration events that downstream contexts may subscribe to
+ 
+Midway patterns:
+ Shared kernel: Two teams share a subset of the domain model and maybe the database.
+ 
+ Published language: A good document shared language to translate models between contexts.
+   It is often combined with an open host service.
+
+ Separate ways: Contexts that have no connections because integration is too expensive.
+ 
+ Partnership: A cooperative relationship between two contexts with joint management of the integration.
+ 
+• Downstream patterns:
+   Customer/supplier: A relationship where the downstream context may veto or negotiate changes to the upstream context
+ 
+   Conformist: The downstream service is coupled with the upstream context’s model
+   
+   Anticorruption layer: A layer to isolate the downstream context from changes in the upstream context’s model
+
+
+
+When to consider CQRS
+Let’s explore the points while considering CQRS:
+
+• Your system experiences a much larger amount of read operations than write operations. Using CQRS 
+    allows you to break the operations into different services, allowing them to be scaled independently.
+    
+• Security is applied differently for writes and reads; it also limits what data is viewable.
+
+• You are using event-driven patterns such as event sourcing. By publishing the events used
+   for your event-sourced models, you can generate as many projections as necessary to handle your queries.
+
+• You have complex read patterns that bloat or complicate the model. Moving read models out
+   of the domain model allows you to optimize the read models or the storage used for each access pattern
+
+• You want the data to be available when writing is not possible. Whether by choice or not, having
+   the reads work when the writes are disabled allows the state of the application to still be returned.
+
+
+• /root/internal: This package can be imported by /root and any package found in the
+    directory tree under it.
+• /root/pkg-b/internal: This package may only be imported by /root/pkg-b and
+    any package found in the directory tree under it. Both /root and /root/pkg-a will not
+    be permitted to use any imports from this package.

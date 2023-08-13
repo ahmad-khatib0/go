@@ -1,0 +1,80 @@
+-- cloud native applications are more than just applications that happen to live in a cloud. 
+   They’re also scalable, loosely coupled, resilient, manageable, and observable. 
+
+Vertical scaling
+    A system can be vertically scaled (or scaled up) by upsizing (or downsizing) the hardware resources 
+    that are already allocated to it. For example, by adding memory or CPU to a database that’s running 
+    on a dedicated computing instance. Vertical scaling has the benefit of being technically relatively 
+    straightforward, but any given instance can only be upsized so much.
+
+Horizontal scaling
+    A system can be horizontally scaled (or scaled out) by adding (or removing) service instances. 
+    For example, this can be done by increasing the number of service nodes behind a load balancer 
+    or containers in Kubernetes, or another container orchestration system. This strategy has a 
+    number of advantages, including redundancy and freedom from the limits of available instance 
+    sizes. However, more replicas mean greater design and management complexity, and not all services
+    can be horizontally scaled.
+
+
+• The resilience of a system is the degree to which it can continue to operate cor‐
+    rectly in the face of errors and faults. Resilience, along with the other four cloud
+    native properties, is just one factor that contributes to reliability.
+• The reliability of a system is its ability to behave as expected for a given time
+    interval. Reliability, in conjunction with attributes like availability and maintain‐
+    ability, contributes to a system’s overall dependability.
+
+• Manageability describes the ease with which changes can be made to the behavior of 
+    a running system, up to and including deploying (and redeploying) components of 
+    that system. It’s how easy it is to make changes from the outside.
+• Maintainability describes the ease with which changes can be made to a system’s
+    underlying functionality, most often its code. It’s how easy it is to make changes from the inside.
+
+
+-- Features for a Cloud Native World
+   Low program comprehensibility
+      Code had become too hard to read. Unnecessary bookkeeping and repetition was
+      compounded by functionally overlapping features that often encouraged cleverness over clarity.
+   Slow builds
+      Language construction and years of feature creep resulted in build times that ran
+      for minutes or hours, even on large build clusters.
+   Inefficiency
+      Many programmers responded to the aforementioned problems by adopting
+      more fluid, dynamic languages, effectively trading efficiency and type safety for expressiveness.
+   High cost of updates
+      Incompatibilities between even minor versions of a language, as well as any
+      dependencies it may have (and its transitive dependencies!) often made updating an exercise in frustration.
+
+
+• Parallelism describes the simultaneous execution of multiple independent processes.
+• Concurrency describes the composition of independently executing processes; it
+    says nothing about when processes will execute.
+
+-- For example, building all 1.8 million lines11 of Go in Kubernetes v1.20.2 on a MacBook Pro with 
+   a 2.4 GHz 8-Core Intel i9 processor and 32 GB of RAM required about 45 seconds of real time:
+
+
+
+func Background() Context
+    Returns an empty Context that’s never cancelled, has no values, and has no
+    deadline. It is typically used by the main function, initialization, and tests, and as
+    the top-level Context for incoming requests.
+
+func TODO() Context
+    Also provides an empty Context, but it’s intended to be used as a placeholder
+    when it’s unclear which Context to use or when a parent Context is not yet available.
+
+-- Defining Context Deadlines and Timeouts
+
+func WithDeadline(Context, time.Time) (Context, CancelFunc)
+   Accepts a specific time at which the Context will be cancelled and the Done channel will be closed.
+   
+func WithTimeout(Context, time.Duration) (Context, CancelFunc)
+   Accepts a duration after which the Context will be cancelled and the Done channel will be closed.
+   
+func WithCancel(Context) (Context, CancelFunc)
+   Unlike the previous functions, WithCancel accepts nothing, and only returns a
+   function that can be called to explicitly cancel the Context.
+
+All three of these functions return a derived Context that includes any requested dec‐
+    oration, and a context.CancelFunc, a zero-parameter function that can be called to
+    explicitly cancel the Context and all of its derived values.
