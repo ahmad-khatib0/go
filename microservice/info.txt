@@ -1,0 +1,112 @@
+ ╔═════════════════════════════════════════════════════════════╗
+ ║ Microservices provide the following benefits to developers: ║
+ ╚═════════════════════════════════════════════════════════════╝
+  Faster compilation and build time: Faster build and compilation time may play a key role in
+  speeding up all development processes.
+
+Faster deployments, lower deployable size: When each part of the system is deployed separately,
+  the deployable size can get so significantly smaller that individual deployments can take just a
+  fraction of the time compared to monolithic applications.
+
+Custom deployment cadence: The microservice model solves the problem of following a custom
+  deployment schedule. Each service can be deployed independently and follow its own schedule.
+
+Custom deployment monitoring: Some services can perform more critical roles in the system
+  than others and may require more fine-grained monitoring and extra checks.
+
+Independent and configurable automated testing: Services may be configured to perform
+  different automated tests as a part of the build and deployment pipeline. Additionally, the scope
+
+of checks can be reduced for individual microservices, that is, we don't need to perform tests for
+  the entire application, which may take longer.
+
+Cross-language support: It is no longer required to run an application as a single executable,
+  so it is possible to implement different parts of the system using different technologies, finding
+  the best fit for each problem.
+
+Simpler APIs: Fine-grained APIs are one of the key aspects of microservice development and
+  having clear and efficient APIs helps to enforce the right composition of the system.
+
+Horizontal scaling: Microservices are easier and often cheaper to scale horizontally. Monolithic
+  applications are usually resource-heavy and running them on numerous instances could be
+  quite expensive due to high hardware requirements. Microservices, however, can be scaled
+  independently. So, if a particular part of the system requires running on hundreds or thousands
+  of servers, other parts don't need to follow the same requirements.
+
+Hardware flexibility: Splitting an application often means reducing the hardware requirements
+  for most parts of the system. It provides more flexibility in choosing the hardware or cloud
+  providers to execute applications.
+
+Fault isolation: Service decoupling provides an efficient safety mechanism to prevent major
+  issues on partial system failures.
+  Understandability: Services are easier to understand and maintain due to lower code base sizes.
+  Cost optimization: Running most application components on lower-grade instances compared
+  to expensive high-resource monolithic instances may result in significant cost savings for the company.
+
+Distributed development: Removing the coupling between the components helps achieve more
+  independence in code development, which can play an important role in distributed teams.
+  Ease of refactoring: In general, it is much easier to perform refactoring for microservices due
+  to the lower scope of changes and independent release and testing processes, which helps detect
+  possible issues and reduce the scope of failures.
+  
+Technological freedom: With microservice architecture, it is much easier to switch to new
+  technologies given that each service is smaller in size and is structurally independent of the
+  others. This can play a key role in companies with an open and experimental development culture, 
+  helping find the right solutions for particular problems and keep their technological stack up to date.
+
+Independent decision-making: Developers are free to choose programming languages,
+  libraries, and tools that fit their needs the best. This does not, however, imply that there should
+  be no standardization, but it is often highly beneficial to achieve a certain degree of freedom
+  for distributed decision-making.
+    
+Removing unnecessary dependencies: It is easy to miss detecting unwanted dependencies
+  between the components of a monolithic application given the tighter coupling of the components.
+  Microservice architecture helps you notice unwanted dependencies between components and
+  restricts the use of certain services to particular parts of the application.
+
+
+ ╔════════════════════════════════╗
+ ║ Common issues of microservices ║
+ ╚════════════════════════════════╝
+
+Higher resource overhead: When an application consists of multiple components, instead of
+  sharing the same process space, there is a need to communicate between the components that
+  involve higher network use. This puts more load on the entire system and increases traffic, latency,
+  and I/O usage. In addition, the total CPU and RAM are also higher due to the extra overhead of
+  running each component separately.
+
+Debugging difficulty: Troubleshooting and debugging are often more difficult when you deal
+  with multiple services. For example, if multiple services process a request that fails, a developer
+  needs to access the logs of multiple services in order to understand what caused the failure.
+
+Integration testing: Separating a system requires building a large set of integration tests and
+  other automated checks that would monitor the compatibility and availability of each component.
+
+Consistency and transactions: In microservice applications, the data is often scattered across the
+  system. While this helps to separate the independent parts of the application, it makes it harder
+  to do transactional and atomic changes in the system.
+
+Divergence: Different services may use different versions of libraries, which may include
+  incompatible or outdated ones. Divergence makes it harder to perform system upgrades and
+  resolve various issues, including software vulnerability fixes.
+
+Tech debt addressability: It is much harder to address tech debt in a distributed system where
+  each component is owned by a different team.
+
+Observability: Managing multiple applications brings additional challenges in collecting and
+  using the system events and messages, including logs, traces, and metrics. Developers need
+  to make sure all such signals are collected for all applications and are available for analysis,
+  including all necessary contextual information to debug any issues and locate the root cause
+  of the issue among the target services.
+
+Possible duplication, overlapping functionality: In a highly distributed development environment,
+  it is not uncommon to have multiple components performing similar roles in the system. It is
+  important to set clear boundaries within the system and decide in advance which particular roles
+  the components are assigned.
+
+Ownership and accountability: Ownership becomes a major aspect of the development process
+  when there are many different teams maintaining and developing independent components.
+  It is crucial to define clear ownership contracts to address the development requests, security
+  and support issues, and all other types of maintenance work.
+
+  
