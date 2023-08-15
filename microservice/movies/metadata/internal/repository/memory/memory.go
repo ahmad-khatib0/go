@@ -5,7 +5,7 @@ import (
 	"sync"
 
 	"github.com/ahmad-khatib0/go/microservice/movies/metadata/internal/repository"
-	model "github.com/ahmad-khatib0/go/microservice/movies/metadata/pkg"
+	model "github.com/ahmad-khatib0/go/microservice/movies/metadata/pkg/model"
 )
 
 // Repository defines a memory movie metadata repository.

@@ -4,7 +4,7 @@ import (
 	"context"
 
 	"github.com/ahmad-khatib0/go/microservice/movies/rating/internal/repository"
-	model "github.com/ahmad-khatib0/go/microservice/movies/rating/pkg"
+	model "github.com/ahmad-khatib0/go/microservice/movies/rating/pkg/model"
 )
 
 // Repository defines a rating repository.

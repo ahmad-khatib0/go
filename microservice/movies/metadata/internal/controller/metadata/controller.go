@@ -5,7 +5,7 @@ import (
 	"errors"
 
 	"github.com/ahmad-khatib0/go/microservice/movies/metadata/internal/repository"
-	model "github.com/ahmad-khatib0/go/microservice/movies/metadata/pkg"
+	model "github.com/ahmad-khatib0/go/microservice/movies/metadata/pkg/model"
 )
 
 // ErrNotFound is returned when a requested record is not found.
