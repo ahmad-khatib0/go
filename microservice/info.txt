@@ -110,3 +110,22 @@ Ownership and accountability: Ownership becomes a major aspect of the developmen
   and support issues, and all other types of maintenance work.
 
   
+
+In general, service discovery addresses multiple problems, as follows:
+  • How to discover the instance(s) of a particular service
+  • How to add and remove instances of service in a discoverable environment
+  • How to handle the issue when instances become unresponsive
+
+
+For the applications, there are two ways of interacting with the registry:
+
+• Client-side service discovery: Access the registry directly from the application using a registry client.
+
+• Server-side service discovery: Access the registry indirectly via a load balancer, a special server
+  that forwards requests to available instances.
+
+
+-- Service health monitoring: 
+   The registry keeps the information about the instances up to date either via a pull or a push model:
+    • Pull model: The service registry periodically performs a health check for each known instance.
+    • Push model: The application renews its status by contacting the registry.
