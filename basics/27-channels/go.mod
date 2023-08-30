@@ -1,3 +1,3 @@
-module github.com/ahmad-khatib0/go/basics/go/basics/channels
+module github.com/ahmad-khatib0/go/basics/27-channels
 
 go 1.19

@@ -5,7 +5,7 @@ import (
 	"log"
 	"net/http"
 
-	"github.com/ahmad-khatib0/go/basics/mongo/router"
+	"github.com/ahmad-khatib0/go/basics/24-mongo/router"
 )
 
 func main() {

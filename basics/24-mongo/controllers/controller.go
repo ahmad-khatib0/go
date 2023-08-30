@@ -8,7 +8,7 @@ import (
 	"net/http"
 	"os"
 
-	model "github.com/ahmad-khatib0/go/basics/mongo/models"
+	model "github.com/ahmad-khatib0/go/basics/24-mongo/model"
 	"github.com/gorilla/mux"
 	"github.com/joho/godotenv"
 	"go.mongodb.org/mongo-driver/bson"
