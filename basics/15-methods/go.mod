@@ -1,3 +1,3 @@
 module github.com/ahmad-khatib0/go/basics/15-methods
 
-go 1.19
+go 1.21

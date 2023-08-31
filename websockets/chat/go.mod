@@ -1,6 +1,6 @@
 module ws
 
-go 1.19
+go 1.21
 
 require (
 	github.com/CloudyKit/jet/v6 v6.2.0

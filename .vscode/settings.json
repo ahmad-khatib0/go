@@ -17,5 +17,6 @@
     "vigilate",
     "waitgroup",
     "websockets"
-  ]
+  ],
+  "cSpell.enableFiletypes": ["go.mod"]
 }
