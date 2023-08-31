@@ -153,7 +153,7 @@ func (app *application) background(fn func()) {
 	go func() {
 		defer app.wg.Done()
 
-		// Recover any panic. that may occurres by long code, or third party packages
+		// Recover any panic. that may be occurred by long code, or third party packages
 		// instead of terminating the application
 		defer func() {
 			if err := recover(); err != nil {

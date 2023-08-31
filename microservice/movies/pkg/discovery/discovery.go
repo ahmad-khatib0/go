@@ -11,7 +11,7 @@ import (
 // Registry defines a service registry.
 type Registry interface {
 	// Register creates a service instance record in the registry.
-	Register(ctx context.Context, instanceID string, serviceName string, hostPort string) error
+	Registr(ctx context.Context, instanceID string, serviceName string, hostPort string) error
 	// Deregister removes a service insttance record from the registry.
 	Deregister(ctx context.Context, instanceID string, serviceName string) error
 	// ServiceAddresses returns the list of addresses of active instances of the given service.
