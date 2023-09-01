@@ -2,7 +2,11 @@ module github.com/ahmad-khatib0/go/microservice/movies
 
 go 1.21
 
-require github.com/hashicorp/consul/api v1.24.0
+require (
+	github.com/golang/protobuf v1.5.0
+	github.com/hashicorp/consul/api v1.24.0
+	google.golang.org/protobuf v1.31.0
+)
 
 require (
 	github.com/armon/go-metrics v0.4.1 // indirect
