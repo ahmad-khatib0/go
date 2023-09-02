@@ -172,3 +172,12 @@ For the applications, there are two ways of interacting with the registry:
 ••Generated code is often harder to use: In formats such as Protocol Buffers, all fields are always
     optional. In generated code, this results in lots of fields that can have nil values. For an application
     developer, this means doing more nil checks across all applications to prevent possible panics.
+
+
+
+• Transaction support: Many databases support transactions – types of data changes – that have
+   the following properties, abbreviated as ACID:
+   --  Atomicity: A change either happens entirely or does not happen at all
+   --  Consistency: A change brings a database from one valid state to another
+   --  Isolation: Concurrent changes get executed as they were executed sequentially
+   --  Durability: All changes get persisted

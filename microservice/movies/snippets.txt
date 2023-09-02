@@ -1,0 +1,16 @@
+docker run 
+   --name movieexample_db 
+  -e MYSQL_ROOT_PASSWORD=password 
+  -e MYSQL_DATABASE=movieexample 
+  -p 3306:3306
+  -d mysql:latest
+
+
+docker exec -i movieexample_db mysql movieexample \
+   -h localhost \
+   -P 3306 \
+   --protocol=tcp \
+   -uroot -ppassword < schema/schema.sql
+
+docker exec -i movieexample_db mysql movieexample -h localhost -P 3306 \ 
+   --protocol=tcp -uroot -ppassword -e "SHOW tables"
