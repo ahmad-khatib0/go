@@ -5,14 +5,17 @@ import (
 	"flag"
 	"fmt"
 	"log"
-	"net/http"
+	"net"
 	"time"
 
+	"github.com/ahmad-khatib0/go/microservice/movies/gen"
 	"github.com/ahmad-khatib0/go/microservice/movies/pkg/discovery"
 	"github.com/ahmad-khatib0/go/microservice/movies/pkg/discovery/consul"
-	controller "github.com/ahmad-khatib0/go/microservice/movies/rating/internal/controller/rating"
-	httphandler "github.com/ahmad-khatib0/go/microservice/movies/rating/internal/handler/http"
+	"github.com/ahmad-khatib0/go/microservice/movies/rating/internal/controller/rating"
+	grpchandler "github.com/ahmad-khatib0/go/microservice/movies/rating/internal/handler/grpc"
 	"github.com/ahmad-khatib0/go/microservice/movies/rating/internal/repository/memory"
+	"google.golang.org/grpc"
+	"google.golang.org/grpc/reflection"
 )
 
 const serviceName = "rating"
@@ -36,23 +39,28 @@ func main() {
 
 	go func() {
 		for {
-			if err := registry.
-				ReportHealthyState(instanceID, serviceName); err != nil {
+			if err := registry.ReportHealthyState(instanceID, serviceName); err != nil {
 				log.Println("Failed to report healthy state: " + err.Error())
 			}
 			time.Sleep(1 * time.Second)
 		}
 	}()
-
 	defer registry.Deregister(ctx, instanceID, serviceName)
 
 	repo := memory.New()
-	svc := controller.New(repo)
-	h := httphandler.New(svc)
+	ctrl := rating.New(repo)
+	h := grpchandler.New(ctrl)
 
-	http.Handle("/rating", http.HandlerFunc(h.Handle))
-	if err := http.ListenAndServe(fmt.Sprintf(":%d",
-		port), nil); err != nil {
+	lis, err := net.Listen("tcp", fmt.Sprintf("localhost:%v", port))
+	if err != nil {
+		log.Fatalf("failed to listen: %v", err)
+	}
+
+	srv := grpc.NewServer()
+	reflection.Register(srv)
+
+	gen.RegisterRatingServiceServer(srv, h)
+	if err := srv.Serve(lis); err != nil {
 		panic(err)
 	}
 }
