@@ -2,14 +2,15 @@ package main
 
 import (
 	"context"
-	"flag"
 	"fmt"
 	"log"
 	"net"
+	"os"
 	"time"
 
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/reflection"
+	"gopkg.in/yaml.v2"
 
 	"github.com/ahmad-khatib0/go/microservice/movies/gen"
 	"github.com/ahmad-khatib0/go/microservice/movies/movie/internal/controller/movie"
@@ -24,9 +25,17 @@ import (
 const serviceName = "movie"
 
 func main() {
-	var port int
-	flag.IntVar(&port, "port", 8083, "API handler port")
-	flag.Parse()
+	f, err := os.Open("base.yaml")
+	if err != nil {
+		panic(err)
+	}
+
+	var cfg config
+	if err := yaml.NewDecoder(f).Decode(&cfg); err != nil {
+		panic(err)
+	}
+
+	port := cfg.API.Port
 	log.Printf("Starting the movie service on port %d", port)
 
 	registry, err := consul.NewRegistry("localhost:8500")
