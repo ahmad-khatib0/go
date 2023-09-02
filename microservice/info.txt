@@ -129,3 +129,46 @@ For the applications, there are two ways of interacting with the registry:
    The registry keeps the information about the instances up to date either via a pull or a push model:
     • Pull model: The service registry periodically performs a health check for each known instance.
     • Push model: The application renews its status by contacting the registry.
+
+
+
+-- Best practices for serialization
+   •• Keeping your schema backward compatible: Avoid any changes in your data schema that
+        would break any existing callers. Such changes include modifications (renaming or removal)
+        of field names and types.
+        
+   •• Ensuring that data schemas are kept in sync between clients and servers: For serialization
+        formats with explicit schema definitions, such as Apache Thrift, Protocol Buffers, and Apache
+        Avro, you should keep clients and servers in sync with the latest schema versions.
+
+   •• Documenting implicit details: Let the callers know any implicit details related to your data
+        schema. For example, if your API does not allow an empty value of a certain field of a structure,
+        include this in the comments in the schema file.
+
+   •• Using built-in structures for representing time whenever possible: Protocol Buffers and
+        some other serialization protocols provide built-in types for timestamps and durations. Taking
+        Protocol Buffers as an example, having a int timestamp filed would be considered a bad
+        practice. The right approach would be to use google.protobuf.Timestamp.
+        Using consistent naming: Opt for using consistent naming in your schema files, similarly to your code.
+
+   •• Following the official style guide: Get familiar with the official style guide if you are using
+        a schema definition language, such as Thrift or Protocol Buffers.    
+
+
+-- it’s not recommended to use the generated structures across the application
+   code base. There are multiple reasons for this, which are listed as follows:
+   
+•• Unnecessary coupling between the application and serialization format: If you ever want to
+    switch from one serialization format to another (for example, from Thrift to Protocol Buffers),
+    and all your application code base uses generated structures for the previous serialization
+    format, you would need to rewrite not only the serialization code but the entire application.
+
+••Generated code structure could vary between different versions: While the field naming and
+    high-level structure of the generated structures are generally stable between different versions of
+    code generation tooling, the internal functions and structure of the generated code could vary
+    from version to version. If any part of your application uses some generated functions that get
+    changed, your application could break unexpectedly during a version update of a code generator.
+
+••Generated code is often harder to use: In formats such as Protocol Buffers, all fields are always
+    optional. In generated code, this results in lots of fields that can have nil values. For an application
+    developer, this means doing more nil checks across all applications to prevent possible panics.
