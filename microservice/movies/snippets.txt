@@ -17,3 +17,6 @@ docker exec -i movieexample_db mysql movieexample -h localhost -P 3306 \
 
 
 GOOS=linux go build -o main cmd/*.go
+
+mockgen -package=repository -source=metadata/internal/controller/metadata/controller.go
+
