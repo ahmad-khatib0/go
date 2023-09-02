@@ -3,6 +3,7 @@ module github.com/ahmad-khatib0/go/microservice/movies
 go 1.21
 
 require (
+	github.com/confluentinc/confluent-kafka-go v1.9.2
 	github.com/golang/protobuf v1.5.3
 	github.com/hashicorp/consul/api v1.24.0
 	google.golang.org/grpc v1.57.0
