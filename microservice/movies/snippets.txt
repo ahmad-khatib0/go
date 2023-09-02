@@ -14,3 +14,6 @@ docker exec -i movieexample_db mysql movieexample \
 
 docker exec -i movieexample_db mysql movieexample -h localhost -P 3306 \ 
    --protocol=tcp -uroot -ppassword -e "SHOW tables"
+
+
+GOOS=linux go build -o main cmd/*.go
