@@ -13,7 +13,7 @@ import (
 	"github.com/ahmad-khatib0/go/microservice/movies/pkg/discovery/consul"
 	"github.com/ahmad-khatib0/go/microservice/movies/rating/internal/controller/rating"
 	grpchandler "github.com/ahmad-khatib0/go/microservice/movies/rating/internal/handler/grpc"
-	"github.com/ahmad-khatib0/go/microservice/movies/rating/internal/repository/memory"
+	"github.com/ahmad-khatib0/go/microservice/movies/rating/internal/repository/mysql"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/reflection"
 )
@@ -47,8 +47,12 @@ func main() {
 	}()
 	defer registry.Deregister(ctx, instanceID, serviceName)
 
-	repo := memory.New()
-	ctrl := rating.New(repo)
+	repo, err := mysql.New()
+	if err != nil {
+		panic(err)
+	}
+
+	ctrl := rating.New(repo, nil)
 	h := grpchandler.New(ctrl)
 
 	lis, err := net.Listen("tcp", fmt.Sprintf("localhost:%v", port))
