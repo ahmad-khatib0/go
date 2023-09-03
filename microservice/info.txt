@@ -181,3 +181,17 @@ For the applications, there are two ways of interacting with the registry:
    --  Consistency: A change brings a database from one valid state to another
    --  Isolation: Concurrent changes get executed as they were executed sequentially
    --  Durability: All changes get persisted
+
+
+-- The technique of adding extra delays between client request retries is called backoff. Different types
+    of backoff are implemented by using different delay intervals between the retry requests:
+    •• Constant backoff: Each retry is performed after a constant delay. 
+    •• Exponential backoff: Each retry is performed after a delay that is exponentially higher than the previous one.
+
+    Backoff delay can also be modified by introducing small random changes to its duration. For example,
+    the retry delay value on each step could be increased or decreased by up to 10% to better spread the
+    load on the server. This optimization is called jittering. To illustrate the usefulness of jittering, assume
+    multiple clients start calling the server simultaneously. If retries are performed with the same delays
+    for each client, they will keep calling the server simultaneously, generating bursts of server requests.
+    Adding pseudo-random offsets to retry delay intervals helps to distribute the load on a server more
+    evenly, preventing possible traffic bursts from request retries.

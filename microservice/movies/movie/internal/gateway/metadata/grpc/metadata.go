@@ -7,6 +7,8 @@ import (
 	"github.com/ahmad-khatib0/go/microservice/movies/internal/grpcutil"
 	"github.com/ahmad-khatib0/go/microservice/movies/metadata/pkg/model"
 	"github.com/ahmad-khatib0/go/microservice/movies/pkg/discovery"
+	"google.golang.org/grpc/codes"
+	"google.golang.org/grpc/status"
 )
 
 // Gateway defines a movie metadata gRPC gateway.
@@ -30,10 +32,29 @@ func (g *Gateway) Get(ctx context.Context, id string) (*model.Metadata, error) {
 	defer conn.Close()
 
 	client := gen.NewMetadataServiceClient(conn)
-	resp, err := client.GetMetadata(ctx, &gen.GetMetadataRequest{MovieId: id})
-	if err != nil {
-		return nil, err
-	}
 
-	return model.MetadataFromProto(resp.Metadata), nil
+	var resp *gen.GetMetadataResponse
+	const maxRetries = 5
+
+	for i := 0; i < maxRetries; i++ {
+		resp, err = client.GetMetadata(ctx, &gen.GetMetadataRequest{MovieId: id})
+		if err != nil {
+			if shouldRetry(err) {
+				continue
+			}
+			return nil, err
+		}
+
+		return model.MetadataFromProto(resp.Metadata), nil
+	}
+	return nil, err
+
+}
+
+func shouldRetry(err error) bool {
+	e, ok := status.FromError(err)
+	if !ok {
+		return false
+	}
+	return e.Code() == codes.DeadlineExceeded || e.Code() == codes.ResourceExhausted || e.Code() == codes.Unavailable
 }
