@@ -38,7 +38,7 @@ func (h *Handler) GetMovieDetails(ctx context.Context, req *gen.GetMovieDetailsR
 	return &gen.GetMovieDetailsResponse{
 		MovieDetails: &gen.MovieDetails{
 			Metadata: model.MetadataToProto(&m.Metadata),
-			Rating:   float32(*m.Rating),
+			Rating:   *m.Rating,
 		},
 	}, nil
 }

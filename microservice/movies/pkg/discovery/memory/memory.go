@@ -27,7 +27,7 @@ func NewRegistry() *Registry {
 }
 
 // Register creates a service record in the registry.
-func (r *Registry) Register(ctx context.Context, instanceID string, serviceName string, hostPort string) error {
+func (r *Registry) Registr(ctx context.Context, instanceID string, serviceName string, hostPort string) error {
 	r.Lock()
 	defer r.Unlock()
 	if _, ok := r.serviceAddrs[serviceName]; !ok {
