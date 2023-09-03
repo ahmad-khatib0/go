@@ -17,6 +17,8 @@ docker exec -i movieexample_db mysql movieexample -h localhost -P 3306 \
 
 
 GOOS=linux go build -o main cmd/*.go
+CGO_ENABLED=0 GOOS=linux go build -ldflags="-w -s" -a -installsuffix cgo -o main ./*.go
 
 mockgen -package=repository -source=metadata/internal/controller/metadata/controller.go
 
+kubectl port-forward <RATING_POD_ID> 8082:8082
