@@ -22,3 +22,13 @@ CGO_ENABLED=0 GOOS=linux go build -ldflags="-w -s" -a -installsuffix cgo -o main
 mockgen -package=repository -source=metadata/internal/controller/metadata/controller.go
 
 kubectl port-forward <RATING_POD_ID> 8082:8082
+
+docker run \
+  -p 9090:9090 \
+  -v configs:/etc/prometheus \
+  prom/prometheus
+
+
+docker run -p 9093:9093 -v <PATH_TO_CONFIGS_DIR>:/etc/
+  alertmanager prom/alertmanager --config.file=/etc/alertmanager/
+  alertmanager.yml
