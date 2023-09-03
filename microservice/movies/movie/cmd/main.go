@@ -8,44 +8,68 @@ import (
 	"os"
 	"time"
 
+	"go.opentelemetry.io/contrib/instrumentation/google.golang.org/grpc/otelgrpc"
+	"go.opentelemetry.io/otel"
+	"go.opentelemetry.io/otel/propagation"
+	"go.uber.org/zap"
 	"golang.org/x/time/rate"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/reflection"
 	"gopkg.in/yaml.v2"
 
 	"github.com/ahmad-khatib0/go/microservice/movies/gen"
-	"github.com/ahmad-khatib0/go/microservice/movies/movie/internal/controller/movie"
+	metadatagateway "github.com/ahmad-khatib0/go/microservice/movies/movie/internal/gateway/metadata/grpc"
+	ratinggateway "github.com/ahmad-khatib0/go/microservice/movies/movie/internal/gateway/rating/grpc"
 	"github.com/ahmad-khatib0/go/microservice/movies/pkg/discovery"
 	"github.com/ahmad-khatib0/go/microservice/movies/pkg/discovery/consul"
+	"github.com/ahmad-khatib0/go/microservice/movies/pkg/tracing"
 
-	metadatagateway "github.com/ahmad-khatib0/go/microservice/movies/movie/internal/gateway/metadata/http"
-	ratinggateway "github.com/ahmad-khatib0/go/microservice/movies/movie/internal/gateway/rating/http"
+	"github.com/ahmad-khatib0/go/microservice/movies/movie/internal/controller/movie"
 	grpchandler "github.com/ahmad-khatib0/go/microservice/movies/movie/internal/handler/grpc"
-	"github.com/grpc-ecosystem/go-grpc-middleware/ratelimit"
 )
 
 const serviceName = "movie"
 
 func main() {
+
+	logger, _ := zap.NewProduction()
+	defer logger.Sync()
+
 	f, err := os.Open("base.yaml")
 	if err != nil {
-		panic(err)
+		logger.Fatal("Failed to open configuration", zap.Error(err))
 	}
 
 	var cfg config
 	if err := yaml.NewDecoder(f).Decode(&cfg); err != nil {
-		panic(err)
+		logger.Fatal("Failed to parse configuration", zap.Error(err))
 	}
 
 	port := cfg.API.Port
-	log.Printf("Starting the movie service on port %d", port)
+	logger.Info("Starting the movie service", zap.Int("port", port))
+
+	ctx, cancel := context.WithCancel(context.Background())
+	defer cancel()
+
+	tp, err := tracing.NewJaegerProvider(cfg.Jaeger.URL, serviceName)
+	if err != nil {
+		logger.Fatal("Failed to initialize Jaeger provider", zap.Error(err))
+	}
+
+	defer func() {
+		if err := tp.Shutdown(ctx); err != nil {
+			log.Fatal("Failed to shut down Jaeger prodiver", zap.Error(err))
+		}
+	}()
+
+	otel.SetTracerProvider(tp)
+	otel.SetTextMapPropagator(propagation.TraceContext{})
 
 	registry, err := consul.NewRegistry("localhost:8500")
 	if err != nil {
 		panic(err)
 	}
 
-	ctx := context.Background()
 	instanceID := discovery.GenerateInstanceID(serviceName)
 	if err := registry.Registr(ctx, instanceID, serviceName, fmt.Sprintf("localhost:%d", port)); err != nil {
 		panic(err)
@@ -54,7 +78,7 @@ func main() {
 	go func() {
 		for {
 			if err := registry.ReportHealthyState(instanceID, serviceName); err != nil {
-				log.Println("Failed to report healthy state: " + err.Error())
+				logger.Error("Failed to report healthy state", zap.Error(err))
 			}
 			time.Sleep(1 * time.Second)
 		}
@@ -63,24 +87,21 @@ func main() {
 
 	metadataGateway := metadatagateway.New(registry)
 	ratingGateway := ratinggateway.New(registry)
-	ctrl := movie.New(ratingGateway, metadataGateway)
 
+	ctrl := movie.New(ratingGateway, metadataGateway)
 	h := grpchandler.New(ctrl)
+
 	lis, err := net.Listen("tcp", fmt.Sprintf("localhost:%d", port))
 	if err != nil {
-		log.Fatalf("failed to listen: %v", err)
+		log.Fatalf("Failed to listen", zap.Error(err))
 	}
 
-	const limit = 100
-	const burst = 100
-	l := newLimiter(100, 100)
-
-	srv := grpc.NewServer(grpc.UnaryInterceptor(ratelimit.UnaryServerInterceptor(l)))
+	srv := grpc.NewServer(grpc.UnaryInterceptor(otelgrpc.UnaryServerInterceptor()))
 	reflection.Register(srv)
-	gen.RegisterMovieServiceServer(srv, h)
 
+	gen.RegisterMovieServiceServer(srv, h)
 	if err := srv.Serve(lis); err != nil {
-		panic(err)
+		log.Fatalf("Failed to start the gRPC server", zap.Error(err))
 	}
 }
 

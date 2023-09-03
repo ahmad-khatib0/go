@@ -195,3 +195,21 @@ For the applications, there are two ways of interacting with the registry:
     for each client, they will keep calling the server simultaneously, generating bursts of server requests.
     Adding pseudo-random offsets to retry delay intervals helps to distribute the load on a server more
     evenly, preventing possible traffic bursts from request retries.
+
+
+
+-- some common metric types:
+    • Counters: These are time series representing the value of a cumulative counter over time. An
+      example would be the counter of service requests – each data point would include a timestamp
+      and the count of requests at that particular moment.
+    • Gauges: These are time series representing the changes of a single scalar value over time. An
+      example of a gauge is a dataset that contains the amount of free disk space on a server at different
+      moments: each data point contains a single numerical value.
+    • Histograms: These are time series representing the distribution of some value against a
+      predefined set of value ranges, called buckets. An example of a histogram metric is a dataset,
+      containing the number of users for different age groups.
+
+
+-- distributed tracing – a technique that involves recording and analyzing interactions between 
+     different services and service components. The main idea behind distributed tracing is to 
+     automatically record all such interactions and provide a convenient way tovisualize them.

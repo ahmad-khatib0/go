@@ -3,8 +3,8 @@ package main
 import (
 	"context"
 	"fmt"
-	"log"
 	"net"
+	"net/http"
 	"os"
 	"time"
 
@@ -14,6 +14,13 @@ import (
 	"github.com/ahmad-khatib0/go/microservice/movies/metadata/internal/repository/memory"
 	"github.com/ahmad-khatib0/go/microservice/movies/pkg/discovery"
 	"github.com/ahmad-khatib0/go/microservice/movies/pkg/discovery/consul"
+	"github.com/ahmad-khatib0/go/microservice/movies/pkg/tracing"
+	"github.com/uber-go/tally"
+	"github.com/uber-go/tally/prometheus"
+	"go.opentelemetry.io/contrib/instrumentation/google.golang.org/grpc/otelgrpc"
+	"go.opentelemetry.io/otel"
+	"go.opentelemetry.io/otel/propagation"
+	"go.uber.org/zap"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/reflection"
 	"gopkg.in/yaml.v3"
@@ -22,48 +29,88 @@ import (
 const serviceName = "metadata"
 
 func main() {
+
+	logger, _ := zap.NewProduction()
+	defer logger.Sync()
+
 	f, err := os.Open("base.yaml")
 	if err != nil {
-		panic(err)
+		logger.Fatal("Failed to open configuration", zap.Error(err))
 	}
-	defer f.Close()
 
-	var cfg serviceConfig
+	var cfg config
 	if err := yaml.NewDecoder(f).Decode(&cfg); err != nil {
-		panic(err)
+		logger.Fatal("Failed to parse configuration", zap.Error(err))
 	}
+
+	port := cfg.API.Port
+	logger.Info("Starting the metadata service", zap.Int("port", port))
+
+	ctx, cancel := context.WithCancel(context.Background())
+	defer cancel()
+
+	tp, err := tracing.NewJaegerProvider(cfg.Jaeger.URL, serviceName)
+	if err != nil {
+		logger.Fatal("Failed to initialize Jaeger provider", zap.Error(err))
+	}
+
+	defer func() {
+		if err := tp.Shutdown(ctx); err != nil {
+			logger.Fatal("Failed to shut down Jaeger prodiver", zap.Error(err))
+		}
+	}()
+
+	otel.SetTracerProvider(tp)
+	otel.SetTextMapPropagator(propagation.TraceContext{})
+
+	reporter := prometheus.NewReporter(prometheus.Options{})
+	scope, closer := tally.NewRootScope(tally.ScopeOptions{
+		Tags:           map[string]string{"service": "metadata"},
+		CachedReporter: reporter,
+	}, 10*time.Second)
+
+	defer closer.Close()
+	http.Handle("/metrics", reporter.HTTPHandler())
+	go func() {
+		if err := http.ListenAndServe(fmt.Sprintf(":%d", cfg.Prometheus.MetricsPort), nil); err != nil {
+			logger.Fatal("Failed to start the metrics handler", zap.Error(err))
+		}
+	}()
+
+	counter := scope.Tagged(map[string]string{"service": "metadata"}).Counter("service_started")
+	counter.Inc(1)
 
 	registry, err := consul.NewRegistry("localhost:8500")
 	if err != nil {
 		panic(err)
 	}
 
-	ctx := context.Background()
 	instanceID := discovery.GenerateInstanceID(serviceName)
-	if err := registry.Registr(ctx, instanceID, serviceName, fmt.Sprintf("localhost:%d", cfg.APIConfig.Port)); err != nil {
+	if err := registry.Registr(ctx, instanceID, serviceName, fmt.Sprintf("localhost:%d", port)); err != nil {
 		panic(err)
 	}
 
 	go func() {
 		for {
 			if err := registry.ReportHealthyState(instanceID, serviceName); err != nil {
-				log.Println("Failed to report healthy state: " + err.Error())
+				logger.Error("Failed to report healthy state", zap.Error(err))
 			}
 			time.Sleep(1 * time.Second)
 		}
 	}()
+
 	defer registry.Deregister(ctx, instanceID, serviceName)
 
 	repo := memory.New()
 	ctrl := metadata.New(repo)
 	h := grpchandler.New(ctrl)
 
-	lis, err := net.Listen("tcp", fmt.Sprintf("localhost:%v", cfg.APIConfig.Port))
+	lis, err := net.Listen("tcp", fmt.Sprintf("localhost:%v", port))
 	if err != nil {
-		log.Fatalf("failed to listen: %v", err)
+		logger.Fatal("Failed to listen", zap.Error(err))
 	}
 
-	srv := grpc.NewServer()
+	srv := grpc.NewServer(grpc.UnaryInterceptor(otelgrpc.UnaryServerInterceptor()))
 	reflection.Register(srv)
 
 	gen.RegisterMetadataServiceServer(srv, h)

@@ -5,6 +5,7 @@ import (
 	"math/rand"
 
 	"github.com/ahmad-khatib0/go/microservice/movies/pkg/discovery"
+	"go.opentelemetry.io/contrib/instrumentation/google.golang.org/grpc/otelgrpc"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials/insecure"
 )
@@ -13,10 +14,14 @@ import (
 // instance and returns a gRPC connection to it.
 func ServiceConnection(ctx context.Context, serviceName string, registry discovery.Registry) (*grpc.ClientConn, error) {
 
-	adrs, err := registry.ServiceAddresses(ctx, serviceName)
+	addrs, err := registry.ServiceAddresses(ctx, serviceName)
 	if err != nil {
 		return nil, err
 	}
+	return grpc.Dial(
+		addrs[rand.Intn(len(addrs))],
+		grpc.WithTransportCredentials(insecure.NewCredentials()),
+		grpc.WithUnaryInterceptor(otelgrpc.UnaryClientInterceptor()),
+	)
 
-	return grpc.Dial(adrs[rand.Intn(len(adrs))], grpc.WithTransportCredentials(insecure.NewCredentials()))
 }

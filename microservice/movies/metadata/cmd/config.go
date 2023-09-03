@@ -1,9 +1,19 @@
 package main
 
-type serviceConfig struct {
-	APIConfig apiConfig `yaml:"api"`
+type config struct {
+	API        apiConfig        `yaml:"api"`
+	Jaeger     jaegerConfig     `yaml:"jaeger"`
+	Prometheus prometheusConfig `yaml:"prometheus"`
 }
 
 type apiConfig struct {
-	Port string `yaml:"port"`
+	Port int `yaml:"port"`
+}
+
+type jaegerConfig struct {
+	URL string `yaml:"url"`
+}
+
+type prometheusConfig struct {
+	MetricsPort int `yaml:"metricsPort"`
 }
