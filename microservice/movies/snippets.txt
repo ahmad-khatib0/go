@@ -32,3 +32,12 @@ docker run \
 docker run -p 9093:9093 -v <PATH_TO_CONFIGS_DIR>:/etc/
   alertmanager prom/alertmanager --config.file=/etc/alertmanager/
   alertmanager.yml
+
+
+go run *.go --simulatecpuload
+
+go tool pprof http://localhost:6060/debug/pprof/profile?seconds=5
+
+docker run -d -p 3000:3000 grafana/grafana-oss
+
+
