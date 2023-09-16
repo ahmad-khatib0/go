@@ -40,6 +40,8 @@ use ./concurrency/5-subscription-service
 
 use ./distributed-services/proglog
 
+use ./event-driven-architecture/mallbots
+
 use ./snippetbox
 
 use ./greenlight
