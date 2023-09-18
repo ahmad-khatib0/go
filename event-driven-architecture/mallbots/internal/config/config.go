@@ -7,6 +7,7 @@ import (
 	"github.com/ahmad-khatib0/go/event-driven-architecture/mallbots/internal/rpc"
 	"github.com/ahmad-khatib0/go/event-driven-architecture/mallbots/internal/web"
 	"github.com/kelseyhightower/envconfig"
+
 	"github.com/stackus/dotenv"
 )
 
@@ -31,5 +32,6 @@ func InitConfig() (cfg AppConfig, err error) {
 	}
 
 	err = envconfig.Process("", &cfg)
+
 	return
 }
