@@ -34,7 +34,9 @@ func (r PaymentRepository) Save(ctx context.Context, payment *models.Payment) er
 func (r PaymentRepository) Find(ctx context.Context, paymentID string) (*models.Payment, error) {
 	const query = "SELECT customer_id, amount FROM %s WHERE id = $1 LIMIT 1"
 
-	payment := &models.Payment{ID: paymentID}
+	payment := &models.Payment{
+		ID: paymentID,
+	}
 
 	err := r.db.QueryRowContext(ctx, r.table(query), paymentID).Scan(&payment.CustomerID, &payment.Amount)
 

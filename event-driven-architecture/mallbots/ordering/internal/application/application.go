@@ -3,6 +3,7 @@ package application
 import (
 	"context"
 
+	"github.com/ahmad-khatib0/go/event-driven-architecture/mallbots/internal/ddd"
 	"github.com/ahmad-khatib0/go/event-driven-architecture/mallbots/ordering/internal/application/commands"
 	"github.com/ahmad-khatib0/go/event-driven-architecture/mallbots/ordering/internal/application/queries"
 	"github.com/ahmad-khatib0/go/event-driven-architecture/mallbots/ordering/internal/domain"
@@ -19,7 +20,6 @@ type (
 		ReadyOrder(ctx context.Context, cmd commands.ReadyOrder) error
 		CompleteOrder(ctx context.Context, cmd commands.CompleteOrder) error
 	}
-
 	Queries interface {
 		GetOrder(ctx context.Context, query queries.GetOrder) (*domain.Order, error)
 	}
@@ -41,20 +41,15 @@ type (
 
 var _ App = (*Application)(nil)
 
-func New(
-	orders domain.OrderRepository,
-	customers domain.CustomerRepository,
-	payments domain.PaymentRepository,
-	invoices domain.InvoiceRepository,
-	shopping domain.ShoppingRepository,
-	notifications domain.NotificationRepository,
+func New(orders domain.OrderRepository, customers domain.CustomerRepository, payments domain.PaymentRepository,
+	shopping domain.ShoppingRepository, domainPublisher ddd.EventPublisher,
 ) *Application {
 	return &Application{
 		appCommands: appCommands{
-			CreateOrderHandler:   commands.NewCreateOrderHandler(orders, customers, payments, shopping, notifications),
-			CancelOrderHandler:   commands.NewCancelOrderHandler(orders, shopping, notifications),
-			ReadyOrderHandler:    commands.NewReadyOrderHandler(orders, invoices, notifications),
-			CompleteOrderHandler: commands.NewCompleteOrderHandler(orders),
+			CreateOrderHandler:   commands.NewCreateOrderHandler(orders, customers, payments, shopping, domainPublisher),
+			CancelOrderHandler:   commands.NewCancelOrderHandler(orders, shopping, domainPublisher),
+			ReadyOrderHandler:    commands.NewReadyOrderHandler(orders, domainPublisher),
+			CompleteOrderHandler: commands.NewCompleteOrderHandler(orders, domainPublisher),
 		},
 		appQueries: appQueries{
 			GetOrderHandler: queries.NewGetOrderHandler(orders),

@@ -1,14 +1,15 @@
-FROM golang:1.21-alpine AS builder
+FROM golang:1.17-alpine AS builder
 
 WORKDIR /mallbots
 
-# Retrieve application dependencies. This allows the container build to reuse 
-# cached dependencies. Expecting to copy go.mod and if present go.sum.
+# Retrieve application dependencies.
+# This allows the container build to reuse cached dependencies.
+# Expecting to copy go.mod and if present go.sum.
 COPY go.* ./
 RUN go mod download
 
 # Copy local code to the container image.
-COPY .. ./
+COPY . ./
 
 # Build the binary.
 RUN go build -v -o monolith ./cmd/mallbots

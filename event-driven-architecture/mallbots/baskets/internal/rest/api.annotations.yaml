@@ -4,17 +4,21 @@ http:
   rules:
     - selector: basketspb.BasketService.StartBasket
       post: /api/baskets
-      body: "*"
+      body: '*'
     - selector: basketspb.BasketService.GetBasket
       get: /api/baskets/{id}
     - selector: basketspb.BasketService.CancelBasket
       delete: /api/baskets/{id}
     - selector: basketspb.BasketService.CheckoutBasket
       put: /api/baskets/{id}/checkout
-      body: "*"
+      body: '*'
     - selector: basketspb.BasketService.AddItem
       put: /api/baskets/{id}/addItem
-      body: "*"
+      body: '*'
     - selector: basketspb.BasketService.RemoveItem
       put: /api/baskets/{id}/removeItem
-      body: "*"
+      body: '*'
+# A single gRPC server may serve any number of gRPC services if the compiled protocol buffers do not
+# have any namespace conflicts. To avoid this conflict, we make sure to compile the parent directory
+# name as part of each protocol buffer API. We end up with basketspb.Item and orderingpb.
+# Item and avoid all conflicts.

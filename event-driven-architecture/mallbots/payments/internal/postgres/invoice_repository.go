@@ -5,9 +5,10 @@ import (
 	"database/sql"
 	"fmt"
 
+	"github.com/stackus/errors"
+
 	"github.com/ahmad-khatib0/go/event-driven-architecture/mallbots/payments/internal/application"
 	"github.com/ahmad-khatib0/go/event-driven-architecture/mallbots/payments/internal/models"
-	"github.com/stackus/errors"
 )
 
 type InvoiceRepository struct {
@@ -18,14 +19,18 @@ type InvoiceRepository struct {
 var _ application.InvoiceRepository = (*InvoiceRepository)(nil)
 
 func NewInvoiceRepository(tableName string, db *sql.DB) InvoiceRepository {
-	return InvoiceRepository{tableName: tableName, db: db}
+	return InvoiceRepository{
+		tableName: tableName,
+		db:        db,
+	}
 }
 
 func (r InvoiceRepository) Find(ctx context.Context, invoiceID string) (*models.Invoice, error) {
 	const query = "SELECT order_id, amount, status FROM %s WHERE id = $1 LIMIT 1"
 
-	invoice := &models.Invoice{ID: invoiceID}
-
+	invoice := &models.Invoice{
+		ID: invoiceID,
+	}
 	var status string
 	err := r.db.QueryRowContext(ctx, r.table(query), invoiceID).Scan(&invoice.OrderID, &invoice.Amount, &status)
 	if err != nil {

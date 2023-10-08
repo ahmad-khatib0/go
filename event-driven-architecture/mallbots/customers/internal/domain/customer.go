@@ -1,11 +1,12 @@
 package domain
 
 import (
+	"github.com/ahmad-khatib0/go/event-driven-architecture/mallbots/internal/ddd"
 	"github.com/stackus/errors"
 )
 
 type Customer struct {
-	ID        string
+	ddd.AggregateBase
 	Name      string
 	SmsNumber string
 	Enabled   bool
@@ -17,6 +18,7 @@ var (
 	ErrSmsNumberCannotBeBlank  = errors.Wrap(errors.ErrBadRequest, "the SMS number cannot be blank")
 	ErrCustomerAlreadyEnabled  = errors.Wrap(errors.ErrBadRequest, "the customer is already enabled")
 	ErrCustomerAlreadyDisabled = errors.Wrap(errors.ErrBadRequest, "the customer is already disabled")
+	ErrCustomerNotAuthorized   = errors.Wrap(errors.ErrUnauthorized, "customer is not authorized")
 )
 
 func RegisterCustomer(id, name, smsNumber string) (*Customer, error) {
@@ -32,12 +34,32 @@ func RegisterCustomer(id, name, smsNumber string) (*Customer, error) {
 		return nil, ErrSmsNumberCannotBeBlank
 	}
 
-	return &Customer{
-		ID:        id,
+	customer := &Customer{
+		AggregateBase: ddd.AggregateBase{
+			ID: id,
+		},
 		Name:      name,
 		SmsNumber: smsNumber,
 		Enabled:   true,
-	}, nil
+	}
+
+	customer.AddEvent(&CustomerRegistered{
+		Customer: customer,
+	})
+
+	return customer, nil
+}
+
+func (c *Customer) Authorize( /* TODO authorize what? */ ) error {
+	if !c.Enabled {
+		return ErrCustomerNotAuthorized
+	}
+
+	c.AddEvent(&CustomerAuthorized{
+		Customer: c,
+	})
+
+	return nil
 }
 
 func (c *Customer) Enable() error {
@@ -46,6 +68,10 @@ func (c *Customer) Enable() error {
 	}
 
 	c.Enabled = true
+
+	c.AddEvent(&CustomerEnabled{
+		Customer: c,
+	})
 
 	return nil
 }
@@ -56,6 +82,10 @@ func (c *Customer) Disable() error {
 	}
 
 	c.Enabled = false
+
+	c.AddEvent(&CustomerDisabled{
+		Customer: c,
+	})
 
 	return nil
 }

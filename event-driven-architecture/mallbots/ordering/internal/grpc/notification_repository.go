@@ -3,9 +3,10 @@ package grpc
 import (
 	"context"
 
+	"google.golang.org/grpc"
+
 	"github.com/ahmad-khatib0/go/event-driven-architecture/mallbots/notifications/notificationspb"
 	"github.com/ahmad-khatib0/go/event-driven-architecture/mallbots/ordering/internal/domain"
-	"google.golang.org/grpc"
 )
 
 type NotificationRepository struct {

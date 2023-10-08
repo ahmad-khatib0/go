@@ -3,10 +3,11 @@ package grpc
 import (
 	"context"
 
-	"github.com/ahmad-khatib0/go/event-driven-architecture/mallbots/payments/internal/application"
-	"github.com/ahmad-khatib0/go/event-driven-architecture/mallbots/payments/paymentspb"
 	"github.com/google/uuid"
 	"google.golang.org/grpc"
+
+	"github.com/ahmad-khatib0/go/event-driven-architecture/mallbots/payments/internal/application"
+	"github.com/ahmad-khatib0/go/event-driven-architecture/mallbots/payments/paymentspb"
 )
 
 type server struct {
@@ -28,13 +29,13 @@ func (s server) AuthorizePayment(ctx context.Context, request *paymentspb.Author
 		CustomerID: request.GetCustomerId(),
 		Amount:     request.GetAmount(),
 	})
-
 	return &paymentspb.AuthorizePaymentResponse{Id: id}, err
 }
 
 func (s server) ConfirmPayment(ctx context.Context, request *paymentspb.ConfirmPaymentRequest) (*paymentspb.ConfirmPaymentResponse, error) {
-	err := s.app.ConfirmPayment(ctx, application.ConfirmPayment{ID: request.GetId()})
-
+	err := s.app.ConfirmPayment(ctx, application.ConfirmPayment{
+		ID: request.GetId(),
+	})
 	return &paymentspb.ConfirmPaymentResponse{}, err
 }
 
@@ -45,8 +46,9 @@ func (s server) CreateInvoice(ctx context.Context, request *paymentspb.CreateInv
 		OrderID: request.GetOrderId(),
 		Amount:  request.GetAmount(),
 	})
-
-	return &paymentspb.CreateInvoiceResponse{Id: id}, err
+	return &paymentspb.CreateInvoiceResponse{
+		Id: id,
+	}, err
 }
 
 func (s server) AdjustInvoice(ctx context.Context, request *paymentspb.AdjustInvoiceRequest) (*paymentspb.AdjustInvoiceResponse, error) {
@@ -54,18 +56,20 @@ func (s server) AdjustInvoice(ctx context.Context, request *paymentspb.AdjustInv
 		ID:     request.GetId(),
 		Amount: request.GetAmount(),
 	})
-
 	return &paymentspb.AdjustInvoiceResponse{}, err
 }
 
 func (s server) PayInvoice(ctx context.Context, request *paymentspb.PayInvoiceRequest) (*paymentspb.PayInvoiceResponse, error) {
-	err := s.app.PayInvoice(ctx, application.PayInvoice{ID: request.GetId()})
-
+	err := s.app.PayInvoice(ctx, application.PayInvoice{
+		ID: request.GetId(),
+	})
 	return &paymentspb.PayInvoiceResponse{}, err
 }
 
-func (s server) CancelInvoice(ctx context.Context, request *paymentspb.CancelInvoiceRequest) (*paymentspb.CancelInvoiceResponse, error) {
-	err := s.app.CancelInvoice(ctx, application.CancelInvoice{ID: request.GetId()})
-
+func (s server) CancelInvoice(ctx context.Context, request *paymentspb.CancelInvoiceRequest,
+) (*paymentspb.CancelInvoiceResponse, error) {
+	err := s.app.CancelInvoice(ctx, application.CancelInvoice{
+		ID: request.GetId(),
+	})
 	return &paymentspb.CancelInvoiceResponse{}, err
 }

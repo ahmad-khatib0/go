@@ -3,11 +3,12 @@ package logging
 import (
 	"context"
 
+	"github.com/rs/zerolog"
+
 	"github.com/ahmad-khatib0/go/event-driven-architecture/mallbots/stores/internal/application"
 	"github.com/ahmad-khatib0/go/event-driven-architecture/mallbots/stores/internal/application/commands"
 	"github.com/ahmad-khatib0/go/event-driven-architecture/mallbots/stores/internal/application/queries"
 	"github.com/ahmad-khatib0/go/event-driven-architecture/mallbots/stores/internal/domain"
-	"github.com/rs/zerolog"
 )
 
 type Application struct {

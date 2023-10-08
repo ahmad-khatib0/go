@@ -5,8 +5,9 @@ import (
 	"database/sql"
 	"fmt"
 
-	"github.com/ahmad-khatib0/go/event-driven-architecture/mallbots/stores/internal/domain"
 	"github.com/stackus/errors"
+
+	"github.com/ahmad-khatib0/go/event-driven-architecture/mallbots/stores/internal/domain"
 )
 
 type ParticipatingStoreRepository struct {

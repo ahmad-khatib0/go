@@ -3,13 +3,15 @@ package grpc
 import (
 	"context"
 
+	"github.com/google/uuid"
+	"google.golang.org/grpc"
+
+	"github.com/ahmad-khatib0/go/event-driven-architecture/mallbots/stores/storespb"
+
 	"github.com/ahmad-khatib0/go/event-driven-architecture/mallbots/stores/internal/application"
 	"github.com/ahmad-khatib0/go/event-driven-architecture/mallbots/stores/internal/application/commands"
 	"github.com/ahmad-khatib0/go/event-driven-architecture/mallbots/stores/internal/application/queries"
 	"github.com/ahmad-khatib0/go/event-driven-architecture/mallbots/stores/internal/domain"
-	"github.com/ahmad-khatib0/go/event-driven-architecture/mallbots/stores/storespb"
-	"github.com/google/uuid"
-	"google.golang.org/grpc"
 )
 
 type server struct {
@@ -32,12 +34,13 @@ func (s server) CreateStore(ctx context.Context, request *storespb.CreateStoreRe
 		Name:     request.GetName(),
 		Location: request.GetLocation(),
 	})
-
 	if err != nil {
 		return nil, err
 	}
 
-	return &storespb.CreateStoreResponse{Id: storeID}, nil
+	return &storespb.CreateStoreResponse{
+		Id: storeID,
+	}, nil
 }
 
 func (s server) GetStore(ctx context.Context, request *storespb.GetStoreRequest) (*storespb.GetStoreResponse, error) {
@@ -60,7 +63,9 @@ func (s server) GetStores(ctx context.Context, request *storespb.GetStoresReques
 		protoStores = append(protoStores, s.storeFromDomain(store))
 	}
 
-	return &storespb.GetStoresResponse{Stores: protoStores}, nil
+	return &storespb.GetStoresResponse{
+		Stores: protoStores,
+	}, nil
 }
 
 func (s server) EnableParticipation(ctx context.Context, request *storespb.EnableParticipationRequest) (*storespb.EnableParticipationResponse, error) {
@@ -96,7 +101,9 @@ func (s server) GetParticipatingStores(ctx context.Context, request *storespb.Ge
 		protoStores = append(protoStores, s.storeFromDomain(store))
 	}
 
-	return &storespb.GetParticipatingStoresResponse{Stores: protoStores}, nil
+	return &storespb.GetParticipatingStoresResponse{
+		Stores: protoStores,
+	}, nil
 }
 
 func (s server) AddProduct(ctx context.Context, request *storespb.AddProductRequest) (*storespb.AddProductResponse, error) {
@@ -135,7 +142,9 @@ func (s server) GetCatalog(ctx context.Context, request *storespb.GetCatalogRequ
 		protoProducts = append(protoProducts, s.productFromDomain(product))
 	}
 
-	return &storespb.GetCatalogResponse{Products: protoProducts}, nil
+	return &storespb.GetCatalogResponse{
+		Products: protoProducts,
+	}, nil
 }
 
 func (s server) GetProduct(ctx context.Context, request *storespb.GetProductRequest) (*storespb.GetProductResponse, error) {

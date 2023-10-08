@@ -3,11 +3,12 @@ package logging
 import (
 	"context"
 
+	"github.com/rs/zerolog"
+
 	"github.com/ahmad-khatib0/go/event-driven-architecture/mallbots/ordering/internal/application"
 	"github.com/ahmad-khatib0/go/event-driven-architecture/mallbots/ordering/internal/application/commands"
 	"github.com/ahmad-khatib0/go/event-driven-architecture/mallbots/ordering/internal/application/queries"
 	"github.com/ahmad-khatib0/go/event-driven-architecture/mallbots/ordering/internal/domain"
-	"github.com/rs/zerolog"
 )
 
 type Application struct {
@@ -17,7 +18,7 @@ type Application struct {
 
 var _ application.App = (*Application)(nil)
 
-func NewApplication(application application.App, logger zerolog.Logger) Application {
+func LogApplicationAccess(application application.App, logger zerolog.Logger) Application {
 	return Application{
 		App:    application,
 		logger: logger,

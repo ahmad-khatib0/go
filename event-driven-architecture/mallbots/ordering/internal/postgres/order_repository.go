@@ -6,8 +6,10 @@ import (
 	"encoding/json"
 	"fmt"
 
-	"github.com/ahmad-khatib0/go/event-driven-architecture/mallbots/ordering/internal/domain"
 	"github.com/stackus/errors"
+
+	"github.com/ahmad-khatib0/go/event-driven-architecture/mallbots/internal/ddd"
+	"github.com/ahmad-khatib0/go/event-driven-architecture/mallbots/ordering/internal/domain"
 )
 
 type OrderRepository struct {
@@ -18,13 +20,20 @@ type OrderRepository struct {
 var _ domain.OrderRepository = (*OrderRepository)(nil)
 
 func NewOrderRepository(tableName string, db *sql.DB) OrderRepository {
-	return OrderRepository{tableName: tableName, db: db}
+	return OrderRepository{
+		tableName: tableName,
+		db:        db,
+	}
 }
 
 func (r OrderRepository) Find(ctx context.Context, orderID string) (*domain.Order, error) {
 	const query = "SELECT customer_id, payment_id, shopping_id, invoice_id, items, status FROM %s WHERE id = $1 LIMIT 1"
 
-	order := &domain.Order{ID: orderID}
+	order := &domain.Order{
+		AggregateBase: ddd.AggregateBase{
+			ID: orderID,
+		},
+	}
 
 	var items []byte
 	var status string

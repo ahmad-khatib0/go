@@ -3,8 +3,9 @@ package application
 import (
 	"context"
 
-	"github.com/ahmad-khatib0/go/event-driven-architecture/mallbots/payments/internal/models"
 	"github.com/stackus/errors"
+
+	"github.com/ahmad-khatib0/go/event-driven-architecture/mallbots/payments/internal/models"
 )
 
 type (
@@ -56,7 +57,8 @@ type (
 
 var _ App = (*Application)(nil)
 
-func New(invoices InvoiceRepository, payments PaymentRepository, orders OrderRepository) *Application {
+func New(invoices InvoiceRepository, payments PaymentRepository, orders OrderRepository,
+) *Application {
 	return &Application{
 		invoices: invoices,
 		payments: payments,

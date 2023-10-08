@@ -3,8 +3,10 @@ package commands
 import (
 	"context"
 
-	"github.com/ahmad-khatib0/go/event-driven-architecture/mallbots/stores/internal/domain"
 	"github.com/stackus/errors"
+
+	"github.com/ahmad-khatib0/go/event-driven-architecture/mallbots/internal/ddd"
+	"github.com/ahmad-khatib0/go/event-driven-architecture/mallbots/stores/internal/domain"
 )
 
 type AddProduct struct {
@@ -17,20 +19,21 @@ type AddProduct struct {
 }
 
 type AddProductHandler struct {
-	stores   domain.StoreRepository
-	products domain.ProductRepository
+	stores          domain.StoreRepository
+	products        domain.ProductRepository
+	domainPublisher ddd.EventPublisher
 }
 
-func NewAddProductHandler(stores domain.StoreRepository, products domain.ProductRepository) AddProductHandler {
+func NewAddProductHandler(stores domain.StoreRepository, products domain.ProductRepository, domainPublisher ddd.EventPublisher) AddProductHandler {
 	return AddProductHandler{
-		stores:   stores,
-		products: products,
+		stores:          stores,
+		products:        products,
+		domainPublisher: domainPublisher,
 	}
 }
 
 func (h AddProductHandler) AddProduct(ctx context.Context, cmd AddProduct) error {
-	_, err := h.stores.Find(ctx, cmd.StoreID)
-	if err != nil {
+	if _, err := h.stores.Find(ctx, cmd.StoreID); err != nil {
 		return errors.Wrap(err, "error adding product")
 	}
 
@@ -39,5 +42,14 @@ func (h AddProductHandler) AddProduct(ctx context.Context, cmd AddProduct) error
 		return errors.Wrap(err, "error adding product")
 	}
 
-	return errors.Wrap(h.products.AddProduct(ctx, product), "error adding product")
+	if err = h.products.Save(ctx, product); err != nil {
+		return errors.Wrap(err, "error adding product")
+	}
+
+	// publish domain events
+	if err = h.domainPublisher.Publish(ctx, product.GetEvents()...); err != nil {
+		return err
+	}
+
+	return nil
 }

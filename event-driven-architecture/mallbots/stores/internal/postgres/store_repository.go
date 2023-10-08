@@ -5,8 +5,10 @@ import (
 	"database/sql"
 	"fmt"
 
-	"github.com/ahmad-khatib0/go/event-driven-architecture/mallbots/stores/internal/domain"
 	"github.com/stackus/errors"
+
+	"github.com/ahmad-khatib0/go/event-driven-architecture/mallbots/internal/ddd"
+	"github.com/ahmad-khatib0/go/event-driven-architecture/mallbots/stores/internal/domain"
 )
 
 type StoreRepository struct {
@@ -24,7 +26,9 @@ func (r StoreRepository) Find(ctx context.Context, storeID string) (*domain.Stor
 	const query = "SELECT name, location, participating FROM %s WHERE id = $1 LIMIT 1"
 
 	store := &domain.Store{
-		ID: storeID,
+		AggregateBase: ddd.AggregateBase{
+			ID: storeID,
+		},
 	}
 
 	err := r.db.QueryRowContext(ctx, r.table(query), storeID).Scan(&store.Name, &store.Location, &store.Participating)

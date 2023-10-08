@@ -3,8 +3,9 @@ package queries
 import (
 	"context"
 
-	"github.com/ahmad-khatib0/go/event-driven-architecture/mallbots/ordering/internal/domain"
 	"github.com/stackus/errors"
+
+	"github.com/ahmad-khatib0/go/event-driven-architecture/mallbots/ordering/internal/domain"
 )
 
 type GetOrder struct {

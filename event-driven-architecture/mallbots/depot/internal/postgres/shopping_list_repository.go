@@ -7,6 +7,7 @@ import (
 	"fmt"
 
 	"github.com/ahmad-khatib0/go/event-driven-architecture/mallbots/depot/internal/domain"
+	"github.com/ahmad-khatib0/go/event-driven-architecture/mallbots/internal/ddd"
 	"github.com/stackus/errors"
 )
 
@@ -27,7 +28,11 @@ func NewShoppingListRepository(tableName string, db *sql.DB) ShoppingListReposit
 func (r ShoppingListRepository) Find(ctx context.Context, id string) (*domain.ShoppingList, error) {
 	const query = "SELECT order_id, stops, assigned_bot_id, status FROM %s WHERE id = $1 LIMIT 1"
 
-	shoppingList := &domain.ShoppingList{ID: id}
+	shoppingList := &domain.ShoppingList{
+		AggregateBase: ddd.AggregateBase{
+			ID: id,
+		},
+	}
 	var stops []byte
 	var status string
 
@@ -52,7 +57,9 @@ func (r ShoppingListRepository) Find(ctx context.Context, id string) (*domain.Sh
 func (r ShoppingListRepository) FindByOrderID(ctx context.Context, orderID string) (*domain.ShoppingList, error) {
 	const query = "SELECT id, stops, assigned_bot_id, status FROM %s WHERE order_id = $1 LIMIT 1"
 
-	shoppingList := &domain.ShoppingList{OrderID: orderID}
+	shoppingList := &domain.ShoppingList{
+		OrderID: orderID,
+	}
 	var stops []byte
 	var status string
 

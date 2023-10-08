@@ -6,11 +6,11 @@ import (
 	"github.com/google/uuid"
 	"google.golang.org/grpc"
 
-	"eda-in-golang/ordering/internal/application"
-	"eda-in-golang/ordering/internal/application/commands"
-	"eda-in-golang/ordering/internal/application/queries"
-	"eda-in-golang/ordering/internal/domain"
-	"eda-in-golang/ordering/orderingpb"
+	"github.com/ahmad-khatib0/go/event-driven-architecture/mallbots/ordering/internal/application"
+	"github.com/ahmad-khatib0/go/event-driven-architecture/mallbots/ordering/internal/application/commands"
+	"github.com/ahmad-khatib0/go/event-driven-architecture/mallbots/ordering/internal/application/queries"
+	"github.com/ahmad-khatib0/go/event-driven-architecture/mallbots/ordering/internal/domain"
+	"github.com/ahmad-khatib0/go/event-driven-architecture/mallbots/ordering/orderingpb"
 )
 
 type server struct {

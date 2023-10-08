@@ -1,0 +1,350 @@
+ ╒══════════════════════════════════════════════════════════════════════════════════════════╕
+   ╒══════════════════════════════════════════════════════════════════════════════════════╕ 
+     MallBots application is a modular monolith, which is an application design that sits     
+     somewhere between a classic monolith design and a microservices application design.      
+     We have most of the benefits of both designs with only a few downsides.                  
+   └──────────────────────────────────────────────────────────────────────────────────────┘ 
+ ╘══════════════════════════════════════════════════════════════════════════════════════════╛
+
+
+Three different uses or patterns exist that can be called EDA individually or altogether, as follows:
+  • Event notifications
+  • Event-carried state transfer
+  • Event sourcing
+
+
+Queues are referred to by a variety of terms, including bus, channel, stream, topic, and others. The
+  exact term given to a queue will depend on its use, purpose, and sometimes vendor. Because events
+  are frequently—but not always—organized in a first-in, first-out (FIFO) fashion,
+
+Message queues
+  The defining characteristic of a message queue is its lack of event retention. All events put into a
+  message queue have a limited lifetime. After the events have been consumed or have expired, they are discarded.
+
+
+Event streams
+  When you add event retention to a message queue, you get an event stream. This means consumers
+  may now read event streams starting with the earliest event, from a point in the stream representing
+  their last read position, or they can begin consuming new events as they are added. Unlike message
+  queues, which will eventually return to their default empty state, an event stream will continue to grow
+  indefinitely until events are removed by outside forces, such as being configured with a maximum
+  stream length or archived based on their age.
+  
+
+Event stores
+  As the name implies, an event store is an append-only repository for events. Potentially millions of
+  individual event streams will exist within an event store. Event stores provide optimistic concurrency
+  controls to ensure that each event stream maintains strong consistency. In contrast to the last two
+  queue examples, an event store is typically not used for message communication.
+
+
+-- Component collaboration
+   There are two patterns we can use to bring components together to manage workflows, 
+   • Choreography: The components each individually know about the work they must do, and
+     which step comes next
+   • Orchestration: The components know very little about their role and are called on to do their
+     part by a centralized orchestrator
+
+
+ ▲
+ █ DDD 
+ ▼      
+
+DDD prescribes no specific architecture to use, and it neither instructs you how to 
+  organize your code for any given programming language nor enforces any rule that you 
+  must use in every corner of your application.
+
+The complexity of the problem domain can be reduced by breaking the domain into subdomains so
+  that we’re dealing with more manageable chunks of the problem. Each new domain we identify falls
+  into one of three types:
+
+  • Core domains: Critical components of the application that are unique or provide a competitive
+      advantage to the business. These get the most focus, the most money, and the best developers.
+      A core domain is not always obvious and can evolve or change with the business.
+
+  • Supporting domains: The utility components that provide functionality that supports the
+      core business. You might consider using an off-the-shelf solution if what is being provided and
+      developed by a team is not specific enough to the business.
+
+  • Generic domains: Components that are unrelated to the core business but necessary for it to
+      function. Email, payment processing, reporting, and other common commodity solutions fall
+      into this domain type. It wouldn’t make sense to devote teams to develop this functionality
+      when so many solutions exist.
+
+
+The purpose of context mapping is to recognize the relationships the models will have with other
+  models and to also show the relationship between teams. The patterns used in context mapping are
+  of a descriptive value only. They do not give any hints about what technical implementations should
+  exist to connect the models:  (see Figure 2.2 – A context mapping example) : 
+  
+•• Upstream patterns:
+    - Open host service: This context provides an exposed contract that downstream contexts may connect to
+    - Event publisher: This context publishes integration events that downstream contexts may subscribe to
+ 
+•• Midway patterns:
+    - Shared kernel: Two teams share a subset of the domain model and maybe the database.
+    - Published language: A good document shared language to translate models between contexts.
+      It is often combined with an open host service.
+    - Separate ways: Contexts that have no connections because integration is too expensive.
+    - Partnership: A cooperative relationship between two contexts with joint management of the integration.
+ 
+• Downstream patterns:
+   - Customer/supplier: A relationship where the downstream context may veto or 
+     negotiate changes to the upstream context
+   - Conformist: The downstream service is coupled with the upstream context’s model
+   - Anticorruption layer: A layer to isolate the downstream context from changes in the upstream context’s model
+
+
+
+ ▲
+ █ DCA 
+ ▼      
+ 
+Domain-centric architectures
+  A domain-centric architecture, to reiterate, is an architecture with the domain at the center. Around
+  the domain is a layer for application logic, and then around that is a layer for the infrastructure or
+  external concerns. The purpose of the architecture is to keep the domain free of any outside influences
+  such as database specifics or framework concerns.
+
+
+-- Hexagonal architecture  (Figure 2.8 – An interpretation of hexagonal architecture with elements of clean architecture)
+These pairs of ports and adapters come in two types:
+  ••Driver or primary adapters are the web UIs, APIs, and event consumers that drive information
+    in our application
+  ••Driven or secondary adapters are the database, loggers, and event producers that are driven
+    by the application with some information
+    
+Communication between the adapters and the application happens only through the ports and the
+Data Transfer Objects (DTOs) that they have created to represent the requests and responses.
+
+
+
+ ▲
+ █ CQRS 
+ ▼       
+
+Command and Query Responsibility Segregation (CQRS) is a simple pattern to define. Objects
+  are split into two new objects, with one being responsible for commands 
+  and the other responsible for queries.
+The definitions for Command and Query are the same as they are for Command-Query Separation (CQS):
+  • Command: Performs a mutation of the application state
+  • Query: Returns application state to the caller  
+
+
+When to consider CQRS Let’s explore the points while considering CQRS:
+• Your system experiences a much larger amount of read operations than write operations. Using CQRS 
+    allows you to break the operations into different services, allowing them to be scaled independently.
+    
+• Security is applied differently for writes and reads; it also limits what data is viewable.
+
+• You are using event-driven patterns such as event sourcing. By publishing the events used
+   for your event-sourced models, you can generate as many projections as necessary to handle your queries.
+
+• You have complex read patterns that bloat or complicate the model. Moving read models out
+   of the domain model allows you to optimize the read models or the storage used for each access pattern
+
+• You want the data to be available when writing is not possible. Whether by choice or not, having
+   the reads work when the writes are disabled allows the state of the application to still be returned.
+
+
+• /root/internal: This package can be imported by /root and any package found in the
+    directory tree under it.
+• /root/pkg-b/internal: This package may only be imported by /root/pkg-b and
+    any package found in the directory tree under it. Both /root and /root/pkg-a will not
+    be permitted to use any imports from this package.
+
+
+
+
+• Types of events: 
+  In an event-driven application and even in an application that is not event-driven,
+  you will encounter several different kinds of events:
+
+Domain events
+  A domain event is a concept that comes from domain-driven design. It is used to inform other parts
+  of a bounded context about state changes. The events can be handled asynchronously but will most
+  often be handled synchronously within the same process that spawned them
+
+Event sourcing events
+  An event sourcing event is one that shares a lot in common with a domain event. 
+  These events will need to be serialized into a format so that they can be stored in event streams.
+  Whereas domain events are only accessible during the duration of the current process, 
+  these events are retained for as long as they are needed
+
+Integration events
+  An integration event is one that is used to communicate state changes across context 
+  boundaries. Like the event sourcing event, it too is serialized into a format that allows it 
+  to be shared with other modules and applications. Consumers of these events will need access to 
+  information on how to deserialize to use the event at their end. Integration events are strictly 
+  asynchronous and use an event broker to decouple the event producer from the event consumers.
+
+
+
+
+
+
+
+
+
+What is event sourcing?
+  Event sourcing is a pattern of recording each change to an aggregate into an append-only stream. To
+  reconstruct an aggregate’s final state, we must read events sequentially and apply them to the aggregate.
+  This contrasts with the direct updates made by a create, read, update, and delete (CRUD) system. In
+  that system, the changed state of the record is stored in a database that overwrites the prior version
+  of the same aggregate.
+  Event sourcing implementations should use event stores that provide strong consistency guarantees
+  and optimistic concurrency control. That is, when two or more modifications are made concurrently,
+  only the first modification can add events to the stream. The rest of the modifications can be retried
+  or would simply fail.
+
+Understanding the difference between event streaming and
+  event sourcing
+  Event streaming is when events are used to communicate state changes with other bounded contexts
+  of an application. Event sourcing is when events are used to keep a history of the changes in a single
+  context and can be considered an implementation detail and not an architectural choice that has
+  application-wide ramifications. These two uses of events are often thought to be the same and some
+  speakers, books, and blogs conflate the two or use the terms interchangeably.
+
+  In terms of consistency models, an event streaming system is always going to be eventually consistent.
+  An event-sourced system will have the same level of consistency as the database it is used with. With
+  an ACID-compliant database, this would be strongly consistent. With non-relational databases, this
+  is typically only eventually consistent. Even if event streaming is implemented within the same system
+  as a strongly consistent event sourcing system, the former will not compromise the latter’s level of consistency.
+
+
+
+
+
+
+
+
+What exactly is a message? 
+  An event is a message, but a message is not always an event. A message is a container with a payload, 
+  which can also be an event and can have some additional information in the form of key-value pairs.
+  A message may be used to communicate an event, but it may also be used to communicate an instruction
+  or information to another component.
+
+The messages payloads include the following:
+  • Integration event: A state change that is communicated outside of its bounded context
+  • Command: A request to perform work
+  • Query: A request for some information
+  • Reply: An informational response to either a command or query
+
+An application uses different kinds of events to accomplish a variety of activities:
+ • Domain events: Exist for the shortest time, never leave the application, do not require versioning,
+     and are typically handled synchronously. These events are used to inform other application
+     components about changes made to or by an aggregate.
+ • Event-sourced events: Exist for the longest time, never leave the service boundary, require
+     versioning, and are handled synchronously. These events keep a record of every change in state
+     that is made to an aggregate.
+ • Integration events: Exist for an unknown amount of time, are used by an unknown number
+     of consumers, require versioning, and are typically handled asynchronously. These events are used 
+     to supply other components of the system with information regarding significant decisions or changes.
+
+A notification event is going to be the smallest event you can send. You might send a notification
+  because the volume of the event is very high, or you might send one because the size of the data related
+  to the change is too large
+Some examples of when to use a notification evetns: 
+  • New media has been uploaded or has become available. Serializing the file content into an
+    event is not likely to be practical or performant.
+  • With events related to time-series data or other tracking events that have a very high volume or rate. 
+    Following edits to a large create, read, update, delete (CRUD) resource. Instead of sending
+  • the entire updated resource, you might send a list of updated fields only.
+
+
+Some uses for event-carried state transfer are:
+  • Storing shipping addresses for customers in a warehouse service
+  • Building a history of product purchases for a seller in an independent search component
+  • Information from multiple producers can be combined to create entirely new resources for the
+    application to support additional functionality
+
+
+Ordered message delivery: 
+  If the order of the messages causing problems are all related—say, because they belong to the same
+  aggregate or the same workflow—then using a partitioned queue will help keep the messages in order
+  when they are finally delivered, With a partitioned queue, all messages with the same partition key 
+  will be delivered in the order that they were published for that partition. At most, 
+  a single consumer will be subscribed to any partition,
+
+
+-- There are a few more features JetStream adds to NATS Core that we are interested in as outlined here: 
+ • Message deduplication: This can deduplicate messages that have been published more than once
+ • Message replay: Consumers may receive all messages, or receive messages after a specific point
+   in the stream or after a specific timestamp
+ • Additional retention policies: We can choose to keep messages if consumers exist with
+   subscriptions to them or assign limits on the number of messages or total size of the stream
+
+JetStream provides two components, the Stream and the Consumer: 
+• Stream: This is responsible for storing published messages for several subjects. Subjects may
+  be named explicitly to be included or be included with the use of token wildcards. Message
+  retention—based on duration, size, or interest—is configured independently for each stream.
+  Our MallBots stream could be just one stream configured in JetStream alongside many others.
+  
+• Consumer: This is created as a view on the message store. Each consumer has a cursor that is
+  used to iterate over the messages in a stream or a subset of them based on both a subject filter
+  and replay policy.
+
+
+
+
+
+
+
+
+
+••  The atomicity guarantee ensures that the group of queries is treated as a single unit – that is, a
+    single interaction with the database – and that they all either succeed together or fail together
+
+••  The consistency guarantee ensures that the queries transition the state in the database while
+    abiding by all rules, constraints, and triggers that exist in the database
+
+••  The isolation guarantee ensures that no other concurrent interactions with the database will
+    affect this interaction with the database
+
+••  The durability guarantee ensures that once the transaction has been committed, any state
+    changes made by the transaction will survive a system crash
+
+A distributed transaction has the potential to be run over a longer period. Also, some distributed
+  transaction choices do not maintain the isolation guarantee so that resources are not blocked and are
+  not fully ACID compliant:
+
+
+Comparing various methods of distributed transactions: 
+
+The 2PC (Two-Phase Commit)
+  At the center of a 2PC is a coordinator that sends the Prepare and Commit messages to all the
+  participants. During the Prepare phase, each participant may respond positively to signify they have
+  started a local transaction and are ready to proceed. If all the participants have responded positively,
+  then the coordinator will send a COMMIT message to all of the participants and the distributed
+  transaction will be complete. On the other hand, if any participant responds negatively during the
+  Prepare phase, then the coordinator will send an ABORT message to inform the other participants
+  to roll back their local transaction; again, the distributed transaction will be complete.
+
+  What the 2PC has going against it is big. During the Prepare phase, the participants all create prepared
+  transactions that will consume resources until the coordinator gets around to sending the message
+  for the Commit phase. If that never arrives for whatever reason, then the participants may end up
+  holding open a transaction much longer than they should or may never resolve the transactions.
+  Another possibility is that a participant may fail to properly commit the transaction, leaving the
+  system in an inconsistent state. Holding onto transactions limits the scalability of this method for
+  larger distributed transactions.
+
+The Saga
+  A saga is a sequence of steps that define the actions and compensating actions for the system components
+  that are involved, also known as the saga participants. In contrast to 2PCs, each participant is not
+  expected to use a prepared transaction. Not relying on prepared transactions opens the possibility of
+  using NoSQL or another database that does not support prepared transactions. Sagas drop support
+  for the isolation guarantee, making them ACD transactions. The saga steps may use a local ACID
+  transaction, but any changes that are made will be visible to concurrent operations while the other
+  steps are being run.
+  Another reason to choose a saga for your distributed transaction is that a saga can be long-lived. Since
+  there are no resources tied up in a database blocking other work, we can build a saga that could have
+  a lifetime of several seconds, minutes, or even longer....  both types of sagas: 
+
+The Choreographed Saga
+  In a choreographed saga, each participant knows the role they play. With no coordinator to tell them
+  what to do, each participant listens for the events that signal their turn. The coordination logic is
+  spread out across the components and is not centralized.
+
+
+
+

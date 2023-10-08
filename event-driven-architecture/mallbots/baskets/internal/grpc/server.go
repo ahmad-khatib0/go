@@ -22,10 +22,7 @@ func RegisterServer(app application.App, registrar grpc.ServiceRegistrar) error 
 	return nil
 }
 
-func (s server) StartBasket(ctx context.Context, request *basketspb.StartBasketRequest) (
-	*basketspb.StartBasketResponse,
-	error,
-) {
+func (s server) StartBasket(ctx context.Context, request *basketspb.StartBasketRequest) (*basketspb.StartBasketResponse, error) {
 	basketID := uuid.New().String()
 	err := s.app.StartBasket(ctx, application.StartBasket{
 		ID:         basketID,
@@ -81,11 +78,15 @@ func (s server) GetBasket(ctx context.Context, request *basketspb.GetBasketReque
 		return nil, err
 	}
 
-	return &basketspb.GetBasketResponse{Basket: s.basketFromDomain(basket)}, nil
+	return &basketspb.GetBasketResponse{
+		Basket: s.basketFromDomain(basket),
+	}, nil
 }
 
 func (s server) basketFromDomain(basket *domain.Basket) *basketspb.Basket {
-	protoBasket := &basketspb.Basket{Id: basket.ID}
+	protoBasket := &basketspb.Basket{
+		Id: basket.ID,
+	}
 
 	protoBasket.Items = make([]*basketspb.Item, 0, len(basket.Items))
 

@@ -3,8 +3,9 @@ package logging
 import (
 	"context"
 
-	"github.com/ahmad-khatib0/go/event-driven-architecture/mallbots/payments/internal/application"
 	"github.com/rs/zerolog"
+
+	"github.com/ahmad-khatib0/go/event-driven-architecture/mallbots/payments/internal/application"
 )
 
 type Application struct {

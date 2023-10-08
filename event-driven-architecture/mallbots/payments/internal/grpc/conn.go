@@ -15,12 +15,14 @@ func Dial(ctx context.Context, endpoint string) (conn *grpc.ClientConn, err erro
 	defer func() {
 		if err != nil {
 			if err = conn.Close(); err != nil {
+				// TODO do something when logging is a thing
 			}
 			return
 		}
 		go func() {
 			<-ctx.Done()
 			if err = conn.Close(); err != nil {
+				// TODO do something when logging is a thing
 			}
 		}()
 	}()

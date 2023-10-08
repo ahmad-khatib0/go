@@ -4,6 +4,7 @@ import (
 	"context"
 
 	"github.com/ahmad-khatib0/go/event-driven-architecture/mallbots/depot/internal/domain"
+	"github.com/ahmad-khatib0/go/event-driven-architecture/mallbots/internal/ddd"
 	"github.com/stackus/errors"
 )
 
@@ -14,16 +15,18 @@ type CreateShoppingList struct {
 }
 
 type CreateShoppingListHandler struct {
-	shoppingLists domain.ShoppingListRepository
-	stores        domain.StoreRepository
-	products      domain.ProductRepository
+	shoppingLists   domain.ShoppingListRepository
+	stores          domain.StoreRepository
+	products        domain.ProductRepository
+	domainPublisher ddd.EventPublisher
 }
 
-func NewCreateShoppingListHandler(shoppingLists domain.ShoppingListRepository, stores domain.StoreRepository, products domain.ProductRepository) CreateShoppingListHandler {
+func NewCreateShoppingListHandler(shoppingLists domain.ShoppingListRepository, stores domain.StoreRepository, products domain.ProductRepository, domainPublisher ddd.EventPublisher) CreateShoppingListHandler {
 	return CreateShoppingListHandler{
-		shoppingLists: shoppingLists,
-		stores:        stores,
-		products:      products,
+		shoppingLists:   shoppingLists,
+		stores:          stores,
+		products:        products,
+		domainPublisher: domainPublisher,
 	}
 }
 
@@ -31,6 +34,7 @@ func (h CreateShoppingListHandler) CreateShoppingList(ctx context.Context, cmd C
 	list := domain.CreateShopping(cmd.ID, cmd.OrderID)
 
 	for _, item := range cmd.Items {
+		// horribly inefficient
 		store, err := h.stores.Find(ctx, item.StoreID)
 		if err != nil {
 			return errors.Wrap(err, "building shopping list")
@@ -45,5 +49,14 @@ func (h CreateShoppingListHandler) CreateShoppingList(ctx context.Context, cmd C
 		}
 	}
 
-	return errors.Wrap(h.shoppingLists.Save(ctx, list), "scheduling shopping")
+	if err := h.shoppingLists.Save(ctx, list); err != nil {
+		return errors.Wrap(err, "scheduling shopping")
+	}
+
+	// publish domain events
+	if err := h.domainPublisher.Publish(ctx, list.GetEvents()...); err != nil {
+		return err
+	}
+
+	return nil
 }
