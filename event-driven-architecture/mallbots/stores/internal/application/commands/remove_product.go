@@ -12,35 +12,32 @@ type RemoveProduct struct {
 }
 
 type RemoveProductHandler struct {
-	products        domain.ProductRepository
-	domainPublisher ddd.EventPublisher
+	products  domain.ProductRepository
+	publisher ddd.EventPublisher[ddd.Event]
 }
 
-func NewRemoveProductHandler(products domain.ProductRepository, domainPublisher ddd.EventPublisher) RemoveProductHandler {
+func NewRemoveProductHandler(products domain.ProductRepository, publisher ddd.EventPublisher[ddd.Event]) RemoveProductHandler {
 	return RemoveProductHandler{
-		products:        products,
-		domainPublisher: domainPublisher,
+		products:  products,
+		publisher: publisher,
 	}
 }
 
 func (h RemoveProductHandler) RemoveProduct(ctx context.Context, cmd RemoveProduct) error {
-	product, err := h.products.Find(ctx, cmd.ID)
+	product, err := h.products.Load(ctx, cmd.ID)
 	if err != nil {
 		return err
 	}
 
-	if err = product.Remove(); err != nil {
+	event, err := product.Remove()
+	if err != nil {
 		return err
 	}
 
-	if err = h.products.Delete(ctx, cmd.ID); err != nil {
+	err = h.products.Save(ctx, product)
+	if err != nil {
 		return err
 	}
 
-	// publish domain events
-	if err = h.domainPublisher.Publish(ctx, product.GetEvents()...); err != nil {
-		return err
-	}
-
-	return nil
+	return h.publisher.Publish(ctx, event)
 }

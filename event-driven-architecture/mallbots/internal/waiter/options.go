@@ -1,6 +1,8 @@
 package waiter
 
-import "context"
+import (
+	"context"
+)
 
 type WaiterOption func(c *waiterCfg)
 

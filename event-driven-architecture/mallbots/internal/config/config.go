@@ -4,11 +4,12 @@ import (
 	"os"
 	"time"
 
-	"github.com/ahmad-khatib0/go/event-driven-architecture/mallbots/internal/rpc"
-	"github.com/ahmad-khatib0/go/event-driven-architecture/mallbots/internal/web"
 	"github.com/kelseyhightower/envconfig"
 
 	"github.com/stackus/dotenv"
+
+	"github.com/ahmad-khatib0/go/event-driven-architecture/mallbots/internal/rpc"
+	"github.com/ahmad-khatib0/go/event-driven-architecture/mallbots/internal/web"
 )
 
 type (
@@ -16,12 +17,23 @@ type (
 		Conn string `required:"true"`
 	}
 
+	NatsConfig struct {
+		URL    string `required:"true"`
+		Stream string `default:"mallbots"`
+	}
+
+	OtelConfig struct {
+		ServiceName      string `envconfig:"SERVICE_NAME" default:"mallbots"`
+		ExporterEndpoint string `envconfig:"EXPORTER_OTLP_ENDPOINT" default:"http://collector:4317"`
+	}
 	AppConfig struct {
 		Environment     string
 		LogLevel        string `envconfig:"LOG_LEVEL" default:"DEBUG"`
 		PG              PGConfig
+		Nats            NatsConfig
 		Rpc             rpc.RpcConfig
 		Web             web.WebConfig
+		Otel            OtelConfig
 		ShutdownTimeout time.Duration `envconfig:"SHUTDOWN_TIMEOUT" default:"30s"`
 	}
 )

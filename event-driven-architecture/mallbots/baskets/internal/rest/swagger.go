@@ -14,6 +14,8 @@ var swaggerUI embed.FS
 func RegisterSwagger(mux *chi.Mux) error {
 	const specRoot = "/baskets-spec/"
 
+	// mount the swagger specification
 	mux.Mount(specRoot, http.StripPrefix(specRoot, http.FileServer(http.FS(swaggerUI))))
+
 	return nil
 }

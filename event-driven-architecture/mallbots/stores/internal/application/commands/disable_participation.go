@@ -12,34 +12,32 @@ type DisableParticipation struct {
 }
 
 type DisableParticipationHandler struct {
-	stores          domain.StoreRepository
-	domainPublisher ddd.EventPublisher
+	stores    domain.StoreRepository
+	publisher ddd.EventPublisher[ddd.Event]
 }
 
-func NewDisableParticipationHandler(stores domain.StoreRepository, domainPublisher ddd.EventPublisher) DisableParticipationHandler {
+func NewDisableParticipationHandler(stores domain.StoreRepository, publisher ddd.EventPublisher[ddd.Event]) DisableParticipationHandler {
 	return DisableParticipationHandler{
-		stores:          stores,
-		domainPublisher: domainPublisher,
+		stores:    stores,
+		publisher: publisher,
 	}
 }
 
 func (h DisableParticipationHandler) DisableParticipation(ctx context.Context, cmd DisableParticipation) error {
-	store, err := h.stores.Find(ctx, cmd.ID)
+	store, err := h.stores.Load(ctx, cmd.ID)
 	if err != nil {
 		return err
 	}
 
-	if err = store.DisableParticipation(); err != nil {
+	event, err := store.DisableParticipation()
+	if err != nil {
 		return err
 	}
 
-	if err = h.stores.Update(ctx, store); err != nil {
+	err = h.stores.Save(ctx, store)
+	if err != nil {
 		return err
 	}
 
-	if err = h.domainPublisher.Publish(ctx, store.GetEvents()...); err != nil {
-		return err
-	}
-
-	return nil
+	return h.publisher.Publish(ctx, event)
 }

@@ -2,23 +2,23 @@ package postgres
 
 import (
 	"context"
-	"database/sql"
 	"fmt"
 
 	"github.com/stackus/errors"
 
+	"github.com/ahmad-khatib0/go/event-driven-architecture/mallbots/internal/postgres"
 	"github.com/ahmad-khatib0/go/event-driven-architecture/mallbots/payments/internal/application"
 	"github.com/ahmad-khatib0/go/event-driven-architecture/mallbots/payments/internal/models"
 )
 
 type InvoiceRepository struct {
 	tableName string
-	db        *sql.DB
+	db        postgres.DB
 }
 
 var _ application.InvoiceRepository = (*InvoiceRepository)(nil)
 
-func NewInvoiceRepository(tableName string, db *sql.DB) InvoiceRepository {
+func NewInvoiceRepository(tableName string, db postgres.DB) InvoiceRepository {
 	return InvoiceRepository{
 		tableName: tableName,
 		db:        db,
@@ -67,11 +67,11 @@ func (r InvoiceRepository) table(query string) string {
 
 func (r InvoiceRepository) statusToDomain(status string) (models.InvoiceStatus, error) {
 	switch status {
-	case models.InvoicePending.String():
-		return models.InvoicePending, nil
-	case models.InvoicePaid.String():
-		return models.InvoicePaid, nil
+	case models.InvoiceIsPending.String():
+		return models.InvoiceIsPending, nil
+	case models.InvoiceIsPaid.String():
+		return models.InvoiceIsPaid, nil
 	default:
-		return models.InvoiceUnknown, fmt.Errorf("unknown invoice status: %s", status)
+		return models.InvoiceIsUnknown, fmt.Errorf("unknown invoice status: %s", status)
 	}
 }

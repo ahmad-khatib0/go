@@ -1,7 +1,7 @@
 {
   "swagger": "2.0",
   "info": {
-    "title": "Payments API",
+    "title": "Payments",
     "version": "1.0.0"
   },
   "tags": [
@@ -153,6 +153,7 @@
         "details": {
           "type": "array",
           "items": {
+            "type": "object",
             "$ref": "#/definitions/protobufAny"
           }
         }

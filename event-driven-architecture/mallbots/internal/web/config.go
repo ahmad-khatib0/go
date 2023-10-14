@@ -1,6 +1,8 @@
 package web
 
-import "fmt"
+import (
+	"fmt"
+)
 
 type WebConfig struct {
 	Host string `default:"0.0.0.0"`

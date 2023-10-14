@@ -1,40 +1,48 @@
 package domain
 
 import (
-	"github.com/ahmad-khatib0/go/event-driven-architecture/mallbots/internal/ddd"
 	"github.com/stackus/errors"
+
+	"github.com/ahmad-khatib0/go/event-driven-architecture/mallbots/internal/ddd"
 )
+
+const ShoppingListAggregate = "depot.ShoppingList"
 
 var (
 	ErrShoppingCannotBeCanceled  = errors.Wrap(errors.ErrBadRequest, "the shopping list cannot be canceled")
+	ErrShoppingCannotBeInitiated = errors.Wrap(errors.ErrBadRequest, "the shopping list cannot be initiated")
 	ErrShoppingCannotBeAssigned  = errors.Wrap(errors.ErrBadRequest, "the shopping list cannot be assigned")
 	ErrShoppingCannotBeCompleted = errors.Wrap(errors.ErrBadRequest, "the shopping list cannot be completed")
 )
 
 type ShoppingList struct {
-	ddd.AggregateBase
+	ddd.Aggregate
 	OrderID       string
 	Stops         Stops
 	AssignedBotID string
 	Status        ShoppingListStatus
 }
 
-func CreateShopping(id, orderID string) *ShoppingList {
-	shoppingList := &ShoppingList{
-		AggregateBase: ddd.AggregateBase{
-			ID: id,
-		},
-		OrderID: orderID,
-		Status:  ShoppingListIsAvailable,
-		Stops:   make(Stops),
+func NewShoppingList(id string) *ShoppingList {
+	return &ShoppingList{
+		Aggregate: ddd.NewAggregate(id, ShoppingListAggregate),
 	}
+}
 
-	shoppingList.AddEvent(&ShoppingListCreated{
+func CreateShoppingList(id, orderID string) *ShoppingList {
+	shoppingList := NewShoppingList(id)
+	shoppingList.OrderID = orderID
+	shoppingList.Status = ShoppingListIsPending
+	shoppingList.Stops = make(Stops)
+
+	shoppingList.AddEvent(ShoppingListCreatedEvent, &ShoppingListCreated{
 		ShoppingList: shoppingList,
 	})
 
 	return shoppingList
 }
+
+func (ShoppingList) Key() string { return ShoppingListAggregate }
 
 func (sl *ShoppingList) AddItem(store *Store, product *Product, quantity int) error {
 	if _, exists := sl.Stops[store.ID]; !exists {
@@ -50,7 +58,7 @@ func (sl *ShoppingList) AddItem(store *Store, product *Product, quantity int) er
 
 func (sl ShoppingList) isCancelable() bool {
 	switch sl.Status {
-	case ShoppingListIsAvailable, ShoppingListIsAssigned, ShoppingListIsActive:
+	case ShoppingListIsPending, ShoppingListIsAvailable, ShoppingListIsAssigned, ShoppingListIsActive:
 		return true
 	default:
 		return false
@@ -64,7 +72,23 @@ func (sl *ShoppingList) Cancel() error {
 
 	sl.Status = ShoppingListIsCanceled
 
-	sl.AddEvent(&ShoppingListCanceled{
+	sl.AddEvent(ShoppingListCanceledEvent, &ShoppingListCanceled{
+		ShoppingList: sl,
+	})
+
+	return nil
+}
+
+func (sl ShoppingList) isPending() bool {
+	return sl.Status == ShoppingListIsPending
+}
+
+func (sl *ShoppingList) Initiate() error {
+	if !sl.isPending() {
+		return ErrShoppingCannotBeInitiated
+	}
+
+	sl.AddEvent(ShoppingListInitiatedEvent, &ShoppingListInitiated{
 		ShoppingList: sl,
 	})
 
@@ -83,7 +107,7 @@ func (sl *ShoppingList) Assign(id string) error {
 	sl.AssignedBotID = id
 	sl.Status = ShoppingListIsAssigned
 
-	sl.AddEvent(&ShoppingListAssigned{
+	sl.AddEvent(ShoppingListAssignedEvent, &ShoppingListAssigned{
 		ShoppingList: sl,
 		BotID:        id,
 	})
@@ -102,7 +126,7 @@ func (sl *ShoppingList) Complete() error {
 
 	sl.Status = ShoppingListIsCompleted
 
-	sl.AddEvent(&ShoppingListCompleted{
+	sl.AddEvent(ShoppingListCompletedEvent, &ShoppingListCompleted{
 		ShoppingList: sl,
 	})
 

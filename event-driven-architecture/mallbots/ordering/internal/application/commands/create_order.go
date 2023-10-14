@@ -13,57 +13,35 @@ type CreateOrder struct {
 	ID         string
 	CustomerID string
 	PaymentID  string
-	Items      []*domain.Item
+	Items      []domain.Item
 }
 
 type CreateOrderHandler struct {
-	orders          domain.OrderRepository
-	customers       domain.CustomerRepository
-	payments        domain.PaymentRepository
-	shopping        domain.ShoppingRepository
-	domainPublisher ddd.EventPublisher
+	orders    domain.OrderRepository
+	publisher ddd.EventPublisher[ddd.Event]
 }
 
-func NewCreateOrderHandler(orders domain.OrderRepository, customers domain.CustomerRepository, payments domain.PaymentRepository, shopping domain.ShoppingRepository, domainPublisher ddd.EventPublisher) CreateOrderHandler {
+func NewCreateOrderHandler(orders domain.OrderRepository, publisher ddd.EventPublisher[ddd.Event]) CreateOrderHandler {
 	return CreateOrderHandler{
-		orders:          orders,
-		customers:       customers,
-		payments:        payments,
-		shopping:        shopping,
-		domainPublisher: domainPublisher,
+		orders:    orders,
+		publisher: publisher,
 	}
 }
 
 func (h CreateOrderHandler) CreateOrder(ctx context.Context, cmd CreateOrder) error {
-	order, err := domain.CreateOrder(cmd.ID, cmd.CustomerID, cmd.PaymentID, cmd.Items)
+	order, err := h.orders.Load(ctx, cmd.ID)
+	if err != nil {
+		return err
+	}
+
+	event, err := order.CreateOrder(cmd.ID, cmd.CustomerID, cmd.PaymentID, cmd.Items)
 	if err != nil {
 		return errors.Wrap(err, "create order command")
 	}
 
-	// authorizeCustomer
-	if err = h.customers.Authorize(ctx, order.CustomerID); err != nil {
-		return errors.Wrap(err, "order customer authorization")
-	}
-
-	// validatePayment
-	if err = h.payments.Confirm(ctx, order.PaymentID); err != nil {
-		return errors.Wrap(err, "order payment confirmation")
-	}
-
-	// scheduleShopping
-	if order.ShoppingID, err = h.shopping.Create(ctx, order); err != nil {
-		return errors.Wrap(err, "order shopping scheduling")
-	}
-
-	// orderCreation
 	if err = h.orders.Save(ctx, order); err != nil {
 		return errors.Wrap(err, "order creation")
 	}
 
-	// publish domain events
-	if err = h.domainPublisher.Publish(ctx, order.GetEvents()...); err != nil {
-		return err
-	}
-
-	return nil
+	return h.publisher.Publish(ctx, event)
 }

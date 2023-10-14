@@ -3,9 +3,10 @@ package commands
 import (
 	"context"
 
+	"github.com/stackus/errors"
+
 	"github.com/ahmad-khatib0/go/event-driven-architecture/mallbots/depot/internal/domain"
 	"github.com/ahmad-khatib0/go/event-driven-architecture/mallbots/internal/ddd"
-	"github.com/stackus/errors"
 )
 
 type CreateShoppingList struct {
@@ -18,10 +19,12 @@ type CreateShoppingListHandler struct {
 	shoppingLists   domain.ShoppingListRepository
 	stores          domain.StoreRepository
 	products        domain.ProductRepository
-	domainPublisher ddd.EventPublisher
+	domainPublisher ddd.EventPublisher[ddd.AggregateEvent]
 }
 
-func NewCreateShoppingListHandler(shoppingLists domain.ShoppingListRepository, stores domain.StoreRepository, products domain.ProductRepository, domainPublisher ddd.EventPublisher) CreateShoppingListHandler {
+func NewCreateShoppingListHandler(shoppingLists domain.ShoppingListRepository, stores domain.StoreRepository,
+	products domain.ProductRepository, domainPublisher ddd.EventPublisher[ddd.AggregateEvent],
+) CreateShoppingListHandler {
 	return CreateShoppingListHandler{
 		shoppingLists:   shoppingLists,
 		stores:          stores,
@@ -31,7 +34,7 @@ func NewCreateShoppingListHandler(shoppingLists domain.ShoppingListRepository, s
 }
 
 func (h CreateShoppingListHandler) CreateShoppingList(ctx context.Context, cmd CreateShoppingList) error {
-	list := domain.CreateShopping(cmd.ID, cmd.OrderID)
+	list := domain.CreateShoppingList(cmd.ID, cmd.OrderID)
 
 	for _, item := range cmd.Items {
 		// horribly inefficient
@@ -54,7 +57,7 @@ func (h CreateShoppingListHandler) CreateShoppingList(ctx context.Context, cmd C
 	}
 
 	// publish domain events
-	if err := h.domainPublisher.Publish(ctx, list.GetEvents()...); err != nil {
+	if err := h.domainPublisher.Publish(ctx, list.Events()...); err != nil {
 		return err
 	}
 

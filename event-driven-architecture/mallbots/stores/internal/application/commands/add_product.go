@@ -19,37 +19,32 @@ type AddProduct struct {
 }
 
 type AddProductHandler struct {
-	stores          domain.StoreRepository
-	products        domain.ProductRepository
-	domainPublisher ddd.EventPublisher
+	products  domain.ProductRepository
+	publisher ddd.EventPublisher[ddd.Event]
 }
 
-func NewAddProductHandler(stores domain.StoreRepository, products domain.ProductRepository, domainPublisher ddd.EventPublisher) AddProductHandler {
+func NewAddProductHandler(products domain.ProductRepository, publisher ddd.EventPublisher[ddd.Event]) AddProductHandler {
 	return AddProductHandler{
-		stores:          stores,
-		products:        products,
-		domainPublisher: domainPublisher,
+		products:  products,
+		publisher: publisher,
 	}
 }
 
 func (h AddProductHandler) AddProduct(ctx context.Context, cmd AddProduct) error {
-	if _, err := h.stores.Find(ctx, cmd.StoreID); err != nil {
-		return errors.Wrap(err, "error adding product")
-	}
-
-	product, err := domain.CreateProduct(cmd.ID, cmd.StoreID, cmd.Name, cmd.Description, cmd.SKU, cmd.Price)
+	product, err := h.products.Load(ctx, cmd.ID)
 	if err != nil {
 		return errors.Wrap(err, "error adding product")
 	}
 
-	if err = h.products.Save(ctx, product); err != nil {
+	event, err := product.InitProduct(cmd.ID, cmd.StoreID, cmd.Name, cmd.Description, cmd.SKU, cmd.Price)
+	if err != nil {
+		return errors.Wrap(err, "initializing product")
+	}
+
+	err = h.products.Save(ctx, product)
+	if err != nil {
 		return errors.Wrap(err, "error adding product")
 	}
 
-	// publish domain events
-	if err = h.domainPublisher.Publish(ctx, product.GetEvents()...); err != nil {
-		return err
-	}
-
-	return nil
+	return errors.Wrap(h.publisher.Publish(ctx, event), "publishing domain event")
 }

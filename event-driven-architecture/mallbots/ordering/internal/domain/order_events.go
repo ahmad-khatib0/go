@@ -1,25 +1,51 @@
 package domain
 
+const (
+	OrderCreatedEvent   = "ordering.OrderCreated"
+	OrderRejectedEvent  = "ordering.OrderRejected"
+	OrderApprovedEvent  = "ordering.OrderApproved"
+	OrderCanceledEvent  = "ordering.OrderCanceled"
+	OrderReadiedEvent   = "ordering.OrderReadied"
+	OrderCompletedEvent = "ordering.OrderCompleted"
+)
+
 type OrderCreated struct {
-	Order *Order
+	CustomerID string
+	PaymentID  string
+	ShoppingID string
+	Items      []Item
 }
 
-func (OrderCreated) EventName() string { return "ordering.OrderCreated" }
+func (OrderCreated) Key() string { return OrderCreatedEvent }
+
+type OrderRejected struct{}
+
+func (OrderRejected) Key() string { return OrderRejectedEvent }
+
+type OrderApproved struct {
+	ShoppingID string
+}
+
+func (OrderApproved) Key() string { return OrderApprovedEvent }
 
 type OrderCanceled struct {
-	Order *Order
+	CustomerID string
+	PaymentID  string
 }
 
-func (OrderCanceled) EventName() string { return "ordering.OrderCanceled" }
+func (OrderCanceled) Key() string { return OrderCanceledEvent }
 
 type OrderReadied struct {
-	Order *Order
+	CustomerID string
+	PaymentID  string
+	Total      float64
 }
 
-func (OrderReadied) EventName() string { return "ordering.OrderReadied" }
+func (OrderReadied) Key() string { return OrderReadiedEvent }
 
 type OrderCompleted struct {
-	Order *Order
+	CustomerID string
+	InvoiceID  string
 }
 
-func (OrderCompleted) EventName() string { return "ordering.OrderCompleted" }
+func (OrderCompleted) Key() string { return OrderCompletedEvent }

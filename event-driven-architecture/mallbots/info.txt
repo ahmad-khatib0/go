@@ -348,3 +348,196 @@ The Choreographed Saga
 
 
 
+
+
+
+System under test
+  At each level of testing, we use the term system under test (SUT) to describe the component or
+  components being tested. For unit tests, the SUT may be a function, whereas for E2E testing, it
+  would encompass the application and any external APIs involved. Generally, the SUT expands
+  in scope or application coverage the higher up you go in the testing pyramid.
+
+Unit tests
+  Unit tests should make an appearance in any testing strategy. They are used to test code for correctness
+  and to locate problems with application and business logic implementations. In a testing strategy, they
+  should take up the bulk of the testing efforts. These tests should be free of any dependencies, especially
+  any I/O, and make use of test doubles such as mocks, stubs, and fakes. The system under test for a
+  unit test should be very small; for example, individual functions and methods.
+
+Integration tests
+  Instead of focusing on the logic, you will focus on testing the
+  interactions between two components. Typically, you must test the interactions between a component
+  with one of its dependencies. Testing that your ORM or repository implementations work with a real
+  database would be an example of an integration test. Another example would be testing that your web
+  interface works with application or business logic components. For an integration test, the SUT will
+  be the two components with any additional dependencies replaced with mocks.
+
+Contract tests
+  A distributed application or a modular monolith like ours is going to have many connection points
+  between the microservices or modules. We can use contract tests built by consumers’ expectations of
+  an API or message to verify whether a producer has implemented those expectations. Despite being
+  rather high on the testing pyramid, these contract tests are expected to run just as fast as unit tests
+  since they do not deal with any real dependencies or test any logic. The SUT for a contract will be
+  either the consumer and its expectation, or the producer and its API or message verification.
+  Distributed applications will benefit the most from adding contract tests to the testing strategy. These
+  tests are not just for testing between microservices – they can also be used to test your UI with its
+  backend API.
+
+End-to-end tests
+  E2E tests are used to test the expected functionality of the whole application. These tests will include
+  the entire application as the SUT. E2E tests are often extensive and slow. If your application includes a
+  UI, then that too will become part of the tests because they intend to test the behaviors and correctness
+  of the application from the point of view of the end user. The correctness being tested for is how the
+  application performs and not like a unit test’s correctness of how the application does it.
+  Teams that take on the effort of maintaining fragile and costly tests are rewarded with confidence that
+  the application is working as expected during large operations that can span the whole application.
+  In the upcoming sections, we will explore each of the testing methods present in our testing strategy
+
+Creating and using test doubles in our tests
+  Test doubles are tools we can use to isolate the system or code under test from the rest of the system around it.
+  These tools come in different forms, each useful for different testing scenarios:
+  
+•• Fakes implement the same functionality as the real dependency. An in-memory implementation
+   of a repository could stand in and take the place of a PostgreSQL implementation so that the
+   test does not rely on any real I/O.
+•• Stubs are like fakes, but the stub implementation responds with static or predictable responses.
+•• Spies work like an observable proxy of the real implementation. A spy can be used to report
+   back the input, return values, and the number of calls that it received. Spies may also help with
+   recording the inputs and outputs that were seen for later use.
+•• Mocks mimic the real implementation, similar to a fake, but do not provide an alternative
+   implementation. Instead, a mock is configured to respond in certain ways to specific inputs.
+   Then, like a spy, it can be used to assert whether the proper inputs were received, the right
+   number of calls were made, and no unexpected calls or inputs were encountered.
+
+
+Arrange, act, and assert
+  The Arrange-Act-Assert (AAA) pattern is a simple yet powerful way to build your tests. It
+  breaks up a test function into three parts for better maintainability and readability. The Arrange
+  portion is where the test is set up, the Act portion is where the target is called or interacted
+  with, and the Assert portion is where the final test or verification happens. By following this
+  pattern, it is easy to spot test functions that are doing more than testing one thing at a time.
+  This pattern is also known as Given-When-Then.
+
+Incorporating the dependencies into your tests
+  how to incorporate containers into our tests?
+  
+Option 1 – manually by using Docker Compose files:
+  We can create a Docker Compose file for our tests, such as test.docker-compose.yml, that
+  will stand up everything we will need to connect to for the integration tests that we’ll write. This
+  should make it easy for every developer to have the dependencies available, and so long as everyone
+  remembers to start up the environment, they should also have no issues running the tests. Volumes
+  can be destroyed during the environment teardown so that previous runs do not affect others.
+  The downsides of this option begin with the Compose file itself. If a problem exists when standing
+  up the entire environment, then someone will need to make changes to it before they can test. There
+  may also be issues running the tests multiple times, so tearing down the environment to stand it back
+  up again might be necessary, which could take a considerable amount of time. To tackle this, we can
+  take a different approach.
+
+Option 2 – internalizing the Docker integration
+  There is a solution we can use that will not only allow us to use different containers or compose
+  environments for different tests but also remove the step of having to run a Docker command before
+  executing any integration tests.
+  Testcontainers-Go (https://golang.testcontainers.org) is a library that makes
+  it possible to start up a container or compose an environment that is controlled 
+  by code that we can include in our tests.
+  The benefits of this option are that we will always have a pristine environment to run our tests in
+  and subsequent runs will not need to wait for any containers or volumes to be reset. The other is
+  the containers will always be started and removed when the test is run. This means that there is no
+  longer any need to maintain documentation on how to prepare a local environment to run tests. This
+  is the better option in my opinion, but it will require some initial setup, as well as some resetting or
+  cleanup between each test.
+
+
+Running specific directories, files, or tests: 
+To run all the application tests for the Shopping Baskets module, you would use the following command:
+  # go test ./baskets/internal/application
+  
+To run only the RemoveItem test, you would add -run "RemoveItem$" to the command:
+  # go test ./baskets/internal/application -run "RemoveItem$"
+  
+We can target specific table-driven subtests as well. To run only the NoProduct subtest for the
+RemoveItem test, we can use "RemoveItem/NoProduct$". For the following command, I
+have moved into the internal directory:
+  # go test ./application -run "RemoveItem/NoProduct$"
+In the previous two command examples, I used a Regex to search for the test to run. You can target
+a group of tests with a well-written Regex. The test tool makes it very easy to target specific tests
+when we need to be very focused on a test or a collection of tests.
+
+
+Go build constraints
+  We can use the conditional compilation build constraints to create groups of our tests. These constraints
+  are normally used to build our programs for different OSs or CPU architectures, but we can also use
+  them for our tests because the tests and the application are both compiled when we run the tests.
+  Because this is accomplished by adding a special comment to the top of our files, we can only group
+  tests together by files; we cannot create any subgroups of the tests within the files
+  To group tests into an integration grouping, we can add the following with 
+  a second blank line to the top of the tests file:
+//go:build integration
+
+The following are a few rules that need to be followed for the compiler to recognize 
+  the comment as a build constraint:
+• There must not be any spaces between the single-line comment syntax and go:build.
+  Multiline comment syntax will not work.
+• The constraint must be followed by a blank line.
+• The constraint must be the first line in the file.
+
+. To run the tests now, we will need to pass the -tags option into the test command, like so:
+  go test ./internal/postgres -tags integration
+
+You can combine multiple tags to create subgroups using the build constraints by 
+taking advantage of the Boolean operators that it supports. We can modify the constraint 
+so that the database tests are run with all integration tests or can be run by themselves:
+  //go:build integration || database
+A file with this constraint could be run using any of the following commands:
+  go test ./internal/postgres -tags integration
+  go test ./internal/postgres -tags database
+  go test ./internal/postgres -tags integration,database
+
+
+Contract testing comes in two forms:
+• Consumer-driven contract testing (CDCT), which is when the contract is developed using
+  the expectations of the consumers
+• Provider-driven contract testing (PDCT), which is when the contract is developed using the
+  provided API of the provider
+
+
+
+
+
+
+
+
+A look at the AWS resources we are deploying
+  The AWS resources that we will be deploying are broken up into different files, so let’s run through
+  each file and cover the major resources that will be installed and configured by the Terraform code within them:
+  
+• Application Load Balancer (ALB): The alb.tf file sets up a service account on the Kubernetes
+  cluster that will be used by the ALB. The file also contains a Helm resource that will install the
+  ALB using a Chart.
+ 
+• Elastic Container Registry (ECR): The ecr.tf file sets up private image registries for each
+  of the nine services we will be deploying. It will also build and push each service up into the
+  newly created registries.
+
+• EKS: The eks.tf file is responsible for creating our Kubernetes cluster. It makes use of a
+  Terraform module, which is a collection of other Terraform scripts, to build the necessary
+  resources from one resource definition. Some AWS IAM policies and roles are configured in
+  this file for the cluster to support the installation of the ALB.
+
+• RDS: rds.tf will set up a serverless PostgreSQL database and make it available to the
+  Kubernetes cluster. The database will also be accessible by us or anyone else who has an IP
+  address allowed by the allowed_cidr_block value.
+
+• Security groups: The security_groups.tf file will set up our security group that will
+  limit access to our resources from the internet. Whatever allowed_cidr_block we provide
+  will be the only set of IP addresses that will be able to reach our database, cluster, and any other
+  resources we have set up.
+
+• VPC: The vpc.tf file will create a set of networks, connect them with routing, and also use
+  our security group to limit access to them. These networks will be used by the Kubernetes cluster
+  to deploy Pods, by the database, and by the application. The VPC will be installed across two
+  AZs to improve our deployed resource resiliency by being installed in different data centers
+
+
+
+

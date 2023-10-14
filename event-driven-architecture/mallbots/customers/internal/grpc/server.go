@@ -3,11 +3,16 @@ package grpc
 import (
 	"context"
 
+	"github.com/google/uuid"
+	"go.opentelemetry.io/otel/attribute"
+	"go.opentelemetry.io/otel/codes"
+	"go.opentelemetry.io/otel/trace"
+	"google.golang.org/grpc"
+
 	"github.com/ahmad-khatib0/go/event-driven-architecture/mallbots/customers/customerspb"
 	"github.com/ahmad-khatib0/go/event-driven-architecture/mallbots/customers/internal/application"
 	"github.com/ahmad-khatib0/go/event-driven-architecture/mallbots/customers/internal/domain"
-	"github.com/google/uuid"
-	"google.golang.org/grpc"
+	"github.com/ahmad-khatib0/go/event-driven-architecture/mallbots/internal/errorsotel"
 )
 
 type server struct {
@@ -18,33 +23,65 @@ type server struct {
 var _ customerspb.CustomersServiceServer = (*server)(nil)
 
 func RegisterServer(app application.App, registrar grpc.ServiceRegistrar) error {
-	customerspb.RegisterCustomersServiceServer(registrar, server{app: app})
+	customerspb.RegisterCustomersServiceServer(registrar, server{
+		app: app,
+	})
 	return nil
 }
 
-func (s server) RegisterCustomer(ctx context.Context, request *customerspb.RegisterCustomerRequest) (*customerspb.RegisterCustomerResponse, error) {
+func (s server) RegisterCustomer(ctx context.Context, request *customerspb.RegisterCustomerRequest) (resp *customerspb.RegisterCustomerResponse, err error) {
+	span := trace.SpanFromContext(ctx)
+
 	id := uuid.New().String()
-	err := s.app.RegisterCustomer(ctx, application.RegisterCustomer{
+
+	span.SetAttributes(
+		attribute.String("CustomerID", id),
+	)
+
+	err = s.app.RegisterCustomer(ctx, application.RegisterCustomer{
 		ID:        id,
 		Name:      request.GetName(),
 		SmsNumber: request.GetSmsNumber(),
 	})
+	if err != nil {
+		span.RecordError(err, trace.WithAttributes(errorsotel.ErrAttrs(err)...))
+		span.SetStatus(codes.Error, err.Error())
+	}
+
 	return &customerspb.RegisterCustomerResponse{Id: id}, err
 }
 
-func (s server) AuthorizeCustomer(ctx context.Context, request *customerspb.AuthorizeCustomerRequest) (*customerspb.AuthorizeCustomerResponse, error) {
-	err := s.app.AuthorizeCustomer(ctx, application.AuthorizeCustomer{
+func (s server) AuthorizeCustomer(ctx context.Context, request *customerspb.AuthorizeCustomerRequest) (resp *customerspb.AuthorizeCustomerResponse, err error) {
+	span := trace.SpanFromContext(ctx)
+
+	span.SetAttributes(
+		attribute.String("CustomerID", request.GetId()),
+	)
+
+	err = s.app.AuthorizeCustomer(ctx, application.AuthorizeCustomer{
 		ID: request.GetId(),
 	})
+	if err != nil {
+		span.RecordError(err, trace.WithAttributes(errorsotel.ErrAttrs(err)...))
+		span.SetStatus(codes.Error, err.Error())
+	}
 
 	return &customerspb.AuthorizeCustomerResponse{}, err
 }
 
-func (s server) GetCustomer(ctx context.Context, request *customerspb.GetCustomerRequest) (*customerspb.GetCustomerResponse, error) {
+func (s server) GetCustomer(ctx context.Context, request *customerspb.GetCustomerRequest) (resp *customerspb.GetCustomerResponse, err error) {
+	span := trace.SpanFromContext(ctx)
+
+	span.SetAttributes(
+		attribute.String("CustomerID", request.GetId()),
+	)
+
 	customer, err := s.app.GetCustomer(ctx, application.GetCustomer{
 		ID: request.GetId(),
 	})
 	if err != nil {
+		span.RecordError(err, trace.WithAttributes(errorsotel.ErrAttrs(err)...))
+		span.SetStatus(codes.Error, err.Error())
 		return nil, err
 	}
 
@@ -53,19 +90,41 @@ func (s server) GetCustomer(ctx context.Context, request *customerspb.GetCustome
 	}, nil
 }
 
-func (s server) EnableCustomer(ctx context.Context, request *customerspb.EnableCustomerRequest) (*customerspb.EnableCustomerResponse, error) {
-	err := s.app.EnableCustomer(ctx, application.EnableCustomer{ID: request.GetId()})
+func (s server) EnableCustomer(ctx context.Context, request *customerspb.EnableCustomerRequest) (resp *customerspb.EnableCustomerResponse, err error) {
+	span := trace.SpanFromContext(ctx)
+
+	span.SetAttributes(
+		attribute.String("CustomerID", request.GetId()),
+	)
+
+	err = s.app.EnableCustomer(ctx, application.EnableCustomer{ID: request.GetId()})
+	if err != nil {
+		span.RecordError(err, trace.WithAttributes(errorsotel.ErrAttrs(err)...))
+		span.SetStatus(codes.Error, err.Error())
+	}
+
 	return &customerspb.EnableCustomerResponse{}, err
 }
 
-func (s server) DisableCustomer(ctx context.Context, request *customerspb.DisableCustomerRequest) (*customerspb.DisableCustomerResponse, error) {
-	err := s.app.DisableCustomer(ctx, application.DisableCustomer{ID: request.GetId()})
+func (s server) DisableCustomer(ctx context.Context, request *customerspb.DisableCustomerRequest) (resp *customerspb.DisableCustomerResponse, err error) {
+	span := trace.SpanFromContext(ctx)
+
+	span.SetAttributes(
+		attribute.String("CustomerID", request.GetId()),
+	)
+
+	err = s.app.DisableCustomer(ctx, application.DisableCustomer{ID: request.GetId()})
+	if err != nil {
+		span.RecordError(err, trace.WithAttributes(errorsotel.ErrAttrs(err)...))
+		span.SetStatus(codes.Error, err.Error())
+	}
+
 	return &customerspb.DisableCustomerResponse{}, err
 }
 
 func (s server) customerFromDomain(customer *domain.Customer) *customerspb.Customer {
 	return &customerspb.Customer{
-		Id:        customer.ID,
+		Id:        customer.ID(),
 		Name:      customer.Name,
 		SmsNumber: customer.SmsNumber,
 		Enabled:   customer.Enabled,

@@ -3,9 +3,10 @@ package application
 import (
 	"context"
 
+	"github.com/stackus/errors"
+
 	"github.com/ahmad-khatib0/go/event-driven-architecture/mallbots/baskets/internal/domain"
 	"github.com/ahmad-khatib0/go/event-driven-architecture/mallbots/internal/ddd"
-	"github.com/pkg/errors"
 )
 
 type (
@@ -49,31 +50,31 @@ type (
 	}
 
 	Application struct {
-		baskets         domain.BasketRepository
-		stores          domain.StoreRepository
-		products        domain.ProductRepository
-		orders          domain.OrderRepository
-		domainPublisher ddd.EventPublisher
+		baskets   domain.BasketRepository
+		stores    domain.StoreRepository
+		products  domain.ProductRepository
+		publisher ddd.EventPublisher[ddd.Event]
 	}
 )
 
-func New(
-	baskets domain.BasketRepository,
-	stores domain.StoreRepository,
-	products domain.ProductRepository,
-	orders domain.OrderRepository,
-	domainPublisher ddd.EventPublisher,
-) *Application {
+var _ App = (*Application)(nil)
+
+func New(baskets domain.BasketRepository, stores domain.StoreRepository, products domain.ProductRepository, publisher ddd.EventPublisher[ddd.Event]) *Application {
 	return &Application{
-		baskets:  baskets,
-		stores:   stores,
-		products: products,
-		orders:   orders,
+		baskets:   baskets,
+		stores:    stores,
+		products:  products,
+		publisher: publisher,
 	}
 }
 
 func (a Application) StartBasket(ctx context.Context, start StartBasket) error {
-	basket, err := domain.StartBasket(start.ID, start.CustomerID)
+	basket, err := a.baskets.Load(ctx, start.ID)
+	if err != nil {
+		return err
+	}
+
+	event, err := basket.Start(start.CustomerID)
 	if err != nil {
 		return err
 	}
@@ -82,64 +83,47 @@ func (a Application) StartBasket(ctx context.Context, start StartBasket) error {
 		return err
 	}
 
-	// publish domain events
-	if err = a.domainPublisher.Publish(ctx, basket.GetEvents()...); err != nil {
-		return err
-	}
-
-	return nil
-
+	return a.publisher.Publish(ctx, event)
 }
 
 func (a Application) CancelBasket(ctx context.Context, cancel CancelBasket) error {
-	basket, err := a.baskets.Find(ctx, cancel.ID)
+	basket, err := a.baskets.Load(ctx, cancel.ID)
 	if err != nil {
 		return err
 	}
 
-	err = basket.Cancel()
+	event, err := basket.Cancel()
 	if err != nil {
 		return err
 	}
 
-	if err = a.baskets.Update(ctx, basket); err != nil {
+	if err = a.baskets.Save(ctx, basket); err != nil {
 		return err
 	}
 
-	// publish domain events
-	if err = a.domainPublisher.Publish(ctx, basket.GetEvents()...); err != nil {
-		return err
-	}
-
-	return nil
-
+	return a.publisher.Publish(ctx, event)
 }
 
 func (a Application) CheckoutBasket(ctx context.Context, checkout CheckoutBasket) error {
-	basket, err := a.baskets.Find(ctx, checkout.ID)
+	basket, err := a.baskets.Load(ctx, checkout.ID)
 	if err != nil {
 		return err
 	}
 
-	err = basket.Checkout(checkout.PaymentID)
+	event, err := basket.Checkout(checkout.PaymentID)
 	if err != nil {
 		return errors.Wrap(err, "baskets checkout")
 	}
 
-	if err = a.baskets.Update(ctx, basket); err != nil {
+	if err = a.baskets.Save(ctx, basket); err != nil {
 		return errors.Wrap(err, "basket checkout")
 	}
 
-	// publish domain events
-	if err = a.domainPublisher.Publish(ctx, basket.GetEvents()...); err != nil {
-		return err
-	}
-
-	return nil
+	return a.publisher.Publish(ctx, event)
 }
 
 func (a Application) AddItem(ctx context.Context, add AddItem) error {
-	basket, err := a.baskets.Find(ctx, add.ID)
+	basket, err := a.baskets.Load(ctx, add.ID)
 	if err != nil {
 		return err
 	}
@@ -151,7 +135,7 @@ func (a Application) AddItem(ctx context.Context, add AddItem) error {
 
 	store, err := a.stores.Find(ctx, product.StoreID)
 	if err != nil {
-		return nil
+		return err
 	}
 
 	err = basket.AddItem(store, product, add.Quantity)
@@ -159,12 +143,7 @@ func (a Application) AddItem(ctx context.Context, add AddItem) error {
 		return err
 	}
 
-	if err = a.baskets.Update(ctx, basket); err != nil {
-		return err
-	}
-
-	// publish domain events
-	if err = a.domainPublisher.Publish(ctx, basket.GetEvents()...); err != nil {
+	if err = a.baskets.Save(ctx, basket); err != nil {
 		return err
 	}
 
@@ -177,7 +156,7 @@ func (a Application) RemoveItem(ctx context.Context, remove RemoveItem) error {
 		return err
 	}
 
-	basket, err := a.baskets.Find(ctx, remove.ID)
+	basket, err := a.baskets.Load(ctx, remove.ID)
 	if err != nil {
 		return err
 	}
@@ -187,12 +166,7 @@ func (a Application) RemoveItem(ctx context.Context, remove RemoveItem) error {
 		return err
 	}
 
-	if err = a.baskets.Update(ctx, basket); err != nil {
-		return err
-	}
-
-	// publish domain events
-	if err = a.domainPublisher.Publish(ctx, basket.GetEvents()...); err != nil {
+	if err = a.baskets.Save(ctx, basket); err != nil {
 		return err
 	}
 
@@ -200,5 +174,5 @@ func (a Application) RemoveItem(ctx context.Context, remove RemoveItem) error {
 }
 
 func (a Application) GetBasket(ctx context.Context, get GetBasket) (*domain.Basket, error) {
-	return a.baskets.Find(ctx, get.ID)
+	return a.baskets.Load(ctx, get.ID)
 }

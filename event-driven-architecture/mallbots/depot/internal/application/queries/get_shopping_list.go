@@ -19,5 +19,6 @@ func NewGetShoppingListHandler(shoppingLists domain.ShoppingListRepository) GetS
 }
 
 func (h GetShoppingListHandler) GetShoppingList(ctx context.Context, query GetShoppingList) (*domain.ShoppingList, error) {
+
 	return h.shoppingLists.Find(ctx, query.ID)
 }

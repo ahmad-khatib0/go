@@ -381,7 +381,7 @@ func RegisterDepotServiceHandlerServer(ctx context.Context, mux *runtime.ServeMu
 // RegisterDepotServiceHandlerFromEndpoint is same as RegisterDepotServiceHandler but
 // automatically dials to "endpoint" and closes the connection when "ctx" gets done.
 func RegisterDepotServiceHandlerFromEndpoint(ctx context.Context, mux *runtime.ServeMux, endpoint string, opts []grpc.DialOption) (err error) {
-	conn, err := grpc.Dial(endpoint, opts...)
+	conn, err := grpc.DialContext(ctx, endpoint, opts...)
 	if err != nil {
 		return err
 	}

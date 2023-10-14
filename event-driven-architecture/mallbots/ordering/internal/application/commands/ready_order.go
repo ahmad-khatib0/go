@@ -12,35 +12,31 @@ type ReadyOrder struct {
 }
 
 type ReadyOrderHandler struct {
-	orders          domain.OrderRepository
-	domainPublisher ddd.EventPublisher
+	orders    domain.OrderRepository
+	publisher ddd.EventPublisher[ddd.Event]
 }
 
-func NewReadyOrderHandler(orders domain.OrderRepository, domainPublisher ddd.EventPublisher) ReadyOrderHandler {
+func NewReadyOrderHandler(orders domain.OrderRepository, publisher ddd.EventPublisher[ddd.Event]) ReadyOrderHandler {
 	return ReadyOrderHandler{
-		orders:          orders,
-		domainPublisher: domainPublisher,
+		orders:    orders,
+		publisher: publisher,
 	}
 }
 
 func (h ReadyOrderHandler) ReadyOrder(ctx context.Context, cmd ReadyOrder) error {
-	order, err := h.orders.Find(ctx, cmd.ID)
+	order, err := h.orders.Load(ctx, cmd.ID)
 	if err != nil {
 		return err
 	}
 
-	if err = order.Ready(); err != nil {
+	event, err := order.Ready()
+	if err != nil {
 		return nil
 	}
 
-	if err = h.orders.Update(ctx, order); err != nil {
+	if err = h.orders.Save(ctx, order); err != nil {
 		return err
 	}
 
-	// publish domain events
-	if err = h.domainPublisher.Publish(ctx, order.GetEvents()...); err != nil {
-		return err
-	}
-
-	return nil
+	return h.publisher.Publish(ctx, event)
 }
