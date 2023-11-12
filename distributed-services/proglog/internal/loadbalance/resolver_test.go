@@ -57,7 +57,7 @@ func TestResolver(t *testing.T) {
 	r := &loadbalance.Resolver{}
 
 	// configures the target end-point to point to the server we set up in first step
-	_, err = r.Build(resolver.Target{Endpoint: l.Addr().String()}, conn, opts)
+	_, err = r.Build(resolver.Target{URL: l.Addr().String()}, conn, opts)
 	require.NoError(t, err)
 
 	wantState := resolver.State{

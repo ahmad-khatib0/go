@@ -6,7 +6,7 @@ import (
 	"testing"
 
 	"github.com/pact-foundation/pact-go/v2/matchers"
-	"github.com/pact-foundation/pact-go/v2/message/v4"
+	v4 "github.com/pact-foundation/pact-go/v2/message/v4"
 	"github.com/pact-foundation/pact-go/v2/models"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"

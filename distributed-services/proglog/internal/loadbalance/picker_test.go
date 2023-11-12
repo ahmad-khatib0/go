@@ -68,7 +68,8 @@ func setupTest() (*loadbalance.Picker, []*subConn) {
 		addr := resolver.Address{Attributes: attributes.New("is_leader", i == 0)}
 
 		sc.UpdateAddresses([]resolver.Address{addr})
-		buildInfo.ReadySCs[sc] = base.SubConnInfo{Address: addr}
+		// FIX:
+		// buildInfo.ReadySCs[sc] = base.SubConnInfo{Address: addr}
 
 		subConns = append(subConns, sc)
 	}

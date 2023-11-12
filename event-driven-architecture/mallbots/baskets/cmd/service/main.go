@@ -17,7 +17,7 @@ import (
 
 func main() {
 	if err := run(); err != nil {
-		fmt.Printf("baskets exitted abnormally: %s\n", err)
+		fmt.Printf("baskets exited abnormally: %s\n", err)
 		os.Exit(1)
 	}
 }

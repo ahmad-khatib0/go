@@ -7,7 +7,7 @@ require (
 	github.com/alexedwards/scs/v2 v2.5.1
 	github.com/bwmarrin/go-alone v0.0.0-20190806015146-742bb55d1631
 	github.com/davecgh/go-spew v1.1.2-0.20180830191138-d8f796af33cc // indirect
-	github.com/go-chi/chi/v5 v5.0.8
+	github.com/go-chi/chi/v5 v5.0.10
 	github.com/go-chi/cors v1.2.1
 	github.com/go-sql-driver/mysql v1.7.1
 	github.com/go-test/deep v1.1.0 // indirect
@@ -17,6 +17,7 @@ require (
 	github.com/stretchr/testify v1.8.4 // indirect
 	github.com/stripe/stripe-go/v72 v72.52.0
 	github.com/xhit/go-simple-mail/v2 v2.13.0
-	golang.org/x/crypto v0.12.0
-	golang.org/x/net v0.14.0 // indirect
+	golang.org/x/crypto v0.13.0
+	golang.org/x/net v0.15.0 // indirect
+	golang.org/x/sys v0.13.0 // indirect
 )
