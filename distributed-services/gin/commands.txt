@@ -1,0 +1,37 @@
+
+****************************************************************************************
+# Analyzing or visualizing the project dependencies
+$ go mod graph | sed -Ee 's/@[^[:blank:]]+//g' | sort | uniq > unver.txt
+
+# Then, create a graph.dot file containing the following content:
+  digraph {
+    graph [overlap=false, size=14];
+    root="$(go list -m)";
+    node [ shape = plaintext, fontname = "Helvetica", fontsize=24];
+    "$(go list -m)" [style = filled, fillcolor = "#E94762"];
+    
+# Previous file content will generate a graph structure using the DOT language. 
+# We can use DOT to describe graphs (directed or not). That being said, we will inject 
+# the output of unvert.txt into the graph.dot file with the following commands:
+$ cat unver.txt | awk '{print "\""$1"\" -> \""$2"\""};' >>graph.dot
+$ echo "}" >>graph.dot
+$ sed -i '' 's+\("github.com/[^/]*/\)\([^"]*"\)+\1\\n\2+g' graph.dot
+
+# execute the following command to convert the graph.dot file into .svg format:
+$ sfdp -Tsvg -o graph.svg graph.dot
+
+****************************************************************************************
+
+# This command will generate the specification in JSON format. 
+$ swagger generate spec –o ./swagger.json
+
+# load the generated spec in the Swagger UI locally
+$ swagger serve ./swagger.json
+
+# load the generated spec in the Swagger UI locally (another theme)
+$ swagger serve -F swagger ./swagger.json
+
+
+
+
+

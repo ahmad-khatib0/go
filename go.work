@@ -1,4 +1,4 @@
-go 1.21
+go 1.21.3
 
 use ./simple-bank
 
@@ -39,6 +39,8 @@ use ./concurrency/4-channels/sleeping-barber
 use ./concurrency/5-subscription-service
 
 use ./distributed-services/proglog
+
+use ./distributed-services/gin/api
 
 use ./event-driven-architecture/mallbots
 
