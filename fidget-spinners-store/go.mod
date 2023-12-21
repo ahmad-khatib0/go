@@ -17,7 +17,6 @@ require (
 	github.com/stretchr/testify v1.8.4 // indirect
 	github.com/stripe/stripe-go/v72 v72.52.0
 	github.com/xhit/go-simple-mail/v2 v2.13.0
-	golang.org/x/crypto v0.13.0
-	golang.org/x/net v0.15.0 // indirect
-	golang.org/x/sys v0.13.0 // indirect
+	golang.org/x/crypto v0.15.0
+	golang.org/x/net v0.18.0 // indirect
 )
