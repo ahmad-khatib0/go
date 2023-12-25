@@ -32,6 +32,24 @@ $ swagger serve ./swagger.json
 $ swagger serve -F swagger ./swagger.json
 
 
+# load the recipe.json file directly into the recipes collection 
+$ mongoimport --username admin --password password --authenticationDatabase admin \ 
+  --db demo --collection recipes --file recipes.json --jsonArray
+
+The Redis container uses the basic caching policy. For production usage, it's recommended to 
+configure an eviction policy. You can configure the policy with a redis.conf file:
+maxmemory-policymaxmemory 512mb
+allkeys-lru
+
+This config allocates 512 MB of memory for Redis and sets the eviction policy to the Least
+  Recently Used (LRU) algorithm, which deletes the cache items that were the least recently
+  used. As a result, we only keep the items with the highest chances of getting read again
+
+run 2,000 GET requests in total on the /recipes endpoint with 100 concurrent requests:
+$ ab -n 2000 -c 100 -g without-cache.data http://localhost:8080/recipes
+
+# the gnuplot utility to plot a chart based on the without-cache.data and with-cache.data files
+$ gnuplot apache-benchmark.p
 
 
 

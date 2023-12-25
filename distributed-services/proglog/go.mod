@@ -62,10 +62,10 @@ require (
 	go.etcd.io/bbolt v1.3.7 // indirect
 	go.uber.org/goleak v1.2.1 // indirect
 	go.uber.org/multierr v1.11.0 // indirect
-	golang.org/x/net v0.18.0 // indirect
+	golang.org/x/net v0.19.0 // indirect
 	golang.org/x/oauth2 v0.14.0 // indirect
 	golang.org/x/sync v0.5.0 // indirect
-	golang.org/x/sys v0.14.0 // indirect
+	golang.org/x/sys v0.15.0 // indirect
 	golang.org/x/text v0.14.0 // indirect
 	google.golang.org/grpc/examples v0.0.0-20231216002054-c109241f34f9 // indirect
 	gopkg.in/ini.v1 v1.66.4 // indirect
