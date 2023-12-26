@@ -131,18 +131,14 @@ func (handler *RecipesHandler) UpdateRecipeHandler(c *gin.Context) {
 	}
 
 	objectId, _ := primitive.ObjectIDFromHex(id)
-	_, err := handler.collection.UpdateOne(
-		handler.ctx,
-		bson.M{"_id": objectId},
-		bson.D{
-			{Key: "$set", Value: bson.D{
-				{Key: "name", Value: recipe.Name},
-				{Key: "instructions", Value: recipe.Instructions},
-				{Key: "ingredients", Value: recipe.Ingredients},
-				{Key: "tags", Value: recipe.Tags},
-			},
-			},
-		})
+	_, err := handler.collection.UpdateOne(handler.ctx, bson.M{
+		"_id": objectId,
+	}, bson.D{{"$set", bson.D{
+		{"name", recipe.Name},
+		{"instructions", recipe.Instructions},
+		{"ingredients", recipe.Ingredients},
+		{"tags", recipe.Tags},
+	}}})
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
@@ -182,7 +178,7 @@ func (handler *RecipesHandler) DeleteRecipeHandler(c *gin.Context) {
 	c.JSON(http.StatusOK, gin.H{"message": "Recipe has been deleted"})
 }
 
-// swagger:operation GET /recipes/{id} recipes
+// swagger:operation GET /recipes/{id} recipes oneRecipe
 // Get one recipe
 // ---
 // produces:
@@ -201,9 +197,10 @@ func (handler *RecipesHandler) DeleteRecipeHandler(c *gin.Context) {
 func (handler *RecipesHandler) GetOneRecipeHandler(c *gin.Context) {
 	id := c.Param("id")
 	objectId, _ := primitive.ObjectIDFromHex(id)
-	cur := handler.collection.FindOne(handler.ctx, bson.M{"_id": objectId})
+	cur := handler.collection.FindOne(handler.ctx, bson.M{
+		"_id": objectId,
+	})
 	var recipe models.Recipe
-
 	err := cur.Decode(&recipe)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
@@ -212,36 +209,3 @@ func (handler *RecipesHandler) GetOneRecipeHandler(c *gin.Context) {
 
 	c.JSON(http.StatusOK, recipe)
 }
-
-// swagger:operation GET /recipes/search recipes findRecipe
-// Search recipes based on tags
-// ---
-// produces:
-// - application/json
-// parameters:
-//   - name: tag
-//     in: query
-//     description: recipe tag
-//     required: true
-//     type: string
-// responses:
-//     '200':
-//         description: Successful operation
-/*func SearchRecipesHandler(c *gin.Context) {
-	tag := c.Query("tag")
-	listOfRecipes := make([]Recipe, 0)
-
-	for i := 0; i < len(recipes); i++ {
-		found := false
-		for _, t := range recipes[i].Tags {
-			if strings.EqualFold(t, tag) {
-				found = true
-			}
-		}
-		if found {
-			listOfRecipes = append(listOfRecipes, recipes[i])
-		}
-	}
-
-	c.JSON(http.StatusOK, listOfRecipes)
-}*/
