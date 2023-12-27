@@ -24,6 +24,7 @@ package main
 import (
 	"context"
 	"log"
+	"net/http"
 	"os"
 
 	"github.com/ahmad-khatib0/go/distributed-services/gin/api/handlers"
@@ -64,6 +65,10 @@ func init() {
 	authHandler = handlers.NewAuthHandler(ctx, collectionUsers)
 }
 
+func VersionHandler(c *gin.Context) {
+	c.JSON(http.StatusOK, gin.H{"version": os.Getenv("API_VERSION")})
+}
+
 func SetupServer() *gin.Engine {
 
 	router := gin.Default()
@@ -76,6 +81,7 @@ func SetupServer() *gin.Engine {
 	router.POST("/signin", authHandler.SignInHandler)
 	router.POST("/refresh", authHandler.RefreshHandler)
 	router.POST("/signout", authHandler.SignOutHandler)
+	router.GET("/version", VersionHandler)
 
 	authorized := router.Group("/")
 	authorized.Use(authHandler.AuthMiddleware())
