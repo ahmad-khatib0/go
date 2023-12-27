@@ -1,4 +1,4 @@
-go 1.21.3
+go 1.21.5
 
 use ./simple-bank
 
@@ -41,6 +41,16 @@ use ./concurrency/5-subscription-service
 use ./distributed-services/proglog
 
 use ./distributed-services/gin/api
+
+use ./distributed-services/gin/caching
+
+use ./distributed-services/gin/parser
+
+use ./distributed-services/gin/consumer
+
+use ./distributed-services/gin/dashboard
+
+use ./distributed-services/gin/producer
 
 use ./event-driven-architecture/mallbots
 

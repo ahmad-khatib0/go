@@ -8,7 +8,7 @@ require (
 	github.com/golangcollege/sessions v1.2.0
 	github.com/justinas/alice v1.2.0
 	github.com/justinas/nosurf v1.1.1
-	golang.org/x/crypto v0.16.0
+	golang.org/x/crypto v0.17.0
 )
 
 require golang.org/x/sys v0.15.0 // indirect

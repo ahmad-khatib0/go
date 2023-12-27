@@ -7,13 +7,13 @@ require (
 	github.com/alexedwards/scs/v2 v2.5.1
 	github.com/bwmarrin/go-alone v0.0.0-20190806015146-742bb55d1631
 	github.com/go-chi/chi/v5 v5.0.10
-	github.com/gomodule/redigo v1.8.0
+	github.com/gomodule/redigo v2.0.0+incompatible
 	github.com/jackc/pgconn v1.14.0
 	github.com/jackc/pgx/v4 v4.18.1
 	github.com/phpdave11/gofpdf v1.4.2
 	github.com/vanng822/go-premailer v1.20.2
 	github.com/xhit/go-simple-mail/v2 v2.13.0
-	golang.org/x/crypto v0.16.0
+	golang.org/x/crypto v0.17.0
 )
 
 require (

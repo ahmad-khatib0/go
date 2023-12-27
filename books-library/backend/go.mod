@@ -10,7 +10,7 @@ require (
 	github.com/jackc/pgx/v4 v4.18.1
 	github.com/mozillazg/go-slugify v0.2.0
 	github.com/ory/dockertest/v3 v3.10.0
-	golang.org/x/crypto v0.16.0
+	golang.org/x/crypto v0.17.0
 )
 
 require (
