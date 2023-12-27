@@ -7,8 +7,8 @@ import (
 
 	"github.com/ahmad-khatib0/go/distributed-services/gin/api/models"
 	"github.com/dgrijalva/jwt-go"
-	"github.com/gin-contrib/sessions"
-	"github.com/gin-gonic/gin"
+	gs "github.com/gin-contrib/sessions"
+	g "github.com/gin-gonic/gin"
 	"github.com/rs/xid"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
@@ -48,10 +48,10 @@ func NewAuthHandler(ctx context.Context, collection *mongo.Collection) *AuthHand
 //	    description: Successful operation
 //	'401':
 //	    description: Invalid credentials
-func (handler *AuthHandler) SignInHandler(c *gin.Context) {
+func (handler *AuthHandler) SignInHandler(c *g.Context) {
 	var user models.User
 	if err := c.ShouldBindJSON(&user); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		c.JSON(http.StatusBadRequest, g.H{"error": err.Error()})
 		return
 	}
 
@@ -62,17 +62,17 @@ func (handler *AuthHandler) SignInHandler(c *gin.Context) {
 		"password": string(h.Sum([]byte(user.Password))),
 	})
 	if cur.Err() != nil {
-		c.JSON(http.StatusUnauthorized, gin.H{"error": "Invalid username or password"})
+		c.JSON(http.StatusUnauthorized, g.H{"error": "Invalid username or password"})
 		return
 	}
 
 	sessionToken := xid.New().String()
-	session := sessions.Default(c)
+	session := gs.Default(c)
 	session.Set("username", user.Username)
 	session.Set("token", sessionToken)
 	session.Save()
 
-	c.JSON(http.StatusOK, gin.H{"message": "User signed in"})
+	c.JSON(http.StatusOK, g.H{"message": "User signed in"})
 }
 
 // swagger:operation POST /refresh auth refresh
@@ -86,12 +86,12 @@ func (handler *AuthHandler) SignInHandler(c *gin.Context) {
 //	    description: Successful operation
 //	'401':
 //	    description: Invalid credentials
-func (handler *AuthHandler) RefreshHandler(c *gin.Context) {
-	session := sessions.Default(c)
+func (handler *AuthHandler) RefreshHandler(c *g.Context) {
+	session := gs.Default(c)
 	sessionToken := session.Get("token")
 	sessionUser := session.Get("username")
 	if sessionToken == nil {
-		c.JSON(http.StatusUnauthorized, gin.H{"error": "Invalid session cookie"})
+		c.JSON(http.StatusUnauthorized, g.H{"error": "Invalid session cookie"})
 		return
 	}
 
@@ -100,7 +100,7 @@ func (handler *AuthHandler) RefreshHandler(c *gin.Context) {
 	session.Set("token", sessionToken)
 	session.Save()
 
-	c.JSON(http.StatusOK, gin.H{"message": "New session issued"})
+	c.JSON(http.StatusOK, g.H{"message": "New session issued"})
 }
 
 // swagger:operation POST /signout auth signOut
@@ -110,19 +110,19 @@ func (handler *AuthHandler) RefreshHandler(c *gin.Context) {
 //
 //	'200':
 //	    description: Successful operation
-func (handler *AuthHandler) SignOutHandler(c *gin.Context) {
-	session := sessions.Default(c)
+func (handler *AuthHandler) SignOutHandler(c *g.Context) {
+	session := gs.Default(c)
 	session.Clear()
 	session.Save()
-	c.JSON(http.StatusOK, gin.H{"message": "Signed out..."})
+	c.JSON(http.StatusOK, g.H{"message": "Signed out..."})
 }
 
-func (handler *AuthHandler) AuthMiddleware() gin.HandlerFunc {
-	return func(c *gin.Context) {
-		session := sessions.Default(c)
+func (handler *AuthHandler) AuthMiddleware() g.HandlerFunc {
+	return func(c *g.Context) {
+		session := gs.Default(c)
 		sessionToken := session.Get("token")
 		if sessionToken == nil {
-			c.JSON(http.StatusForbidden, gin.H{
+			c.JSON(http.StatusForbidden, g.H{
 				"message": "Not logged",
 			})
 			c.Abort()

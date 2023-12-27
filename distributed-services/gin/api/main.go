@@ -64,7 +64,8 @@ func init() {
 	authHandler = handlers.NewAuthHandler(ctx, collectionUsers)
 }
 
-func main() {
+func SetupServer() *gin.Engine {
+
 	router := gin.Default()
 
 	store, _ := redisStore.NewStore(10, "tcp", "localhost:6379", "", []byte("secret"))
@@ -85,5 +86,9 @@ func main() {
 		authorized.GET("/recipes/:id", recipesHandler.GetOneRecipeHandler)
 	}
 
-	router.Run()
+	return router
+}
+
+func main() {
+	SetupServer().Run()
 }
