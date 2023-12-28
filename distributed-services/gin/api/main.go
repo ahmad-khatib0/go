@@ -33,6 +33,9 @@ import (
 	redisStore "github.com/gin-contrib/sessions/redis"
 	"github.com/gin-gonic/gin"
 	"github.com/go-redis/redis"
+	"github.com/prometheus/client_golang/prometheus"
+	"github.com/prometheus/client_golang/prometheus/promauto"
+	"github.com/prometheus/client_golang/prometheus/promhttp"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
 	"go.mongodb.org/mongo-driver/mongo/readpref"
@@ -40,6 +43,30 @@ import (
 
 var authHandler *hand.AuthHandler
 var recipesHandler *hand.RecipesHandler
+
+var totalRequests = prometheus.NewCounterVec(
+	prometheus.CounterOpts{
+		Name: "http_requests_total",
+		Help: "Number of incoming requests",
+	},
+	[]string{"path"},
+)
+
+var totalHTTPMethods = prometheus.NewCounterVec(
+	prometheus.CounterOpts{
+		Name: "http_methods_total",
+		Help: "Number of requests per HTTP method",
+	},
+	[]string{"method"},
+)
+
+var httpDuration = promauto.NewHistogramVec(
+	prometheus.HistogramOpts{
+		Name: "http_response_time_seconds",
+		Help: "Duration of HTTP requests",
+	},
+	[]string{"path"},
+)
 
 func init() {
 	ctx := context.Background()
@@ -63,10 +90,25 @@ func init() {
 
 	collectionUsers := client.Database(os.Getenv("MONGO_DATABASE")).Collection("users")
 	authHandler = handlers.NewAuthHandler(ctx, collectionUsers)
+
+	prometheus.Register(totalRequests)
+	prometheus.Register(totalHTTPMethods)
+	prometheus.Register(httpDuration)
+
 }
 
 func VersionHandler(c *gin.Context) {
 	c.JSON(http.StatusOK, gin.H{"version": os.Getenv("API_VERSION")})
+}
+
+func PrometheusMiddleware() gin.HandlerFunc {
+	return func(c *gin.Context) {
+		timer := prometheus.NewTimer(httpDuration.WithLabelValues(c.Request.URL.Path))
+		totalRequests.WithLabelValues(c.Request.URL.Path).Inc()
+		totalHTTPMethods.WithLabelValues(c.Request.Method).Inc()
+		c.Next()
+		timer.ObserveDuration()
+	}
 }
 
 func SetupServer() *gin.Engine {
@@ -75,6 +117,7 @@ func SetupServer() *gin.Engine {
 
 	store, _ := redisStore.NewStore(10, "tcp", "localhost:6379", "", []byte("secret"))
 	router.Use(sessions.Sessions("recipes_api", store))
+	router.Use(PrometheusMiddleware())
 
 	router.GET("/recipes", recipesHandler.ListRecipesHandler)
 
@@ -82,6 +125,7 @@ func SetupServer() *gin.Engine {
 	router.POST("/refresh", authHandler.RefreshHandler)
 	router.POST("/signout", authHandler.SignOutHandler)
 	router.GET("/version", VersionHandler)
+	router.GET("/prometheus", gin.WrapH(promhttp.Handler()))
 
 	authorized := router.Group("/")
 	authorized.Use(authHandler.AuthMiddleware())
