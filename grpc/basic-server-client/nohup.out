@@ -1,0 +1,16 @@
+server/server.go:8:2: no required module provides package github.com/ahmad-khatib0/go/grpc/2-basic-server-client/payment; to add it:
+	go get github.com/ahmad-khatib0/go/grpc/2-basic-server-client/payment
+server/server.go:8:2: no required module provides package github.com/ahmad-khatib0/go/grpc/2-basic-server-client/payment; to add it:
+	go get github.com/ahmad-khatib0/go/grpc/2-basic-server-client/payment
+server/server.go:8:2: no required module provides package github.com/ahmad-khatib0/go/grpc/2-basic-server-client/payment; to add it:
+	go get github.com/ahmad-khatib0/go/grpc/2-basic-server-client/payment
+server/server.go:8:2: no required module provides package github.com/ahmad-khatib0/go/grpc/basic-server-client/payment; to add it:
+	go get github.com/ahmad-khatib0/go/grpc/basic-server-client/payment
+server/server.go:8:2: no required module provides package github.com/ahmad-khatib0/go/grpc/basic-server-client/payment; to add it:
+	go get github.com/ahmad-khatib0/go/grpc/basic-server-client/payment
+server/server.go:8:2: no required module provides package github.com/ahmad-khatib0/go/grpc/basic-server-client/payment; to add it:
+	go get github.com/ahmad-khatib0/go/grpc/basic-server-client/payment
+server/server.go:8:2: no required module provides package github.com/ahmad-khatib0/go/grpc/basic-server-client/payment; to add it:
+	go get github.com/ahmad-khatib0/go/grpc/basic-server-client/payment
+server/server.go:8:2: no required module provides package github.com/ahmad-khatib0/go/grpc/basic-server-client/proto/payment; to add it:
+	go get github.com/ahmad-khatib0/go/grpc/basic-server-client/proto/payment

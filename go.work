@@ -58,6 +58,36 @@ use ./snippetbox
 
 use ./greenlight
 
+use ./grpc/basic-server-client
+
+use ./grpc/microservices/e2e
+
+use ./grpc/microservices/order
+
+use ./grpc/microservices/payment
+
+use ./grpc/microservices-proto/golang/order/
+
+use ./grpc/microservices-proto/golang/payment/
+
+use ./grpc/microservices-proto/golang/shipping/
+
+use ./grpc/resilient/1-client-side-timeout-pattern
+
+use ./grpc/resilient/2-ctx-timeout-propagation
+
+use ./grpc/resilient/3-retry-pattern
+
+use ./grpc/resilient/4-circuit-breaker
+
+use ./grpc/resilient/5-client-circuit-breaker
+
+use ./grpc/resilient/6-circuit-breaker-interceptor
+
+use ./grpc/resilient/7-server-client-validation
+
+use ./grpc/resilient/8-tls-config
+
 use (
 	./basics/01-hello
 	./basics/02-variables

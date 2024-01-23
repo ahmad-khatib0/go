@@ -1,0 +1,16 @@
+syntax = "proto3";
+
+option go_package="github.com/ahmad-khatib0/go/grpc/basic-server-client/proto/payment";
+
+message CreatePaymentRequest {
+	float price = 1;
+}
+
+message CreatePaymentResponse {
+	int64 bill_id = 1;
+}
+
+service PaymentService {
+    rpc Create(CreatePaymentRequest) returns (CreatePaymentResponse) {}
+}
+

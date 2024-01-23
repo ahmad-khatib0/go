@@ -1,0 +1,384 @@
+
+The main advantage of this framework (grpc) comes from being able to generate server and client stubs 
+  ( i.e., objects on the client side that implement the same methods as the service) for multiple 
+  languages that can be used both in consumer projects to call remote service methods and in server 
+  projects to define business logic behind those service methods.
+
+With the help of gRPC, most of the challenges in microservices, such as handling network failures and applying 
+  TLS (Transport Layer Security) to service communications, can be eliminated. By using these built-in features 
+  in gRPC, you can improve both the reliability of the product and the productivity of an entire team.
+
+Polyglot development environments are ideal for gRPC integrations since using the
+  Python client within the Checkout service to access the Payment service, which is written using Java, 
+  is very easy with client stub generation. You can apply the same strategy to your SDK generations for 
+  public consumers. Also, whenever you change your service definitions, the test fails on the client side, 
+  which is a suitable verification mechanism for your microservices.
+
+If you prefer to expose gRPC without maintaining the SDKs for your consumers, then it is better to share your 
+  service definitions with them or provide a clear explanation about how to make gRPC calls to your gRPC services
+
+Microservice architecture opens a gate to the polyglot development environment, which is very helpful for 
+  choosing the proper language for different use cases. It also allows the use of various technologies 
+  such as Neo4j for graph-related use cases, MySQL if there is a need for relational table structures, or 
+  Mongo for document-based data models. Microservice architecture also helps you to construct different small
+  teams to assign code ownership to a specific pool of services.
+
+gRPC needs a server address to dial in to call service functions. Kubernetes’s discovery system is a 
+  good fit for finding the correct address because the server address is the service name of a microservice 
+  defined within a service spec. Suppose you have a proper naming convention for your services. In that case, 
+  you also have perfect integration between the consumer and service, with no help from service discovery prod-
+  ucts to see the actual address of a specific service.
+
+Let’s say that a consumer uses an SDK to access an API via the API gateway. It
+  propagates requests to four to five downstream services to handle all the operations and then returns to 
+  the customer. Having a successful response does not mean everything is good; it is not good if there is 
+  a latency within this life cycle. After latency detection, request flows can be analyzed by grouping by 
+  trace IDs that contain helpful information. Trace IDs in the requests and response headers can be 
+  injected quickly with a simple middleware
+
+
+  gRPC performs well in interservice communications because it uses binary serialization 
+   for the data and transfers it through the HTTP/2 protocol.
+     
+  gRPC allows you to engage in client streaming, server streaming, and bidirectional streaming, 
+   which gives you the ability to send multiple requests or receive multiple responses in parallel.
+   
+  Stable client–server interaction in gRPC microservices is easy because of auto- matic code generation.
+
+  REST is popular primarily because of its broad browser support, but you can still use a gRPC web proxy 
+   (e.g., https://github.com/grpc/grpc-web) for REST- to-gRPC conversion.
+   
+  Due to its high portability, Go is one of the best languages for cloud-native applications, 
+   such as microservices in Kubernetes.
+   
+  Using HTTP/2 over SSL/TLS end-to-end encryption connections in gRPC
+   eliminates most of the security concerns for a microservice.
+
+
+Scale cube
+  Plenty of driving factors can force you to change your architecture, and scalability is
+  one of them, for performance reasons. A scale cube is a three-dimensional scalability
+  model of an application. Those dimensions are X-axis scaling, Y-axis scaling, and Z-axis scaling, 
+
+
+To have data consistency in a distributed system, you have two options: a two-phase commit (2PC) and saga. 
+  2PC coordinates all the processes that form distributed atomic transactions and determines whether they
+  should be committed or aborted. A saga is a sequence of local transactions that updates each service and 
+  publishes another message to trigger another local transaction on the next service.
+  Because transaction steps are spanned across the services, they cannot be handled
+  with an annotation or two lines of code. However, there are widely used practices with
+  saga, so you don’t need to reinvent the wheel for your use cases. Choreography- and orchestrator-based 
+  sagas are the most popular patterns for interservice communication to have consistent data.
+
+Choreography-based saga
+  A choreography-based saga is a pattern in which each service executes its local transaction
+      and publishes an event to trigger the next service to execute its local transaction.
+      Whenever a saga is created, it can be completed in the following patterns:
+     Service returns the result to the client once the saga is completed. It receives an
+      event to update its domain object’s status as succeeded or failed.
+     A saga is created, and the client starts to poll the next service to get either a succeeded or failed 
+      response. The unique identifier to start polling should be directly returned when the saga is created.
+     A saga is created, and the client uses a WebSocket connection in which the service sends the result back 
+      using WebSocket protocol. A saga will be completed once the succeeded or failed result is returned.
+
+Service communications over queue can be handled in two ways:
+   Command channels—The publisher sends a message directly to the next service with a replyToChannel 
+    parameter so that it can notify the consumer once it completes the operation and commits the transaction. 
+    The main drawback of this pattern is that the publisher needs to know the location of the next service.
+   Pub/sub mechanism—The publisher publishes a domain event, and interested consumers can consume messages 
+    to process and commit a local transaction. The main disadvantage of this notation is that it is a possible 
+    single point of failure since all the subscribers use one broker technology and all the events are
+    sent to consumers.
+
+An orchestration-based saga consists of an orchestrator and participants, and the orchestrator tells 
+  participants what to do. The orchestrator can communicate with participants using a command channel or
+  request/response style. It connects participants individually to tell them to execute their local 
+  transactions and decides the next step based on this response.
+
+Service discovery
+  Service discovery is the operation in which service locations are managed and exposed outside to 
+  let each service find the next one for step execution. There are two types of service discovery:
+   Client-side service discovery—In this notation, a service discovery tool allows applications to report 
+    their locations during startup. Client applications have direct connections to the service registry, 
+    and they query the location of a specific service by providing some criteria, like the service name,
+    or a unique identifier.
+   Server-side service discovery—A load balancer integrates with the service registry to resolve downstream 
+    services. Client applications connect to services via the load balancer instead of using the service 
+    registry to resolve the exact location.
+
+the order creation flow to use gRPC and protocol buffers for interservice
+  communication. The ideal steps are as follows:
+  
+1 Define the proto files that contain message and service definitions. These can be
+  inside the current project or in a separate repository independently maintained.
+2 Generate the client and server stubs from the .proto file.
+3 Implement the server-side business logic by using one of the supported languages (https://www.grpc.io/docs/languages/).
+4 Implement the client-side business logic to connect services through the stub.
+5 Run the service and client.
+
+
+Protobuf FIELD NAMES
+  The Protobuf compiler requires naming conventions for field naming since it generates source code for 
+  multiple languages by relying on those rules. The field name should be lowercase; if it contains more than 
+  one word, it should be separated by an underscore (e.g., user_id).
+
+FIELD NUMBERS
+  Each field has a unique identifier in the message to identify the field in the binary message format. Since 
+  field numbers are unique identifiers for the fields, those numbers shouldn’t be changed to provide a backward 
+  compatibility guarantee. If you want to remove a field, it is best to reserve it with the reserved keyword 
+  before removing it to prevent future definitions with the same field number or name. You can also reserve those 
+  fields by using their field numbers one by one or by a range with the help of the to keyword. For example, 
+  removing the customer_id field with field number 3 and adding a new field with the same field name or number with 
+  a different type will cause problems. If the client has the old message definition and the server has the new one, a data compatibility problem will result because they contain the same field but the data types are different
+
+message CreateOrderRequest {
+    reserved 1, 2, 3 to 7;          // Reservation by single or ranged numbers such as 3 to 7
+    reserved "customer_id";         // customer_id is reserved since user_id is introduced.
+    int64 user_id = 7;
+    repeated Item items = 8;
+    float amount = 9;
+}
+
+
+Required fields in a message can be thought of as frequently used fields since you can not skip them as you 
+  can for optional fields. It is a best practice to reserve some numbers between 1 and 15 for the fields that 
+  can be frequently used since the numbers take 1 byte to encode in that range. For example, if you introduce a 
+  field with the name correlation_id, and it is used in almost all types of requests, you can assign one of the
+  pre-reserved numbers for this new field. In the same way, it takes 2 bytes to encode numbers from 16 to 2,047. 
+  Giving frequently used fields numbers between 1 and 15 will increase performance quality.
+
+
+GRPC. Marshalling results in some bytes containing encoding information of the metadata and the data itself: 
+1 The metadata section is expressed with 1 byte and has the first three bits for denoting the wire type: 000, 
+   which is type 0 (Varint) since our data type is int (see the whole list below in the table). 
+2 The first bit of the data section is called the most significant bit (MSB), and its value is 0 when there is 
+  no additional byte. Its value becomes 1 if more bytes come to encode the remaining data.
+3 The remaining bits of the metadata section contain the field value.
+4 The data section contains the MSB (i.e., a continuation bit) to state whether there are more bytes.
+5 The remaining seven bits are used for the data itself.
+
+
+There are six wire types: VARINT, I64, LEN, SGROUP, EGROUP, and I32: 
+  ID	Name	       Used For
+  0	  VARINT	     int32, int64, uint32, uint64, sint32, sint64, bool, enum
+  1	  I64	         fixed64, sfixed64, double
+  2	  LEN	         string, bytes, embedded messages, packed repeated fields
+  3	  SGROUP	     group start (deprecated)
+  4	  EGROUP	     group end (deprecated)
+  5	  I32	         fixed32, sfixed32, float
+
+A field’s value can be anything based on your needs, and thus cannot affect perfor- mance. However, we can 
+  affect performance by following some rules for field num- bers. For example, you can use numbers less than 
+  or equal to 15 for field numbers since that is the maximum number a metadata block can store. More metadata blocks 
+  are needed to express a specified field number. In the same way, if you want to store a data value greater 
+  than 127 (the maximum capacity of a data block), you need more bytes to fit that value in those data blocks.
+
+
+how to encode an object with a value greater than 127 ? Let’s say that the CreatePaymentRequest message has only 
+  one field, user_id, with type int, and field number 2. We compiled this message and used it in our production code:
+  
+  // order.proto
+  message CreatePaymentRequest { int64 user_id = 2; }
+
+  // main.go
+  request := CreatePaymentRequest { UserId: 21567 }
+  // send a request via gRPC
+
+The Protobuf compiler will marshal the request object into a []byte, and the metadata section will be encoded, 
+  just like the previous example and as visualized in figure 3.2. The data section will be handled this way:
+  
+1 Convert the decimal value 21567 to a binary value: 101010000111111.
+
+2 Split the binary value into seven-bit blocks: 0000001-0101000-0111111.
+
+3 The seven-bit block is for data, and the last bit will be used to store MSB.
+
+4 Reverse the order of data parts (https://betterexplained.com/articles/understanding-big-and-little-endian-byte-order/), 
+  which will result in 0111111-0101000-0000001.
+  
+5 Since there are three data parts here, the first will have the MSB as 1, the second as 1, 
+  and the 3rd as 0 since no more bytes come after that.
+
+protoc mainly accepts the following parameters to generate language-specific source code:
+  -I—To specify the import path where imported packages in .proto files are searched
+
+  --go_ou—To specify where to put generated Go code for messages
+
+  --go_opt—To configure options for Go source code generation, such as paths=source_relative, to keep 
+     the same folder structure after source code generation
+     
+  --go-grpc_out—To define the destination folder of gRPC-specific 
+     Go source code, such as calling a service function
+     
+  --go-grpc_opt—To configure options for gRPC-related operations, such as paths=source_relative, 
+     to have the same folder structure after source code generation
+
+
+Proto project structure
+  Assume you created a repository, github.com/username/microservices-proto, with dedicated folders for each 
+  service to store .proto files. This project will have the following characteristics:
+  proto files are grouped by service folders such as order/order.proto in the root folder.
+
+  There is a folder inside the root project for each language to store language-specific implementations.
+
+  Generated source code for each service will be formatted as a typical Go module project since it 
+   will be added as a dependency on the consumer side. – As an example, the module name of the Order service 
+   will be github.com/username/microservices-proto/golang/order.
+   
+  Generated source code will be tagged: golang/<service_name>/<version> (e.g. golang/order/v1.2.3). 
+   This is the convention for the Go module to resolve the
+   dependency that lives in subfolders in the remote repository:
+
+
+Removing a field from oneof is a backward-incompatible change, and adding a new field to oneof is a forward-incompatible 
+  change. If there is an incompatible change in your message field, you need to introduce an update to your semantic 
+  version (https://semver.org/) so that consumers will know there is a breaking change. Consumers will need to check the 
+  release notes page of the new release to make the necessary changes on the client side and avoid compatibility problems.
+
+
+
+Hexagonal architecture: 
+Alistair Cockburn in 2005, is an architectural pattern that aims to build loosely coupled application components that 
+  can be connected via ports and adapters. In this pattern, the consumer opens the application at a port via an adapter,
+  and the output is sent through a port to an adapter. Therefore, hexagonal architecture is also known as a ports and adapters 
+  system. Using ports and adapters creates an abstraction layer that isolates the application’s core from external dependencies
+
+Application
+  An application is a technology-agnostic component that contains the business logic that orchestrates functionalities or 
+  use cases. A hexagon represents the application that receives write and read queries from the ports and sends them to external 
+  actors, such as database and third-party services, via ports. A hexagon visually represents multiple port/adapter combinations 
+  for an application and shows the difference between the left side (or driving side) and right side (or driven side).
+
+Actors
+  Actors are designed to interact with humans, other applications, and any other software or hardware device. There 
+  are two types of actors: driver (or primary) and driven (or secondary). Driver actors are responsible for triggering 
+  communication with the application to invoke a service on it. Command-line interfaces (CLIs), controllers, are good 
+  examples of driver actors since they take user input and send it to the application via a port. Driven actors expect to 
+  see communication triggered by the application itself. For example, an application triggers a communication 
+  to save data into MySQL.
+
+Ports
+  Ports are generally interfaces that contain information about interactions between an actor and an application. 
+  Driver ports have a set of actions, and actors should imple- ment them. Driver ports contain a set of actions 
+  that the application provides and exposes to the public.
+
+Adapters
+  Adapters deal primarily with transforming a request from an actor to an application, and vice versa. Data transformation 
+  helps the application understand the requests that come from actors. For example, a specific driver adapter can transform 
+  a technology-specific request into a call to an application service. In the same way, a driven adapter can convert a 
+  technology-agnostic request from the application into a technology-specific request on the driven port.
+
+
+Project folders
+  While there are no written rules for a hexagonal architecture folder, the following
+  folders are common in typical Go projects:
+    Application folder—This folder contains microservice business logic, which is a combination of the domain model 
+     that refers to a business entity and an API that exposes core functionalities to other modules.
+     
+    Port folder—This folder contains contract information for integration between the core application and third parties. 
+     This can be a contract about accessing core application features or about specifying available features for a database
+     system, if one is used for the persistence layer.
+     
+    Adapter folder—This folder contains concrete implementation for using contracts that are defined in ports. 
+     For example, gRPC can be an adapter with a concrete implementation that handles requests and uses an API port to access
+     core functionalities, such as if you have an application with some functionalities and will expose it to customers. 
+     The functionalities can be CreateProduct, GetProduct, and so on, and you can expose them to the customer via REST,
+     gRPC, and other adaptors, which will use the contracts of those functionalities, as defined in the port layer. 
+     We will revisit this topic and look at more advanced examples in later sections of this chapter.
+
+Dependency injection and running the application
+The 12-factor app is a methodology for building applications that encourages you to: 
+    Use a declarative setup for infrastructure and for application environment automation to 
+     quickly deploy to any environment, such as dev, staging, or prod
+     
+    Have a clean contract between underlying operating systems so that the same
+     application can be executed on any environment with different parameters
+     
+    Use continuous deployment to minimize divergence between environments
+  
+    Scale easily without any significant change in the system.
+
+
+gRPC uses predefined status codes within the RPC protocol that are understood among different languages. For example, 
+  for successful operations, gRPC returns an OK status code. All the remaining codes are about unsuccessful use cases:
+    
+    CANCELLED—In this use case, the client calls the server, and for a specific reason, it cancels the request. For 
+     example, you call multiple services, and for whichever returns first, you use that data and cancel the other requests.
+     
+    INVALID_ARGUMENT—This status code is caused by the caller in that it provides invalid input, and the server complains 
+     about that. For example, the server will return this status code if you provide an empty order ID during payment creation.
+     
+    DEADLINE_EXCEEDED—This status code shows that the deadline expired before the actual operation could complete. For 
+     example, say you configure your client to have a deadline of 5 seconds. If you call an endpoint with this client and it 
+     takes 6 seconds to complete, you will see it will get DEADLINE_EXCEEDED after 5 seconds before the actual operation finishes.
+     
+    NOT_FOUND— This status code states that a resource is not found. For example, you want to get order details by ID, but 
+     you get NOT_FOUND since there is no order with that ID.
+  
+    ALREADY_EXISTS—This status code is for preventing resource duplication. For example, if you try creating a user 
+     with an existing email address, the server will return this status code.
+  
+    PERMISSION_DENIED— If the operation is not allowed for the current caller, the server will return this status code. 
+     You might be already logged into the system, but the resource you are trying to access may need higher permissions.
+     
+    RESOURCE_EXHAUSTED—This code is used once the caller reaches its limit for usage. For example, you may have a quota 
+     for a Software as a Service (SaaS) product; then, once you reach the limit for the product 
+     in that environment, the server will return this status code.
+     
+    INTERNAL—This status code is used for internal server errors.
+
+
+Assume that you have a 50 MS average latency limit for your interservice communication, which sometimes exceeds this limit. 
+  You can apply resiliency patterns to this use case: once the average request latency exceeds the limit, you halt sending
+  the request for a while and then resume after a specific time. This prevents memory leaks by dropping long-lived 
+  connections to other services, which can cause a possible cascading failure
+
+In gRPC, there are two types of interceptor usage, WithUnaryInterceptor and With StreamingInterceptor for unary and streaming 
+  connections, respectively. As in listing 6.3, you can use UnaryClientInterceptor with or without values; if you don’t
+  pass a value, it will use default values for retry, or you can override them by using additional configurations such as 
+  WithCodes, WithMax, or WithBackoff. Keep in mind that the gRPC retry configuration is handled via the grpc_retry package.
+  WithCodes is used for deciding when to retry, and its default value is the total of the Unavailable and ResourceExhausted 
+  lists. Unavailable code is the default since retrying until the service becomes available is beneficial for the client to 
+  recover the gRPC call once the dependent service becomes available. In the same way, ResourceExhausted is a default because 
+  the client might have performed multiple calls that caused the server to apply throttling. For this kind of case, the 
+  server will remove throttling, and the client will succeed on the next calls performed by the retry. With these defaults, 
+  the retry pattern is applied only if you get Unavailable or ResourceExhausted from the service call. The WithMax parameter 
+  helps to set a maximum limit for retries during interservice communication. If the dependent service becomes available earlier,
+  the client will not retry until the maximum count; it will stop once the client starts to get a response code other than 
+  Unavailable or ResourceExhausted. WithBackoff requires a function to specify back-off functionality between retries. In
+  our example, BackoffLinear is used, which means there is a one-second wait time between retries. There are other options, 
+  such as BackoffExponential, in which the timeout interval on the next retry is multiplied by two, compared to the current 
+  timeout interval. Other options are BackoffLinearWithJitter and BackoffExponentialWithJitter, in which the next timeout 
+  interval is decided randomly. This randomness reduces the collision of gRPC calls clients make
+
+
+Circuit breaker pattern
+  In the circuit breaker pattern, connections between services are also called circuits, and if the error rate of an 
+  interservice communication reaches a threshold value, it opens that circuit, which means the connection between two 
+  services is closed intentionally. After this point, any request to the dependent service will immediately fail due to the
+  open circuit. Of course, this is not a permanent situation; it will be reset after a certain time based on your 
+  configuration, and if there is no failure in new requests, the circuit will be closed again. Once the reset timeout 
+  is triggered, the state will go into a half-open state, and become closed if there is no other failure. 
+  If it continues to get failures, it will go back into an open state
+
+The relevant terms in a circuit breaker implementation:
+  MaxRequests limits the number of requests allowed to pass through a half-open circuit. The difference between an 
+   open and half-open circuit is that a half-open one allows certain requests to pass through the circuit based on 
+   your configuration, whereas you can’t pass through an open request.
+   
+  Interval mainly defines when the count is cleared while the state is closed. For some use cases, you may not want to 
+   clear the interval, even if it has been a long time since you last saw a failure. However, this interval is cleared 
+   for most use cases to allow users to make failures within a reasonable time interval.
+     
+  Timeout decides when to change a circuit breaker state from an open to a half-open state. The advantage of this 
+   change is that in an open state, the requests will fail fast, whereas in a half-open state, the circuit breaker 
+   allows passing through a half-open circuit by limiting the number of requests.
+   
+  ReadyToTrip checks the state of the failure threshold after the last failure and 
+   decides on whether to open the circuit completely.
+   
+  OnStateChange is mainly used for tracking state changes while handling business models within a function wrapper.
+
+
+
+

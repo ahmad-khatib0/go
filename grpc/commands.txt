@@ -1,0 +1,27 @@
+protoc \
+  --go_out=. \
+  --go_opt=paths=source_relative \
+  --go-grpc_out=. \
+  --go-grpc_opt=paths=source_relative \ 
+  payment.proto 
+
+
+git tag -a golang/order/v1.2.3 -m "golang/order/v1.2.3"
+git tag -a golang/payment/v1.2.8 -m "golang/payment/v1.2.8"
+git tag -a golang/shipping/v1.2.6 -m "golang/shipping/v1.2.6"
+git push --tags
+
+go get -u github.com/ahmad-khatib0/go/grpc/microservices-proto/golang/order@latest
+go get -u github.com/ahmad-khatib0/go/grpc/microservices-proto/golang/order@v1.2.3
+
+
+$ docker run -p 3306:3306 -e MYSQL_ROOT_PASSWORD=verysecretpass -e MYSQL_DATABASE=order mysql
+
+# In this case, our data source URL is
+$ root:verysecretpass@tcp(127.0.0.1:3306)/order
+
+# The -plaintext parameter is used to disable TLS during gRPC communication.
+grpcurl -d '{"user_id": 123, "order_items": [{"product_code": "prod", "quantity": 4, "unit_price": 12}]}' -plaintext localhost:3000 
+
+
+
