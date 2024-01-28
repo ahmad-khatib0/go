@@ -380,5 +380,16 @@ The relevant terms in a circuit breaker implementation:
   OnStateChange is mainly used for tracking state changes while handling business models within a function wrapper.
 
 
+gRPC TLS credentials
+  Adding certificate information to a server implementation is twofold: implement logic
+  to load credentials and create a TransportCredentials (http://mng.bz/gBAe) instance;
+  then use this function within the interceptor to handle credentials verification out of
+  the box for each request. This means the following steps are applied:
+1 The client sends a gRPC call to the server.
+2 The server presents its shared certificate with its public key.
+3 The client validates this certificate on a CA. For now, the CA cert contains client and server shared certificates.
+4 After client validation, the client presents its shared certificate with its public key to the server.
+5 The server validates the shared certificate on the CA.
+6 After successful verification, the client receives a response from the gRPC call
 
 
