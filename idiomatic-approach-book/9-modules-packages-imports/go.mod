@@ -1,3 +1,3 @@
 module github.com/ahmad-khatib0/go/idiomatic-approach-book/modules-packages-imports
 
-go 1.15
+go 1.21

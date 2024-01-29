@@ -393,3 +393,260 @@ gRPC TLS credentials
 6 After successful verification, the client receives a response from the gRPC call
 
 
+GRPC resiliency Summary
+ In a typical microservices architecture, it is normal for one service to depend on one or more other services. 
+  If one of the dependent services is down, it will affect the availability of the entire microservice application. 
+  We use resiliency patterns such as retry, timeout, and circuit breaker to prevent these situations.
+  
+  Once the dependent service is down, we can use the retry strategy on the con-
+   sumer side to make gRPC communication eventually succeed.
+  Retry logic can be triggered for certain status codes, such as Unavailable or ResourceExhausted, instead of blindly 
+   retrying on each failure. For example, it is not wise to retry a request if you received a validation exception 
+   because it shows that you sent an invalid payload; you should fix it to make it succeed.
+   
+  Using retry logic blocks the actual gRPC call since you have to wait for dependent service. It is hard to detect 
+   recovery time for a dependent service, which can create long wait times for retries. To prevent this situation, 
+   we use context timeout and deadline to put a time limit on blocking the actual execution.
+   
+  In the retry mechanism, you can redo an operation for specific time intervals, but this can also put an extra load 
+   on the dependent service since it has to retry all the time, even if the dependent service is not ready. To solve 
+   this problem, we use a circuit breaker to open a circuit once we reach the failure limit, retry
+   the request after some time, and finally close the circuit once the dependent service is back online.
+
+  Error handling is important in interservice communication because the next step is decided from error 
+   codes or messages in the gRPC response. We use a status package to return customized errors from a service, 
+   and we can convert them on the client side once needed.
+
+  Resiliency is important not only in communication patterns, but also in zero-trust environments, in which we 
+   use TLS-enabled communications, as the server and client verify their certificates during gRPC communications. 
+   This is also called mutual TLS.
+
+Testing pyramid
+  The testing pyramid organizes software tests into three categories based on their context 
+  and provides insight into the percentage of tests for each category:
+  Unit tests—Type of software test in which specific units of software are tested
+  Integration tests—Type of software test in which the integration of multiple mod- ules is tested
+  End-to-end tests—Type of software test in which the entire behavior of the application is tested
+
+As you can see, in a typical application, the percentage of unit tests is greater than that for integration tests, 
+  which is greater than the percentage for end-to-end tests. There are possible reasons/outputs for that percentage; 
+  let’s analyze them individually. Unit tests are designed to test one component at a time, with maximum isolation.
+  While testing a component (SUT), you should mock the other dependencies. Isolation levels get lower once you move 
+  up on the pyramid because you start to involve more components in the test suite that might break the isolation.
+  In a unit test, you probably have a test runner, enough to test the core features and mock the dependencies. Once you 
+  move to the integration test, you need third-party tools to maintain dependencies, such as having test containers for 
+  a DB connection. Once you start to use third parties, test execution will slow down to wait for all the dependent components.
+  Going from a unit test to an end-to-end test has cost increases because more components mean more resource consumption, 
+  and thus more money. The unit test has the greatest percentage of the pyramid because it is fast and cheap. In the same way,
+  the end-to-end test has the lowest percentage of the pyramid because it is expensive and slow to run. This does not mean 
+  you need to write a unit test but not an end-to-end test. It does mean you should arrange the percentage of test types 
+  as stated in the test pyramid. Now that we can see the relations between testing strategies, let’s look at
+  how those strategies are used to verify the microservice application behavior.
+
+System under test
+  The SUT test contains inputs, execution conditions, and expected results to verify its behavior within a codebase. 
+  A SUT means a software element is being tested. Based on your testing strategy, a SUT can be a class or an entire 
+  application. This test is important if you are testing a specific layer in hexagonal architecture because you need to 
+  know what to test in that layer. It becomes a test suite if you group related tests to verify the behavior of a SUT.
+
+
+The phases of an automated test:
+1 Setup—In this phase, we prepare the dependencies of a SUT and initialize a SUT with them. 
+  This can also involve initializing third-party dependencies, such as a MySQL database.
+2 Invoke the SUT—If we are testing a class, in this phase, we might call a function from that class.
+3 Verify—Verify the actual result with the expected result by using assertions.
+4 Teardown—Clean up resources that are no longer needed. For example, we
+  could destroy the MySQL database once we are done with it.
+
+Working with mocks
+  Mocking in a test aims to isolate dependent systems’ internals and focus only on a SUT to not only have minimal 
+  setup for your test, but to also control the behavior of the dependent system based on your needs. Let’s say 
+  that the Order service depends on the Payment service and Order database, and you want to test one of the scenarios
+  for the PlaceOrder functionality in the Order service. If you want to control the behavior of the Order database and 
+  Payment service operations, you can mock the Order database and Payment service and then simulate the method calls
+
+We can use the following steps to create a mock for any interface:
+  1 Create a mock struct for the payment interface.
+  2 Embed mock.Mock as a field to this struct.
+  3 Create a receiver function for the Charge method.
+  4 Create a mock struct for the DB interface.
+  5 Create a receiver function for the Save and Get functions that have the same signature as stated in a real interface.
+
+Automatic mock generation
+  Hexagonal architecture encourages defining your ports as an interface, then implementing the adapters afterward. 
+  It is easy to mock interfaces because mocking libraries need exposed functions of an API. If there are lots of 
+  interfaces in your project to mock, you can use mockery (https://github.com/vektra/mockery)
+  execute the following command/:         mockery --all --keeptree  
+  You will see autogenerated files, such as *_mock.go, for each interface that contains the mocks. Instead of trying 
+  to mock method arguments and return values, mockery does that for us, and we can use those mocks in our unit tests. 
+  When they are needed, we can re-create mocks whenever we update an interface or introduce a new one. The
+  flow is the same after generating mocks so that you can control their behavior and test a SUT.
+
+
+You may want to act on the following cases in a test suite:
+  Before each test—You may want to create a mock before each test instead of manually defining that mock on each test 
+   function. We can run an action before each test by adding a method named TestSetupTest to our test suite.
+  After each test—Let’s say you interact with files and folders on each test and want to delete them to have a new 
+   state on the next test. We can activate such an action by implementing TestTearDownSuite.
+  Before all the tests—We prepare resources for all tests to use because they use a shared resource. For example, we can 
+   initialize a database via Testcontainers before running the tests. This action can be activated by implementing TestSetupSuite.
+  After all the tests—Let’s say you initialized your DB instance and want to destroy it right after you finish all the 
+   tests. We can trigger this action by adding a method named TestTearDownSuite.
+
+
+In a typical Testcontainer setup, you can see the following events:
+  A background context
+  A container request with an image, exposed ports, and a liveness probe statement that the Testcontainers 
+   library can use to check whether the running container is ready to accept connections
+  Once the container is up and running, a connection URL to use in our tests
+
+
+A Kubernetes cluster is a distributed system made from a machine set that contains primarily containerized workloads. 
+  Those nodes are divided into control plane nodes and worker nodes. The control plane is the brain of the Kubernetes 
+  cluster, and it has mission-critical components to manage resources in the Kubernetes environment. Those resources 
+  are specific to Kubernetes, but they manage a containerized application under the hood. Worker nodes contain system 
+  components like kubelet and work-loads like pods, the minimum deployable unit in Kubernetes
+
+RollingUpdate
+  RollingUpdate is a deployment strategy in which a new ReplicaSet is created for the new version, and the old 
+  ReplicaSet is gradually removed until the new one has the correct number of replicas. This is the default behavior 
+  of a deployment in Kubernetes (http://mng.bz/0KQW). Assume that we have huseyinbabal/order:1.0.0 in our deployment, 
+  and you want to deploy a new version of 1.1.0. You can trigger a rolling update with the following command:
+     $ kubectl set image deployment/order order=order:1.1.0
+
+Blue-Green Deployment
+  In this type of deployment strategy, there are two versions of the existing system, and whenever a deployment occurs 
+  on one of the systems, the old one becomes deprecated by routing traffic to the new system. We currently have Payment 
+  Service v1 in production and plan to deploy v2 soon. However, this time it will not be like an almost-instant update 
+  like in RollingUpdate; v2 will be prepared in advance, and traffic will be switched to v2 after everything is taken 
+  care of. In this case, we start with Green (v1), and when v2 is deployed, it is Blue at the beginning, but after a 
+  while will be Green.
+
+in Blue-Green deployment what happens under the hood is this: 
+  Remember, once we create an Ingress controller, it provisions a load balancer,
+   and we add Ingress resources behind this controller using the Ingress name.
+   
+  For the blue environment, an additional Ingress controller can be deployed, and Ingress v2 can be involved 
+   behind the load balancer created by the new Ingress controller.
+   
+  The current state is our domain has a record pointing to the initial load balancer (green), and once we 
+   feel confident, we simply update the record value as the second load balancer.
+   
+  Once we introduce a new version, it is deployed behind the first load balancer
+   and becomes green after an internal check.
+   
+  Most of the time, blue environments are accessible from the internal network so that they can be tested by internal 
+   employees or a particular group of testers. This deployment strategy is smoother since we simply change the load 
+   balancer switch. However, since we duplicate the existing system entirely as v2, it will introduce an additional cost.
+
+Canary deployment
+  Remember that a Service resource is designed to expose a pod as an endpoint internally or publicly to users. 
+  The Service–pod relationship is handled by selectors in the Service resource so that Service uses a selector 
+  field to find available pods filtered by the logic inside the selector. In canary deployment, there is always 
+  one service, but this time an additional deployment is created with new data (e.g., a new Docker image) but with 
+  the same selector. Then, requests are distributed between v1 and v2 pods. In canary deployment, this percentage is 
+  gradually changed until all the replicas become available in the new deployment and the old one is downscaled to zero 
+  In figure 8.11, you can see the transitions for canary deployment, which are simply
+  a summary of gradually increasing the possibility of seeing the newly deployed feature
+  while deprecating the old deployment. We need a second deployment here with the
+  same selector so that once the request reaches the load balancer, it will be routed to a
+  pod by selectors. Canary deployment is widely used, especially for collecting feedback
+  from end users by enabling an experimental feature to a subset of customers instead
+  of overwriting the current production.
+
+
+
+
+Traces
+  A trace, a collection of operations to handle a unique transaction, refers to the journey of a request across 
+  services in a distributed system. It encodes the metadata of a specific request to propagate it until it reaches 
+  its final service. A trace can contain one or more spans that map to a single operation
+
+Metrics
+  Metrics contain numerical values to help us define a service’s behavior over time. Prometheus has metrics that are 
+  defined by name, value, label, and timestamp. Using these fields, we can see metrics over time. We can also group 
+  them using their labels. Of course, we can apply other aggregation techniques (https://prometheus.io/docs/prometheus/latest/querying/functions/) 
+  using metric fields, SLA, SLO, and SLI, and obtain information about the system. For more in-depth information, see Google’s
+  Site Reliability Engineering book (https://sre.google/sre-book/table-of-contents/).
+  
+SLA
+  An SLA (service-level agreement) is an agreement between customers and service providers and 
+  contains measurable metrics such as latency, throughput, and uptime. It is not easy to measure 
+  and report SLAs, so a stable observability system is important.
+  
+SLI
+  An SLI (service-level indicator) is a specific metric that helps showcase service quality to customers by referencing 
+  request latency, error rate, and throughput for example. The statement “The throughput of our service is 1000/ms” 
+  indicates that this service can handle 1,000 operations per millisecond.
+  
+SLO
+  A SLO (service-level objective) is the goal for a product team to satisfy SLA. Especially in SaaS projects, you can 
+  see the SLA in terms and conditions pages. A typical example of a SLO is “99.999% uptime for the Object Storage 
+  service”: the Object Storage service should be up 99.999%, and it might be down 0.001% of the time. These numbers are
+  calculated as average values 
+
+In SLO the average Response latency result is found by adding latency amounts (ms) and dividing them by the sampling 
+  count of 10. This is also called the average value of num- bers. If I was using SLA documentation, I would say, 
+  “We provide a 4 ms response latency guarantee for our services.” Can you spot the problem here? What if you have
+  a 1,000 times 1 ms response latency and ten times 4 seconds latency?
+   ▲                                         ▲
+   █ 1000 x 1 ms + 10 x 4000 ms = 5000 ms    █
+   █ 5000,ms / 1010 = 5ms                    █
+   ▼                                         ▼
+  Even though you had a very good response latency of 1 ms, the remaining ten response latencies corrupted your report. 
+  Averaging numbers may not satisfy custom- ers; they might want to see the distribution of latencies with their 
+  percentages. There this a term to explain this situation: percentile. For example, if you say, “The 95 percentile 
+  response latency is 3 ms,” 95% of the response latencies are 3 ms or less.
+  
+  Think about the response latency numbers in:    
+          10 22 2 3 9 1 87 11 7 4
+  The first thing we can do is sort all the num bers in descending order, which results in the
+          87 22 11 10 9 7 4 3 2 1
+  To find 80 percentile response latency, see the index at 80% from the right to left
+  direction, which in this case is 11 ms.
+
+
+LOGS
+ In a Kubernetes environment, we have two types of logging architecture:
+       Node-level logging
+       Cluster-level logging
+
+NODE-LEVEL LOGGING
+  In node-level logging architecture, applications generate events, which are logged to a file or standard output using 
+  some logging library in the application. If the application keeps logging events, that file can grow dramatically, 
+  which will make it hard to find certain logs. To avoid this situation, we can use log rotation: once a log file 
+  reaches a specific size, it can be rotated to a file with a name that contains time metadata for that rotation. Once 
+  you rotate logs, they are saved in separate files, but we still need to ship them to a central location or find a 
+  way to analyze them in multiple files
+
+CLUSTER LEVEL LOGGING
+  There are agents, typically a daemonset, on each Kubernetes cluster node that are responsible for collecting logs
+  from container-standard output logs. In cluster-level logging architecture, the logs are saved to a file on the host, 
+  but this time a central agent, (e.g., Elasticsearch, https://www.elastic.co/; graylog, https://www.graylog.org/)
+  collects those logs and sends them to the logging backend. 
+
+ELK stack, Elasticsearch-Logstash-Kibana: Elasticsearch is the logging backend, Logstash is some kind of log collector, 
+  and Kibana is the UI for logs, a proper monitoring dashboard for gRPC microservices that gives insight into services 
+  such as error rates and check details. We can even create alarms to send a notification to the development team if 
+  there is a matching log pattern in the logging backend store. 
+
+
+OpenTelemetry Collector
+  OpenTelemetry Collector uses otel/opentelemetry-collector-contrib (https://hub.docker.com/r/otel/opentelemetry-collector-contrib), 
+  which exposes two ports: 14278 and 8889. 14278 is for the collector endpoint; it accepts metric requests from gRPC
+  microservices. 8889 is used for the Prometheus exporter, and Jaeger uses this port to get time series data for 
+  performance monitoring. Once the collector obtains the values, it also sends calculated data to Prometheus.
+
+We can add the following environment variables to the Jaeger All in One deployment to enable the 
+  Prometheus metrics storage type:
+        METRICS_STORAGE_TYPE=prometheus
+        PROMETHEUS_SERVER_URL=http://jaeger-prometheus.jaeger.svc.cluster.local:9090
+  jaeger-prometheus is the Prometheus service name, jaeger is the namespace, and
+  svc.cluster.local is the suffix used for Kubernetes service discovery.
+
+OpenTelemetry SDKs sends data to the collector endpoint
+(http://jaeger-otel.jaeger.svc.cluster.local:14278/api/traces). Traces are sent to the OpenTelemetry Collector.
+
+
+
+

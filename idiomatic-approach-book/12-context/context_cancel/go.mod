@@ -1,3 +1,3 @@
 module github.com/ahmad-khatib0/go/idiomatic-approach-book/context_cancel
 
-go 1.14
+go 1.21

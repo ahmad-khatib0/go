@@ -23,5 +23,151 @@ $ root:verysecretpass@tcp(127.0.0.1:3306)/order
 # The -plaintext parameter is used to disable TLS during gRPC communication.
 grpcurl -d '{"user_id": 123, "order_items": [{"product_code": "prod", "quantity": 4, "unit_price": 12}]}' -plaintext localhost:3000 
 
+# he following command to redirect detailed coverage information to a file:
+$ go test -coverprofile=coverage.out
 
+# generate an HTML report
+$ go tool cover -html=coverage.out
+
+# to deploy the nginx-ingress chart:
+
+# Adds the required repository for the chart
+$ helm repo add ingress-nginx https://kubernetes.github.io/ingress-nginx 
+
+# Updates the repository index
+$ helm repo update #B
+
+# Installs resources via the chart
+$ helm install nginx-ingress ingress-nginx/ingress-nginx
+
+
+
+
+****************************************************************************************
+****************************************************************************************
+****************************************************************************************
+
+# cert-manager contains custom resources for generating and injecting certificates to specific workloads. Installation 
+# will create custom resources in Kubernetes that we can use in our deployment pipeline. There are several options to 
+# install cert-manager: Helm, Operator, or kubectl apply. Let’s use Helm:
+
+# Repo for cert-manager 
+$ helm repo add jetstack https://charts.jetstack.io  
+$ helm repo update
+$ helm install cert-manager jetstack/cert-manager \ 
+     --namespace cert-manager \
+     --create-namespace \
+     --version v1.10.0 \
+     --set installCRDs=true
+
+# You can verify and see all the available CRDs (custom resource definitions) installed via cert-manager as follows:
+$ kubectl get crds
+#  As a result, you will see six CRDs: CertificateRequests, Certificates, Challenges,
+#  ClusterIssuers, Issuers, and Orders. We will focus on ClusterIssuers. Let’s create a
+#  ClusterIssuer to handle the self-signed certification flow, which is very handy for local development.
+
+# this resource name (ClusterIssuer) significant because when you want to use a certificate for TLS communication, 
+# you must “issue a certificate.” ClusterIssuer does that for you cluster-wide. You would use the following resource 
+# to create a self-signed certificate in a Kubernetes cluster:
+
+# then
+apiVersion: cert-manager.io/v1
+kind: ClusterIssuer
+metadata:
+  name: selfsigned-issuer
+spec:
+  selfSigned: {}
+
+# then 
+$ kubectl apply -f cluster-issuer.yaml
+
+# You can verify creation with this command:
+$ kubectl get clusterissuers -o wide selfsigned-issuer
+
+# Certificate usage in Ingress
+    The self-signed certificate we created is only authorized for local development and
+    uses Ingress’s .local domain name. Add the following record to /etc/hosts:
+    
+ingress.local 127.0.0.1
+
+# Certificates on the client side
+    minikube has an available command, minikube tunnel, that creates a proxy through 127.0.0.1 so that whenever you 
+    request 127.0.0.1, that request will be proxied to the Ingress controller inside minikube: 
+$ minikube tunnel
+
+# Open your browser and request https://ingress.local to see if you will get a certificate issued. You can simply 
+  click the padlock/info icon in the browser next to the insecure message and download the certificate. If you 
+  double-click on that certificate, it will prompt you to install the certificate into your key chain. Refer to 
+  http://mng.bz/zXZg for detailed steps on how to collect the certificate from the browser. You should see a secure 
+  connection after installing the certificate. We are requesting a browser, but this is not a gRPC communication. 
+  To make a gRPC call, we can still use grpcurl and provide the .proto files to understand what kind of methods 
+  are available to grpcurl for the requested service:
+
+$ grpcurl -import-path /path/to/order -proto order.proto ingress.local:443  Order.Create
+
+****************************************************************************************
+****************************************************************************************
+****************************************************************************************
+
+# Jaeger installation
+$ helm repo add huseyinbabal https://huseyinbabal.github.io/charts
+
+# Then we are ready to deploy Jaeger with all components:
+$ helm install my-jaeger huseyinbabal/jaeger -n jaeger –create-namespace
+
+
+# We can use Helm Charts to install Fluent Bit in the Kubernetes environment:
+
+$ helm repo add fluent https://fluent.github.io/helm-charts
+$ helm repo update
+$ helm install fluent-bit fluent/fluent-bit
+
+# This will create a Kubernetes DaemonSet, which spins up a pod per Kubernetes node
+# to collect logs. By default, it tries to connect Elasticsearch with the domain name
+# elasticsearch-master, which means we must configure it via values.yaml. 
+
+# installing the operator to create an Elasticsearch cluster:
+$ kubectl create -f https://download.elastic.co/downloads/eck/2.5.0/crds.yaml
+
+# Since CRDs are available in Kubernetes, let’s install the operator as follows.
+$ kubectl apply -f https://download.elastic.co/downloads/eck/2.5.0/operator.yaml
+
+Now that the CRDs and the operator are ready to handle the lifecycle of the Elastic-
+search cluster, let’s send an Elasticsearch cluster creation request:
+
+cat <<EOF | kubectl apply -f -
+apiVersion: elasticsearch.k8s.elastic.co/v1   # CRD spec for the cluster
+kind: Elasticsearch
+metadata:
+  name: quickstart
+spec:
+  version: 8.5.2
+  nodeSets:
+  - name: default
+    count: 1
+    config:
+      node.store.allow_mmap: false            # Disables memory mapping
+EOF
+
+# The previous command will apply the Elasticsearch spec to the Kubernetes cluster, which ends up deploying 
+# an Elasticsearch instance. Now we can configure Fluent Bit, but we need one more thing from Elasticsearch: 
+# a password. You can use the following command in your terminal to get a password:
+PASSWORD=$(kubectl get secret quickstart-es-elastic-user -o go-template='{{.data.elastic | base64decode}}')
+
+# and after adding fluent-bit config 
+$ helm upgrade --install fluent-bit fluent/fluent-bit -f fluent.yaml
+
+# install kibana 
+
+cat <<EOF | kubectl apply -f -
+apiVersion: kibana.k8s.elastic.co/v1 
+kind: Kibana
+metadata:
+  name: quickstart
+spec:
+  version: 8.5.2
+  count: 1
+  elasticsearchRef:
+    name: quickstart             # Reference to Elasticsearch backend
+EOF
 

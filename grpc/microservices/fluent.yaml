@@ -1,0 +1,16 @@
+---
+config:
+
+# match kube.*              Forward log that matches kube
+# Host quickstart-es-http   Elasticsearch endpoint name
+outputs: |
+  [OUTPUT]
+    Name es
+    Match kube.*
+    Host quickstart-es-http
+    HTTP_User elastic
+    HTTP_Password $PASSWORD
+    tls On
+    tls.verify Off
+    Logstash_Format On
+    Retry_Limit False
