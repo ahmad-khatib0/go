@@ -1,3 +1,3 @@
 module github.com/ahmad-khatib0/go/idiomatic-approach-book/concurrency
 
-go 1.21
+go 1.22
