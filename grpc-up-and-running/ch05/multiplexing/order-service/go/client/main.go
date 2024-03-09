@@ -3,12 +3,13 @@ package main
 import (
 	"context"
 	"fmt"
-	pb "github.com/grpc-up-and-running/samples/ch05/interceptors/order-service/go/order-service-gen"
-	hwpb "google.golang.org/grpc/examples/helloworld/helloworld"
-	"google.golang.org/grpc"
-	"google.golang.org/grpc/status"
 	"log"
 	"time"
+
+	pb "github.com/ahmad-khatib0/go/grpc-up-and-running/ch05/interceptors/order-service/go/order-service-gen"
+	"google.golang.org/grpc"
+	hwpb "google.golang.org/grpc/examples/helloworld/helloworld"
+	"google.golang.org/grpc/status"
 )
 
 const (
@@ -23,7 +24,6 @@ func main() {
 	}
 	defer conn.Close()
 
-
 	// *********** Calling the Order Management gRPC service **********
 	orderManagementClient := pb.NewOrderManagementClient(conn)
 
@@ -31,7 +31,7 @@ func main() {
 	defer cancel()
 
 	// Add Order
-	order1 := pb.Order{Id: "101", Items:[]string{"iPhone XS", "Mac Book Pro"}, Destination:"San Jose, CA", Price:2300.00}
+	order1 := pb.Order{Id: "101", Items: []string{"iPhone XS", "Mac Book Pro"}, Destination: "San Jose, CA", Price: 2300.00}
 	res, addErr := orderManagementClient.AddOrder(ctx, &order1)
 
 	if addErr != nil {
@@ -40,8 +40,6 @@ func main() {
 	} else {
 		log.Print("AddOrder Response -> ", res.Value)
 	}
-
-
 
 	// *********** Calling the Greeter gRPC service  **********
 	helloClient := hwpb.NewGreeterClient(conn)
@@ -54,11 +52,9 @@ func main() {
 	}
 	fmt.Println("Greeting: ", helloResponse.Message)
 
-
 	// Get Order
 	//retrievedOrder , err := orderManagementClient.GetOrder(ctx, &wrapper.StringValue{Value: "106"})
 	//log.Print("GetOrder Response -> : ", retrievedOrder)
-
 
 	// Search Order
 	//searchStream, _ := orderManagementClient.SearchOrders(ctx, &wrapper.StringValue{Value: "Google"})
@@ -73,7 +69,6 @@ func main() {
 	//		log.Print("Search Result : ", searchOrder)
 	//	}
 	//}
-
 
 	// Update Orders
 
@@ -106,41 +101,3 @@ func main() {
 	//
 	//<- channel
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

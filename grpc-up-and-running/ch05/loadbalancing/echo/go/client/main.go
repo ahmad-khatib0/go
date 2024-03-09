@@ -52,7 +52,7 @@ func main() {
 	// Make another ClientConn with round_robin policy.
 	roundrobinConn, err := grpc.Dial(
 		fmt.Sprintf("%s:///%s", exampleScheme, exampleServiceName), // // "example:///lb.example.grpc.io"
-		grpc.WithBalancerName("round_robin"), // This sets the initial balancing policy.
+		grpc.WithBalancerName("round_robin"),                       // This sets the initial balancing policy.
 		grpc.WithInsecure(),
 	)
 	if err != nil {

@@ -1,6 +1,6 @@
 // Go to ${grpc-up-and-running}/samples/ch02/productinfo
 // Optional: Execute protoc -I proto proto/product_info.proto --go_out=plugins=grpc:go/product_info
-// Execute go get -v github.com/grpc-up-and-running/samples/ch02/productinfo/go/product_info
+// Execute go get -v github.com/ahmad-khatib0/go/grpc-up-and-running/ch02/productinfo/go/product_info
 // Execute go run go/server/main.go
 
 package main
@@ -8,15 +8,16 @@ package main
 import (
 	"context"
 	"errors"
-	grpc_opentracing "github.com/grpc-ecosystem/go-grpc-middleware/tracing/opentracing"
-	"github.com/opentracing/opentracing-go"
 	"log"
 	"net"
 
+	grpc_opentracing "github.com/grpc-ecosystem/go-grpc-middleware/tracing/opentracing"
+	"github.com/opentracing/opentracing-go"
+
+	pb "github.com/ahmad-khatib0/go/grpc-up-and-running/ch07/grpc-opentracing/go/proto"
+	"github.com/ahmad-khatib0/go/grpc-up-and-running/ch07/grpc-opentracing/go/tracer"
 	wrapper "github.com/golang/protobuf/ptypes/wrappers"
 	"github.com/google/uuid"
-	pb "github.com/grpc-up-and-running/samples/ch07/grpc-opentracing/go/proto"
-	"github.com/grpc-up-and-running/samples/ch07/grpc-opentracing/go/tracer"
 	"google.golang.org/grpc"
 )
 

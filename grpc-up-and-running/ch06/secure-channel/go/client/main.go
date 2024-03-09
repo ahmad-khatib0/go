@@ -1,26 +1,27 @@
 // Go to ${grpc-up-and-running}/samples/ch02/productinfo
 // Optional: Execute protoc --go_out=plugins=grpc:golang/product_info product_info.proto
-// Execute go get -v github.com/grpc-up-and-running/samples/ch02/productinfo/golang/product_info
+// Execute go get -v github.com/ahmad-khatib0/go/grpc-up-and-running/ch02/productinfo/golang/product_info
 // Execute go run go/client/main.go
 
 package main
 
 import (
 	"context"
-	"google.golang.org/grpc/credentials"
 	"log"
 	"path/filepath"
 	"time"
 
+	"google.golang.org/grpc/credentials"
+
+	pb "github.com/ahmad-khatib0/go/grpc-up-and-running/ch02/productinfo/go/proto"
 	wrapper "github.com/golang/protobuf/ptypes/wrappers"
-	pb "github.com/grpc-up-and-running/samples/ch02/productinfo/go/proto"
 	"google.golang.org/grpc"
 )
 
 const (
-	address = "localhost:50051"
+	address  = "localhost:50051"
 	hostname = "localhost"
-	crtFile = filepath.Join("ch06", "secure-channel", "certs", "server.crt")
+	crtFile  = filepath.Join("ch06", "secure-channel", "certs", "server.crt")
 )
 
 func main() {

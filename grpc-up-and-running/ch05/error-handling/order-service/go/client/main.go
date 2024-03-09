@@ -2,13 +2,14 @@ package main
 
 import (
 	"context"
-	pb "github.com/grpc-up-and-running/samples/ch05/interceptors/order-service/go/order-service-gen"
+	"log"
+	"time"
+
+	pb "github.com/ahmad-khatib0/go/grpc-up-and-running/ch05/interceptors/order-service/go/order-service-gen"
 	epb "google.golang.org/genproto/googleapis/rpc/errdetails"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
-	"log"
-	"time"
 )
 
 const (
@@ -24,14 +25,13 @@ func main() {
 	defer conn.Close()
 	client := pb.NewOrderManagementClient(conn)
 
-	ctx, cancel := context.WithTimeout(context.Background(), time.Second * 5)
+	ctx, cancel := context.WithTimeout(context.Background(), time.Second*5)
 	defer cancel()
 
 	// Add Order
 	// This is an invalid order
-	order1 := pb.Order{Id: "-1", Items:[]string{"iPhone XS", "Mac Book Pro"}, Destination:"San Jose, CA", Price:2300.00}
+	order1 := pb.Order{Id: "-1", Items: []string{"iPhone XS", "Mac Book Pro"}, Destination: "San Jose, CA", Price: 2300.00}
 	res, addOrderError := client.AddOrder(ctx, &order1)
-
 
 	if addOrderError != nil {
 		errorCode := status.Code(addOrderError)
@@ -53,12 +53,9 @@ func main() {
 		log.Print("AddOrder Response -> ", res.Value)
 	}
 
-
-
 	// Get Order
 	//retrievedOrder , err := client.GetOrder(ctx, &wrapper.StringValue{Value: "106"})
 	//log.Print("GetOrder Response -> : ", retrievedOrder)
-
 
 	// Search Order
 	//searchStream, _ := client.SearchOrders(ctx, &wrapper.StringValue{Value: "Google"})
@@ -73,7 +70,6 @@ func main() {
 	//		log.Print("Search Result : ", searchOrder)
 	//	}
 	//}
-
 
 	// Update Orders
 
@@ -106,41 +102,3 @@ func main() {
 	//
 	//<- channel
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

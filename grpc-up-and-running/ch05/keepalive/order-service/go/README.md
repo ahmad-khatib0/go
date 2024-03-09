@@ -39,5 +39,5 @@ protoc -I order-service-gen/ order-service-gen/order_management.proto --go_out=p
 
 ### Update after changing the service definition
 ``` 
-go get -u github.com/grpc-up-and-running/samples/ch05/keepalive/order-service/go/order-service-gen
+go get -u github.com/ahmad-khatib0/go/grpc-up-and-running/ch05/keepalive/order-service/go/order-service-gen
 ```

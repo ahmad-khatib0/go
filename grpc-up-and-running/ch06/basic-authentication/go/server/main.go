@@ -1,6 +1,6 @@
 // Go to ${grpc-up-and-running}/samples/ch02/productinfo
 // Optional: Execute protoc --go_out=plugins=grpc:golang/product_info product_info.proto
-// Execute go get -v github.com/grpc-up-and-running/samples/ch02/productinfo/go/product_info
+// Execute go get -v github.com/ahmad-khatib0/go/grpc-up-and-running/ch02/productinfo/go/product_info
 // Execute go run go/server/main.go
 
 package main
@@ -10,18 +10,19 @@ import (
 	"crypto/tls"
 	"encoding/base64"
 	"errors"
+	"log"
+	"net"
+	"path/filepath"
+	"strings"
+
+	pb "github.com/ahmad-khatib0/go/grpc-up-and-running/ch02/productinfo/go/product_info"
 	wrapper "github.com/golang/protobuf/ptypes/wrappers"
 	"github.com/google/uuid"
-	pb "github.com/grpc-up-and-running/samples/ch02/productinfo/go/product_info"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/credentials"
 	"google.golang.org/grpc/metadata"
 	"google.golang.org/grpc/status"
-	"log"
-	"net"
-	"path/filepath"
-	"strings"
 )
 
 // server is used to implement ecommerce/product_info.
@@ -30,7 +31,7 @@ type server struct {
 }
 
 var (
-	port = ":50051"
+	port               = ":50051"
 	errMissingMetadata = status.Errorf(codes.InvalidArgument, "missing metadata")
 	errInvalidToken    = status.Errorf(codes.Unauthenticated, "invalid credentials")
 )

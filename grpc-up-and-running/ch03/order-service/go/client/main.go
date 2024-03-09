@@ -3,8 +3,9 @@ package main
 import (
 	"context"
 	"log"
-	pb "ordermgt/client/ecommerce"
 	"time"
+
+	pb "github.com/ahmad-khatib0/go/grpc-up-and-running/ordermgt/client/ecommerce"
 
 	"google.golang.org/grpc"
 )

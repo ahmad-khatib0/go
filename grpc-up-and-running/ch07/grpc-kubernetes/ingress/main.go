@@ -1,6 +1,6 @@
 // Go to ${grpc-up-and-running}/samples/ch02/productinfo
 // Optional: Execute protoc -I proto-gen proto-gen/product_info.proto-gen --go_out=plugins=grpc:go/product_info
-// Execute go get -v github.com/grpc-up-and-running/samples/ch02/productinfo/golang/product_info
+// Execute go get -v github.com/ahmad-khatib0/go/grpc-up-and-running/ch02/productinfo/golang/product_info
 // Execute go run go/client/main.go
 
 package main
@@ -10,8 +10,8 @@ import (
 	"log"
 	"time"
 
+	pb "github.com/ahmad-khatib0/go/grpc-up-and-running/ch07/grpc-docker/go/proto-gen"
 	wrapper "github.com/golang/protobuf/ptypes/wrappers"
-	pb "github.com/grpc-up-and-running/samples/ch07/grpc-docker/go/proto-gen"
 	"google.golang.org/grpc"
 )
 

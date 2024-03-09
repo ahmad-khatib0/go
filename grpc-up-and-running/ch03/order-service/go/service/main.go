@@ -3,6 +3,7 @@ package main
 import (
 	"context"
 	"fmt"
+
 	"github.com/golang/protobuf/ptypes/wrappers"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
@@ -10,12 +11,13 @@ import (
 
 	/*"github.com/golang/protobuf/ptypes/wrappers"
 	"google.golang.org/grpc"*/
-	pb "ordermgt/service/ecommerce"
-	wrapper "github.com/golang/protobuf/ptypes/wrappers"
 	"io"
 	"log"
 	"net"
 	"strings"
+
+	pb "github.com/ahmad-khatib0/go/grpc-up-and-running/ordermgt/service/ecommerce"
+	wrapper "github.com/golang/protobuf/ptypes/wrappers"
 )
 
 const (
@@ -44,7 +46,6 @@ func (s *server) GetOrder(ctx context.Context, orderId *wrapper.StringValue) (*p
 	}
 
 	return nil, status.Errorf(codes.NotFound, "Order does not exist. : ", orderId)
-
 
 }
 
@@ -123,7 +124,7 @@ func (s *server) ProcessOrders(stream pb.OrderManagement_ProcessOrdersServer) er
 			shipment.OrdersList = append(shipment.OrdersList, &ord)
 			combinedShipmentMap[destination] = shipment
 		} else {
-			comShip := pb.CombinedShipment{Id: "cmb - " + (orderMap[orderId.GetValue()].Destination), Status: "Processed!", }
+			comShip := pb.CombinedShipment{Id: "cmb - " + (orderMap[orderId.GetValue()].Destination), Status: "Processed!"}
 			ord := orderMap[orderId.GetValue()]
 			comShip.OrdersList = append(shipment.OrdersList, &ord)
 			combinedShipmentMap[destination] = comShip
@@ -132,7 +133,7 @@ func (s *server) ProcessOrders(stream pb.OrderManagement_ProcessOrdersServer) er
 
 		if batchMarker == orderBatchSize {
 			for _, comb := range combinedShipmentMap {
-				log.Printf("Shipping : %v -> %v" , comb.Id, len(comb.OrdersList))
+				log.Printf("Shipping : %v -> %v", comb.Id, len(comb.OrdersList))
 				if err := stream.Send(&comb); err != nil {
 					return err
 				}
@@ -144,7 +145,6 @@ func (s *server) ProcessOrders(stream pb.OrderManagement_ProcessOrdersServer) er
 		}
 	}
 }
-
 
 func main() {
 	initSampleData()

@@ -35,7 +35,7 @@ shell command,
 ### Update after changing the service definition
 
 ```shell script 
-go get -u github.com/grpc-up-and-running/samples/ch02/productinfo/go/product_info
+go get -u github.com/ahmad-khatib0/go/grpc-up-and-running/ch02/productinfo/go/product_info
 ```
 
 ### Generate Server key and certificate

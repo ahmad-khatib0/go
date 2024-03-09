@@ -4,8 +4,8 @@ import (
 	"context"
 	"fmt"
 
+	pb "github.com/ahmad-khatib0/go/grpc-up-and-running/ch05/interceptors/order-service/go/order-service-gen"
 	wrapper "github.com/golang/protobuf/ptypes/wrappers"
-	pb "github.com/grpc-up-and-running/samples/ch05/interceptors/order-service/go/order-service-gen"
 
 	"io"
 	"log"

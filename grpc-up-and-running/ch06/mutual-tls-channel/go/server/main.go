@@ -1,6 +1,6 @@
 // Go to ${grpc-up-and-running}/samples/ch02/productinfo
 // Optional: Execute protoc --go_out=plugins=grpc:golang/product_info product_info.proto
-// Execute go get -v github.com/grpc-up-and-running/samples/ch02/productinfo/go/product_info
+// Execute go get -v github.com/ahmad-khatib0/go/grpc-up-and-running/ch02/productinfo/go/product_info
 // Execute go run go/server/main.go
 
 package main
@@ -10,15 +10,16 @@ import (
 	"crypto/tls"
 	"crypto/x509"
 	"errors"
-	wrapper "github.com/golang/protobuf/ptypes/wrappers"
-	"github.com/google/uuid"
-	pb "github.com/grpc-up-and-running/samples/ch02/productinfo/go/proto"
-	"google.golang.org/grpc"
-	"google.golang.org/grpc/credentials"
 	"io/ioutil"
 	"log"
 	"net"
 	"path/filepath"
+
+	pb "github.com/ahmad-khatib0/go/grpc-up-and-running/ch02/productinfo/go/proto"
+	wrapper "github.com/golang/protobuf/ptypes/wrappers"
+	"github.com/google/uuid"
+	"google.golang.org/grpc"
+	"google.golang.org/grpc/credentials"
 )
 
 // server is used to implement ecommerce/product_info.
@@ -50,10 +51,10 @@ func (s *server) GetProduct(ctx context.Context, in *wrapper.StringValue) (*pb.P
 }
 
 var (
-	port = ":50051"
-    crtFile = filepath.Join("ch06", "mutual-tls-channel", "certs", "server.crt")
-    keyFile = filepath.Join("ch06", "mutual-tls-channel", "certs", "server.key")
-    caFile = filepath.Join("ch06", "mutual-tls-channel", "certs", "ca.crt")
+	port    = ":50051"
+	crtFile = filepath.Join("ch06", "mutual-tls-channel", "certs", "server.crt")
+	keyFile = filepath.Join("ch06", "mutual-tls-channel", "certs", "server.key")
+	caFile  = filepath.Join("ch06", "mutual-tls-channel", "certs", "ca.crt")
 )
 
 func main() {
@@ -76,12 +77,12 @@ func main() {
 
 	opts := []grpc.ServerOption{
 		// Enable TLS for all incoming connections.
-		grpc.Creds(    // Create the TLS credentials
-			credentials.NewTLS(&tls.Config {
+		grpc.Creds( // Create the TLS credentials
+			credentials.NewTLS(&tls.Config{
 				ClientAuth:   tls.RequireAndVerifyClientCert,
 				Certificates: []tls.Certificate{certificate},
 				ClientCAs:    certPool,
-				},
+			},
 			)),
 	}
 

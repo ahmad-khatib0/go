@@ -2,24 +2,23 @@ package main
 
 import (
 	"context"
-	pb "github.com/grpc-up-and-running/samples/ch07/grpc-docker/go/proto-gen"
-	"google.golang.org/grpc"
-	"google.golang.org/grpc/reflection"
-	"google.golang.org/grpc/test/bufconn"
 	"log"
 	"net"
 	"testing"
 	"time"
+
+	pb "github.com/ahmad-khatib0/go/grpc-up-and-running/ch07/grpc-docker/go/proto-gen"
+	"google.golang.org/grpc"
+	"google.golang.org/grpc/reflection"
+	"google.golang.org/grpc/test/bufconn"
 )
 
 const (
 	address = "localhost:50051"
 	bufSize = 1024 * 1024
-
 )
 
 var listener *bufconn.Listener
-
 
 func initGRPCServerHTTP2() {
 	lis, err := net.Listen("tcp", port)
@@ -44,7 +43,6 @@ func getBufDialer(listener *bufconn.Listener) func(context.Context, string) (net
 	}
 }
 
-
 // Initialization of BufConn.
 // Package bufconn provides a net.Conn implemented by a buffer and related dialing and listening functionality.
 func initGRPCServerBuffConn() {
@@ -60,7 +58,6 @@ func initGRPCServerBuffConn() {
 	}()
 
 }
-
 
 // Conventional test that starts a gRPC server and client test the service with RPC
 func TestServer_AddProduct(t *testing.T) {
@@ -84,7 +81,6 @@ func TestServer_AddProduct(t *testing.T) {
 	}
 	log.Printf("Res %s", r.Value)
 }
-
 
 // Test written using Buffconn
 func TestServer_AddProductBufConn(t *testing.T) {

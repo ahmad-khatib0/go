@@ -8,7 +8,7 @@ import (
 	"github.com/grpc-ecosystem/grpc-gateway/runtime"
 	"google.golang.org/grpc"
 
-	gw "github.com/grpc-up-and-running/samples/ch08/grpc-gateway/go/gw"
+	gw "github.com/ahmad-khatib0/go/grpc-up-and-running/ch08/grpc-gateway/go/gw"
 )
 
 var (

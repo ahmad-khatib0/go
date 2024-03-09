@@ -2,16 +2,17 @@ package main
 
 import (
 	"context"
-	"github.com/golang/protobuf/ptypes/wrappers"
-	wrapper "github.com/golang/protobuf/ptypes/wrappers"
-	ordermgt_pb "github.com/grpc-up-and-running/samples/ch05/interceptors/order-service/go/order-service-gen"
-	hello_pb "google.golang.org/grpc/examples/helloworld/helloworld"
-	"google.golang.org/grpc"
-	"google.golang.org/grpc/reflection"
 	"io"
 	"log"
 	"net"
 	"strings"
+
+	ordermgt_pb "github.com/ahmad-khatib0/go/grpc-up-and-running/ch05/interceptors/order-service/go/order-service-gen"
+	"github.com/golang/protobuf/ptypes/wrappers"
+	wrapper "github.com/golang/protobuf/ptypes/wrappers"
+	"google.golang.org/grpc"
+	hello_pb "google.golang.org/grpc/examples/helloworld/helloworld"
+	"google.golang.org/grpc/reflection"
 )
 
 const (
@@ -21,9 +22,8 @@ const (
 
 var orderMap = make(map[string]ordermgt_pb.Order)
 
-
-
 type helloServer struct{}
+
 // SayHello implements helloworld.GreeterServer
 func (s *helloServer) SayHello(ctx context.Context, in *hello_pb.HelloRequest) (*hello_pb.HelloReply, error) {
 	log.Printf("Greeter Service - SayHello RPC")
@@ -40,7 +40,7 @@ func (s *orderMgtServer) AddOrder(ctx context.Context, orderReq *ordermgt_pb.Ord
 
 	log.Printf("Order Management Service - AddOrder RPC")
 
-	log.Println("Order : ",  orderReq.Id, " -> Added")
+	log.Println("Order : ", orderReq.Id, " -> Added")
 	return &wrapper.StringValue{Value: "Order Added: " + orderReq.Id}, nil
 }
 
@@ -57,7 +57,7 @@ func (s *orderMgtServer) SearchOrders(searchQuery *wrappers.StringValue, stream 
 		for _, itemStr := range order.Items {
 			if strings.Contains(itemStr, searchQuery.Value) {
 				// Send the matching orders in a stream
-				log.Print("Matching Order Found : " + key, " -> Writing Order to the stream ... ")
+				log.Print("Matching Order Found : "+key, " -> Writing Order to the stream ... ")
 				stream.Send(&order)
 				break
 			}
@@ -117,7 +117,7 @@ func (s *orderMgtServer) ProcessOrders(stream ordermgt_pb.OrderManagement_Proces
 			shipment.OrdersList = append(shipment.OrdersList, &ord)
 			combinedShipmentMap[destination] = shipment
 		} else {
-			comShip := ordermgt_pb.CombinedShipment{Id: "cmb - " + (orderMap[orderId.GetValue()].Destination), Status: "Processed!", }
+			comShip := ordermgt_pb.CombinedShipment{Id: "cmb - " + (orderMap[orderId.GetValue()].Destination), Status: "Processed!"}
 			ord := orderMap[orderId.GetValue()]
 			comShip.OrdersList = append(shipment.OrdersList, &ord)
 			combinedShipmentMap[destination] = comShip
@@ -126,7 +126,7 @@ func (s *orderMgtServer) ProcessOrders(stream ordermgt_pb.OrderManagement_Proces
 
 		if batchMarker == orderBatchSize {
 			for _, comb := range combinedShipmentMap {
-				log.Print("Shipping : " , comb.Id, " -> ", len(comb.OrdersList))
+				log.Print("Shipping : ", comb.Id, " -> ", len(comb.OrdersList))
 				stream.Send(&comb)
 			}
 			batchMarker = 0

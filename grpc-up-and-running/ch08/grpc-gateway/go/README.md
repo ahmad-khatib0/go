@@ -60,7 +60,7 @@ product_info.proto
 
 ### Update after changing the service definition
 ``` 
-go get -u github.com/grpc-up-and-running/samples/ch08/grpc-gateway/go/pb
+go get -u github.com/ahmad-khatib0/go/grpc-up-and-running/ch08/grpc-gateway/go/pb
 ```
 
 ### Generate reverse proxy service code
@@ -74,7 +74,7 @@ product_info.proto
 
 ### Update after changing the reverse proxy service definition
 ``` 
-go get -u github.com/grpc-up-and-running/samples/ch08/grpc-gateway/go/gw
+go get -u github.com/ahmad-khatib0/go/grpc-up-and-running/ch08/grpc-gateway/go/gw
 ```
 
 ### Generate the swagger file correspond to reverse proxy service

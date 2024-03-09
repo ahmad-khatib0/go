@@ -1,8 +1,3 @@
-module productinfo/client
+module github.com/ahmad-khatib0/go/grpc-up-and-running/productinfo/client
 
-go 1.16
-
-require (
-	github.com/golang/protobuf v1.3.2
-	google.golang.org/grpc v1.24.0
-)
+go 1.22

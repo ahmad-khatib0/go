@@ -1,19 +1,20 @@
 // Go to ${grpc-up-and-running}/samples/ch02/productinfo
 // Optional: Execute protoc -I proto proto/product_info.proto --go_out=plugins=grpc:go/product_info
-// Execute go get -v github.com/grpc-up-and-running/samples/ch02/productinfo/golang/product_info
+// Execute go get -v github.com/ahmad-khatib0/go/grpc-up-and-running/ch02/productinfo/golang/product_info
 // Execute go run go/client/main.go
 
 package main
 
 import (
 	"context"
+	"log"
+	"time"
+
+	pb "github.com/ahmad-khatib0/go/grpc-up-and-running/ch07/grpc-opentracing/go/proto"
 	"github.com/daneshk/samples/ch07/grpc-opentracing/go/tracer"
 	wrapper "github.com/golang/protobuf/ptypes/wrappers"
 	grpcopentracing "github.com/grpc-ecosystem/go-grpc-middleware/tracing/opentracing"
-	pb "github.com/grpc-up-and-running/samples/ch07/grpc-opentracing/go/proto"
 	"google.golang.org/grpc"
-	"log"
-	"time"
 )
 
 const (
