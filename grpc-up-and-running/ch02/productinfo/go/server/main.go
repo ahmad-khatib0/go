@@ -28,11 +28,10 @@ type server struct {
 }
 
 // AddProduct implements ecommerce.AddProduct
-func (s *server) AddProduct(ctx context.Context,
-	in *pb.Product) (*pb.ProductID, error) {
+func (s *server) AddProduct(ctx context.Context, in *pb.Product) (*pb.ProductID, error) {
 	out, err := uuid.NewV4()
 	if err != nil {
-		return nil, status.Errorf(codes.Internal, "Error while generating Product ID", err)
+		return nil, status.Errorf(codes.Internal, "Error while generating Product ID %d", err)
 	}
 	in.Id = out.String()
 	if s.productMap == nil {
@@ -50,7 +49,7 @@ func (s *server) GetProduct(ctx context.Context, in *pb.ProductID) (*pb.Product,
 		log.Printf("Product %v : %v - Retrieved.", product.Id, product.Name)
 		return product, status.New(codes.OK, "").Err()
 	}
-	return nil, status.Errorf(codes.NotFound, "Product does not exist.", in.Value)
+	return nil, status.Errorf(codes.NotFound, "Product does not exist. %s", in.Value)
 }
 
 func main() {

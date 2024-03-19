@@ -45,7 +45,7 @@ func (s *server) GetOrder(ctx context.Context, orderId *wrapper.StringValue) (*p
 		return &ord, status.New(codes.OK, "").Err()
 	}
 
-	return nil, status.Errorf(codes.NotFound, "Order does not exist. : ", orderId)
+	return nil, status.Errorf(codes.NotFound, "Order does not exist. : %s", orderId)
 
 }
 
