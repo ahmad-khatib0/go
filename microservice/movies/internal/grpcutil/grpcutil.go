@@ -21,7 +21,7 @@ func ServiceConnection(ctx context.Context, serviceName string, registry discove
 	return grpc.Dial(
 		addrs[rand.Intn(len(addrs))],
 		grpc.WithTransportCredentials(insecure.NewCredentials()),
-		grpc.WithUnaryInterceptor(otelgrpc.UnaryClientInterceptor()),
+		grpc.WithStatsHandler(otelgrpc.NewClientHandler()),
 	)
 
 }

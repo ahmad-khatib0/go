@@ -41,10 +41,12 @@ func run() (err error) {
 	if err != nil {
 		return err
 	}
+
 	s, err := system.NewSystem(cfg)
 	if err != nil {
 		return err
 	}
+
 	m := monolith{
 		System: s,
 		modules: []system.Module{
@@ -65,6 +67,7 @@ func run() (err error) {
 			return
 		}
 	}(m.DB())
+
 	err = m.MigrateDB(migrations.FS)
 	if err != nil {
 		return err
@@ -80,11 +83,7 @@ func run() (err error) {
 	fmt.Println("started mallbots application")
 	defer fmt.Println("stopped mallbots application")
 
-	m.Waiter().Add(
-		m.WaitForWeb,
-		m.WaitForRPC,
-		m.WaitForStream,
-	)
+	m.Waiter().Add(m.WaitForWeb, m.WaitForRPC, m.WaitForStream)
 
 	// go func() {
 	// 	for {

@@ -18,5 +18,8 @@
     "waitgroup",
     "websockets"
   ],
-  "cSpell.enableFiletypes": ["go.mod"]
+  "cSpell.enableFiletypes": ["go.mod"],
+  "yaml.schemas": {
+    "https://json.schemastore.org/github-workflow.json": "file:///home/ahmad-khatib/Downloads/personal/go/projects/simple-bank/.github/workflows/deploy.yml"
+  }
 }

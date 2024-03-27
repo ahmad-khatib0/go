@@ -3,12 +3,13 @@ package main
 import (
 	"context"
 	"fmt"
-	shipping "github.com/ahmad-khatib0/go/grpc/resilient/1-client-side-timeout-pattern"
-	"google.golang.org/grpc"
 	"log"
 	"math/rand"
 	"net"
 	"time"
+
+	shipping "github.com/ahmad-khatib0/go/grpc/resilient/1-client-side-timeout-pattern"
+	"google.golang.org/grpc"
 )
 
 type server struct {
@@ -46,7 +47,6 @@ func main() {
 }
 
 func randomFunc(ctx context.Context, name string) string {
-	rand.Seed(time.Now().UnixNano())
 	min := 3
 	max := 7
 	sleepTime := rand.Intn(max-min+1) + min

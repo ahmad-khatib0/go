@@ -28,6 +28,7 @@ func run() (err error) {
 	if err != nil {
 		return err
 	}
+
 	s, err := system.NewSystem(cfg)
 	if err != nil {
 		return err
@@ -37,9 +38,11 @@ func run() (err error) {
 			return
 		}
 	}(s.DB())
+
 	if err = s.MigrateDB(migrations.FS); err != nil {
 		return err
 	}
+
 	s.Mux().Mount("/", http.FileServer(http.FS(web.WebUI)))
 	// call the module composition root
 	if err = ordering.Root(s.Waiter().Context(), s); err != nil {
@@ -49,11 +52,7 @@ func run() (err error) {
 	fmt.Println("started ordering service")
 	defer fmt.Println("stopped ordering service")
 
-	s.Waiter().Add(
-		s.WaitForWeb,
-		s.WaitForRPC,
-		s.WaitForStream,
-	)
+	s.Waiter().Add(s.WaitForWeb, s.WaitForRPC, s.WaitForStream)
 
 	// go func() {
 	// 	for {
