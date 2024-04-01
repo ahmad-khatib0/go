@@ -1,28 +1,52 @@
 package config
 
+import (
+	"fmt"
+
+	"github.com/spf13/viper"
+)
+
 type Config struct {
 	// Cache-Control value for static content.
-	CacheControl int `json:"cache_control"`
+	CacheControl int `json:"cache_control" mapstructure:"cache_control"`
 	// Take IP address of the client from HTTP header 'X-Forwarded-For'.
 	// Useful when chat app is behind a proxy. If missing, fallback to default RemoteAddr.
-	UseXForwardedFor bool `json:"use_x_forwarded_for"`
+	UseXForwardedFor bool `json:"use_x_forwarded_for" mapstructure:"use_x_forwarded_for"`
 	// 2-letter country code (ISO 3166-1 alpha-2) to assign to sessions by default
 	// when the country isn't specified by the client explicitly and
 	// it's impossible to infer it.
-	DefaultCountryCode string `json:"default_country_code"`
+	DefaultCountryCode string        `json:"default_country_code" mapstructure:"default_country_code"`
+	Paths              PathsConfig   `json:"paths" mapstructure:"paths"`
+	WsConfig           WSConfig      `json:"ws_config" mapstructure:"ws_config"`
+	GrpcConfig         GrpcConfig    `json:"grpc_config" mapstructure:"grpc_config"`
+	Secrets            SecretsConfig `json:"secrets" mapstructure:"secrets"`
+	Media              MediaConfig   `json:"media" mapstructure:"media"`
 
 	// Configs for subsystems
-	Cluster   ClusterConfig   `json:"cluster"`
-	Plugins   []PluginConfig  `json:"plugins"`
-	Store     StoreConfig     `json:"store"`
-	Push      PushConfig      `json:"push"`
-	Tls       TlsConfig       `json:"tls"`
-	Auth      AuthConfig      `json:"auth"`
-	Validator ValidatorConfig `json:"validator"`
-	AccountGC AccountGCConfig `json:"account_gc"`
-	Webrtc    WebrtcConfig    `json:"webrtc"`
+	Cluster   ClusterConfig   `json:"cluster" mapstructure:"cluster"`
+	Plugins   []PluginConfig  `json:"plugins" mapstructure:"plugins"`
+	Store     StoreConfig     `json:"store" mapstructure:"store"`
+	Push      PushConfig      `json:"push" mapstructure:"push"`
+	Tls       TlsConfig       `json:"tls" mapstructure:"tls"`
+	Auth      AuthConfig      `json:"auth" mapstructure:"auth"`
+	Validator ValidatorConfig `json:"validator" mapstructure:"validator"`
+	AccountGC AccountGCConfig `json:"account_gc" mapstructure:"account_gc"`
+	Webrtc    WebrtcConfig    `json:"webrtc" mapstructure:"webrtc"`
 }
 
-func LoadConfig() {
+func LoadConfig() (*Config, error) {
+	var cfg Config
 
+	viper.SetConfigName("config")
+	viper.SetConfigType("yaml")
+	viper.AddConfigPath(".")
+
+	if err := viper.ReadInConfig(); err != nil {
+		return nil, fmt.Errorf("failed to init configurations %w", err)
+	}
+	if err := viper.Unmarshal(&cfg); err != nil {
+		return nil, fmt.Errorf("failed to init configurations %w", err)
+	}
+
+	return &cfg, nil
 }
