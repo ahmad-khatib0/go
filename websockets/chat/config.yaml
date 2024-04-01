@@ -1,7 +1,17 @@
 ---
 cache_control: 39600 # 11 hours
 use_x_forwarded_for: true
-default_country_code: ''
+
+app:
+  version: '0.0.1'
+  default_country_code: ''
+  #  Reported to clients in response to {hi} message.
+  #  For instance, to define the buildstamp as a timestamp of when the server was built add a
+  #  flag to compiler command line:
+  # 	-ldflags "-X main.buildstamp=`date -u '+%Y%m%dT%H:%M:%SZ'`"
+  #  or to set it to git tag:
+  # 	-ldflags "-X main.buildstamp=`git describe --tags`"
+  buildstamp_command: -ldflags "-X main.buildstamp=`git describe --tags`"
 
 secrets:
   api_key_salt: 'T713/rYYgW7g4m3vG6zGRh7+FM1t0T8j13koXScOAj4='
