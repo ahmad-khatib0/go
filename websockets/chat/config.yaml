@@ -22,6 +22,7 @@ paths:
   static_mount: /
   expvar: /debug/vars
   server_status: /debug/status
+  pprof: '/pprof'
 
 grpc_config:
   listen: ':16060'

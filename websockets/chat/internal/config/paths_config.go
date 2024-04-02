@@ -16,4 +16,5 @@ type PathsConfig struct {
 	StaticData string `json:"static_data" mapstructure:"static_data"`
 	// URL path for internal server status. Disabled if the path is blank or "-"
 	ServerStatus string `json:"server_status" mapstructure:"server_status"`
+	PProf        string `json:"pprof" mapstructure:"pprof"`
 }
