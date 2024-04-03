@@ -1,0 +1,14 @@
+---
+version: v1
+managed:
+  enabled: true
+
+plugins:
+  - plugin: go
+    out: ../golang/chat
+    opt: paths=source_relative
+    protoc_path: ./*.proto
+  - name: go-grpc
+    out: ../golang/chat
+    opt: paths=source_relative
+    protoc_path: ./*.proto
