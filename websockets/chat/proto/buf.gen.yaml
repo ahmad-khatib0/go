@@ -5,10 +5,10 @@ managed:
 
 plugins:
   - plugin: go
-    out: .
+    out: ../pb
     opt: paths=source_relative
     protoc_path: ./
   - name: go-grpc
-    out: .
+    out: ../pb
     opt: paths=source_relative
     protoc_path: ./
