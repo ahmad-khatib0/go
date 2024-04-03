@@ -4,7 +4,7 @@
 // - protoc             (unknown)
 // source: chat.proto
 
-package chat
+package chatpb
 
 import (
 	context "context"
@@ -19,7 +19,7 @@ import (
 const _ = grpc.SupportPackageIsVersion7
 
 const (
-	Node_MessageLoop_FullMethodName = "/chat.Node/MessageLoop"
+	Node_MessageLoop_FullMethodName = "/chatpb.Node/MessageLoop"
 )
 
 // NodeClient is the client API for Node service.
@@ -128,7 +128,7 @@ func (x *nodeMessageLoopServer) Recv() (*ClientMsg, error) {
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
 var Node_ServiceDesc = grpc.ServiceDesc{
-	ServiceName: "chat.Node",
+	ServiceName: "chatpb.Node",
 	HandlerType: (*NodeServer)(nil),
 	Methods:     []grpc.MethodDesc{},
 	Streams: []grpc.StreamDesc{
@@ -143,12 +143,12 @@ var Node_ServiceDesc = grpc.ServiceDesc{
 }
 
 const (
-	Plugin_FireHose_FullMethodName     = "/chat.Plugin/FireHose"
-	Plugin_Find_FullMethodName         = "/chat.Plugin/Find"
-	Plugin_Account_FullMethodName      = "/chat.Plugin/Account"
-	Plugin_Topic_FullMethodName        = "/chat.Plugin/Topic"
-	Plugin_Subscription_FullMethodName = "/chat.Plugin/Subscription"
-	Plugin_Message_FullMethodName      = "/chat.Plugin/Message"
+	Plugin_FireHose_FullMethodName     = "/chatpb.Plugin/FireHose"
+	Plugin_Find_FullMethodName         = "/chatpb.Plugin/Find"
+	Plugin_Account_FullMethodName      = "/chatpb.Plugin/Account"
+	Plugin_Topic_FullMethodName        = "/chatpb.Plugin/Topic"
+	Plugin_Subscription_FullMethodName = "/chatpb.Plugin/Subscription"
+	Plugin_Message_FullMethodName      = "/chatpb.Plugin/Message"
 )
 
 // PluginClient is the client API for Plugin service.
@@ -407,7 +407,7 @@ func _Plugin_Message_Handler(srv interface{}, ctx context.Context, dec func(inte
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
 var Plugin_ServiceDesc = grpc.ServiceDesc{
-	ServiceName: "chat.Plugin",
+	ServiceName: "chatpb.Plugin",
 	HandlerType: (*PluginServer)(nil),
 	Methods: []grpc.MethodDesc{
 		{
