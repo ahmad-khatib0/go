@@ -2,7 +2,7 @@ syntax = "proto3";
 
 package pb;
 
-option go_package = "github.com/ahmad-khatib0/go/websockets/chat/pb";
+option go_package = "github.com/ahmad-khatib0/go/websockets/chat/proto";
 
 // This is the single method that needs to be implemented by a gRPC client.
 service Node {

@@ -7,8 +7,8 @@ plugins:
   - plugin: go
     out: ../pb
     opt: paths=source_relative
-    protoc_path: ./
+    protoc_path: ./*.proto
   - name: go-grpc
     out: ../pb
     opt: paths=source_relative
-    protoc_path: ./
+    protoc_path: ./*.proto

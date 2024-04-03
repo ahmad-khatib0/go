@@ -4,7 +4,7 @@
 // - protoc             (unknown)
 // source: models.proto
 
-package pb
+package proto
 
 import (
 	context "context"
