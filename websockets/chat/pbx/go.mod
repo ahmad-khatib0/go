@@ -1,4 +1,4 @@
-module github.com/ahmad-khatib0/go/websockets/chat/chatpb
+module github.com/ahmad-khatib0/go/websockets/chat/pbx
 
 go 1.22.1
 
