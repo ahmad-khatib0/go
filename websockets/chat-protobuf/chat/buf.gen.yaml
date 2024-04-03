@@ -2,13 +2,15 @@
 version: v1
 managed:
   enabled: true
+  go_package_prefix:
+    default: github.com/ahmad-khatib0/go/websockets/chat-protobuf/chat
 
 plugins:
   - plugin: go
-    out: ../golang/chat
+    out: .
     opt: paths=source_relative
     protoc_path: ./*.proto
   - name: go-grpc
-    out: ../golang/chat
+    out: .
     opt: paths=source_relative
     protoc_path: ./*.proto
