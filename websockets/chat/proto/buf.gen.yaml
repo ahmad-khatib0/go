@@ -1,0 +1,14 @@
+---
+version: v1
+managed:
+  enabled: true
+
+plugins:
+  - plugin: go
+    out: ../pbx
+    opt: paths=source_relative
+    protoc_path: ./
+  - name: go-grpc
+    out: ../pbx
+    opt: paths=source_relative
+    protoc_path: ./
