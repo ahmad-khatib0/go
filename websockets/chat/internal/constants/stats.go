@@ -1,7 +1,10 @@
 package constants
 
 const (
-	StatsUptime        = "Uptime"
-	StatsNumGoroutines = "NumGoroutines"
-	StatsVersion       = "Version"
+	StatsUptime            = "Uptime"
+	StatsNumGoroutines     = "NumGoroutines"
+	StatsVersion           = "Version"
+	StatsClusterLeader     = "ClusterLeader"
+	StatsClusterTotalNodes = "ClusterTotalNodes"
+	StatsClusterLiveNodes  = "ClusterLiveNodes"
 )
