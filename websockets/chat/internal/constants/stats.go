@@ -7,4 +7,5 @@ const (
 	StatsClusterLeader     = "ClusterLeader"
 	StatsClusterTotalNodes = "ClusterTotalNodes"
 	StatsClusterLiveNodes  = "ClusterLiveNodes"
+	StatsDB                = "DB"
 )

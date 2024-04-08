@@ -7,4 +7,6 @@ type AppConfig struct {
 	// when the country isn't specified by the client explicitly and
 	// it's impossible to infer it.
 	DefaultCountryCode string `json:"default_country_code" mapstructure:"default_country_code"`
+	// Masked tags: tags immutable on User (mask), mutable on Topic only within the mask.
+	MaskedTagsNS []string `json:"masked_tags_ns" mapstructure:"masked_tags_ns"`
 }

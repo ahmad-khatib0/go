@@ -12,6 +12,8 @@ app:
   #  or to set it to git tag:
   # 	-ldflags "-X main.buildstamp=`git describe --tags`"
   buildstamp_command: -ldflags "-X main.buildstamp=`git describe --tags`"
+  # Masked tags: tags immutable on User (mask), mutable on Topic only within the mask.
+  masked_tags_ns: []
 
 secrets:
   api_key_salt: 'T713/rYYgW7g4m3vG6zGRh7+FM1t0T8j13koXScOAj4='
@@ -23,6 +25,9 @@ paths:
   expvar: /debug/vars
   server_status: /debug/status
   pprof: '/pprof'
+
+pprof:
+  file_name: profile
 
 grpc_config:
   listen: ':16060'

@@ -1,7 +1,7 @@
 package config
 
 type ValidatorConfig struct {
-	Email ValidatorConfigEmail `json:"email" mapstructure:"email"`
+	Email *ValidatorConfigEmail `json:"email" mapstructure:"email"`
 }
 
 type ValidatorConfigEmail struct {

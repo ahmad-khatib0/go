@@ -62,6 +62,8 @@ func NewCluster(ca ClusterArgs) (models.Cluster, int, error) {
 		return nil, 1, errors.New("invalid cluster size: Cluster needs at least two nodes.")
 	}
 
+	// TODO: add the failoverInit here
+
 	sort.Strings(nodeNames)
 	wid := sort.SearchStrings(nodeNames, ca.Cfg.MainName) + 1
 	ca.Stats.IntStatsSet(constants.StatsClusterTotalNodes, int64(len(res.nodes)+1))

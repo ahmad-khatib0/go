@@ -8,6 +8,7 @@ package profile
 import (
 	"fmt"
 	"net/http"
+	"os"
 	"runtime/pprof"
 	"strings"
 )
@@ -32,6 +33,25 @@ func (p *Profile) ProfileHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	profile.WriteTo(w, 2)
+}
+
+func (p *Profile) StartProfile(filepath string) error {
+	cpuf, err := os.Create(filepath + ".cpu")
+	if err != nil {
+		return fmt.Errorf("failed to create cpu profiling file: %w", err)
+	}
+	defer cpuf.Close()
+
+	memp, err := os.Create(filepath + ".mem")
+	if err != nil {
+		return fmt.Errorf("failed to create memory profiling file: %w", err)
+	}
+	defer memp.Close()
+
+	pprof.StartCPUProfile(cpuf)
+	defer pprof.StopCPUProfile()
+	defer pprof.WriteHeapProfile(memp)
+	return nil
 }
 
 func (p *Profile) err(w http.ResponseWriter, code int, msg string) {

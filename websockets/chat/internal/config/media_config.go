@@ -5,7 +5,7 @@ type MediaConfig struct {
 	HandlerName string `json:"handler_name" mapstructure:"handler_name"`
 	// Maximum allowed size of an uploaded file
 	MaxFileUploadSize int64 `json:"max_file_upload_size" mapstructure:"max_file_upload_size"`
-	// Garbage collection timeout
+	// Garbage collection periodicity in seconds: unused or abandoned uploads are deleted.
 	GcPeriod int `json:"gc_period" mapstructure:"gc_period"`
 	// Number of entries to delete in one pass
 	GcBlockSize int            `json:"gc_block_size" mapstructure:"gc_block_size"`
