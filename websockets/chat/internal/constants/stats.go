@@ -9,3 +9,8 @@ const (
 	StatsClusterLiveNodes  = "ClusterLiveNodes"
 	StatsDB                = "DB"
 )
+
+const (
+	DBDefaultMaxResults        = 1024
+	DBDefaultMaxMessageResults = 100
+)
