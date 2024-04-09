@@ -6,11 +6,15 @@ import (
 
 	"github.com/ahmad-khatib0/go/websockets/chat/internal/auth"
 	t "github.com/ahmad-khatib0/go/websockets/chat/internal/store/types"
+	"github.com/ahmad-khatib0/go/websockets/chat/pkg/logger"
 )
 
+type AdapterArgs struct {
+	Conf   any
+	Logger *logger.Logger
+}
+
 type DB interface {
-	// Open and configure the adapter
-	Open(cfg any) error
 	// Close the adapter
 	Close() error
 	// IsOpen checks if the adapter is ready for use
@@ -195,6 +199,8 @@ type PersistentCache interface {
 }
 
 type Adapter interface {
+	// Open opens the db connection and configure the releated fields for the adapter
+	Open(aa AdapterArgs) (Adapter, error)
 	DB() DB
 	Users() Users
 	Files() Files
