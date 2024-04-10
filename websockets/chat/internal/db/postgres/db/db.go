@@ -1,6 +1,7 @@
 package db
 
 import (
+	"fmt"
 	"strconv"
 	"time"
 
@@ -77,4 +78,31 @@ func (d *DB) SetMaxResults(val int) error {
 		d.cfg.MaxResults = val
 	}
 	return nil
+}
+
+// CheckDbVersion checks whether the actual DB version matches the expected version of this adapter.
+func (d *DB) CheckDbVersion() error {
+	ver, err := d.GetDbVersion()
+	if err != nil {
+		return err
+	}
+
+	if ver != d.adpVersion {
+		return fmt.Errorf("invalid db version, expected %d, got: %d", d.adpVersion, ver)
+	}
+
+	return nil
+}
+
+// Version returns adapter version.
+func (d *DB) Version() int {
+	return d.adpVersion
+}
+
+// Stats, returns connection stats object.
+func (d *DB) Stats() any {
+	if d.db == nil {
+		return nil
+	}
+	return d.db.Stat()
 }
