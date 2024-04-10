@@ -15,7 +15,7 @@ type AdapterArgs struct {
 }
 
 type DB interface {
-	// Close the adapter
+	// Close closes the underlying database connection
 	Close() error
 	// IsOpen checks if the adapter is ready for use
 	IsOpen() bool

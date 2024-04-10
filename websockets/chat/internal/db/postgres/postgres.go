@@ -8,6 +8,7 @@ import (
 
 	"github.com/ahmad-khatib0/go/websockets/chat/internal/config"
 	"github.com/ahmad-khatib0/go/websockets/chat/internal/constants"
+	"github.com/ahmad-khatib0/go/websockets/chat/pkg/utils"
 
 	"github.com/ahmad-khatib0/go/websockets/chat/internal/db"
 	"github.com/ahmad-khatib0/go/websockets/chat/internal/db/postgres/auth"
@@ -72,9 +73,11 @@ func (p *postgres) Open(aa db.AdapterArgs) (db.Adapter, error) {
 		return nil, fmt.Errorf("postgres db failed to parse DSN config %w", err)
 	}
 
+	ut := utils.NewUtils()
+
+	p.dB = idb.NewDB(idb.DBArgs{DB: p.db, Cfg: &c, Utils: ut})
 	p.auth = auth.NewAuth(auth.AuthArgs{DB: p.db})
 	p.credentials = credentials.NewCredentials(credentials.CredentialsArgs{DB: p.db})
-	p.dB = idb.NewDB(idb.DBArgs{DB: p.db})
 	p.devices = devices.NewDevices(devices.DevicesArgs{DB: p.db})
 	p.files = files.NewFiles(files.FilesArgs{DB: p.db})
 	p.messages = messages.NewMessages(messages.MessagesArgs{DB: p.db})
