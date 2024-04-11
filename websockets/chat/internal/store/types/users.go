@@ -5,7 +5,7 @@ import "time"
 // User is a representation of a DB-stored user record.
 type User struct {
 	ObjHeader
-	State   ObjHeader
+	State   ObjState
 	StateAt *time.Time
 
 	// Default access to user for P2P topics (used as default modeGiven)

@@ -2,9 +2,19 @@ package utils
 
 import (
 	"bytes"
+	"encoding/json"
 	"errors"
 	"io"
 )
+
+func (u *Utils) ToJSON(src any) []byte {
+	if src == nil {
+		return nil
+	}
+
+	enc, _ := json.Marshal(src)
+	return enc
+}
 
 func (u *Utils) JsonLineAndCharErr(offset int64, pay []byte) (int, int, error) {
 	if offset < 0 {
