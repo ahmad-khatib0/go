@@ -7,6 +7,7 @@ require (
 	github.com/go-chi/chi/v5 v5.0.12
 	github.com/gorilla/websocket v1.5.0
 	github.com/jackc/pgx/v5 v5.5.5
+	github.com/jmoiron/sqlx v1.3.5
 	github.com/spf13/viper v1.10.1
 	go.uber.org/zap v1.25.0
 	golang.org/x/crypto v0.21.0
