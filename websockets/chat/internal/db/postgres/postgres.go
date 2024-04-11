@@ -19,6 +19,7 @@ import (
 	"github.com/ahmad-khatib0/go/websockets/chat/internal/db/postgres/messages"
 	"github.com/ahmad-khatib0/go/websockets/chat/internal/db/postgres/persistentcache"
 	"github.com/ahmad-khatib0/go/websockets/chat/internal/db/postgres/search"
+	"github.com/ahmad-khatib0/go/websockets/chat/internal/db/postgres/shared"
 	"github.com/ahmad-khatib0/go/websockets/chat/internal/db/postgres/subscriptions"
 	"github.com/ahmad-khatib0/go/websockets/chat/internal/db/postgres/topics"
 	"github.com/ahmad-khatib0/go/websockets/chat/internal/db/postgres/users"
@@ -74,8 +75,10 @@ func (p *postgres) Open(aa db.AdapterArgs) (db.Adapter, error) {
 	}
 
 	ut := utils.NewUtils()
+	sh := shared.NewShared()
 
 	p.dB = idb.NewDB(idb.DBArgs{DB: p.db, Cfg: &c, Utils: ut})
+	p.users = users.NewUsers(users.UsersArgs{DB: p.db, Utils: ut, Cfg: &c, Shared: sh})
 	p.auth = auth.NewAuth(auth.AuthArgs{DB: p.db})
 	p.credentials = credentials.NewCredentials(credentials.CredentialsArgs{DB: p.db})
 	p.devices = devices.NewDevices(devices.DevicesArgs{DB: p.db})
@@ -85,7 +88,6 @@ func (p *postgres) Open(aa db.AdapterArgs) (db.Adapter, error) {
 	p.search = search.NewSearch(search.SearchArgs{DB: p.db})
 	p.subscriptions = subscriptions.NewSubscriptions(subscriptions.SubscriptionsArgs{DB: p.db})
 	p.topics = topics.NewTopics(topics.TopicsArgs{DB: p.db})
-	p.users = users.NewUsers(users.UsersArgs{DB: p.db})
 
 	// TODO: check here the missing db
 	err = p.db.Ping(ctx)
