@@ -173,6 +173,29 @@ func (s *Shared) ExpandQuery(query string, args ...any) (string, []any) {
 	return expandedQuery, expandedArgs
 }
 
+// Convert update to a list of columns and arguments.
+func (s *Shared) UpdateByMap(update map[string]any) (cols []string, args []any) {
+	for col, arg := range update {
+		col = strings.ToLower(col)
+		if col == "public" || col == "trusted" || col == "private" {
+			arg = s.utils.ToJSON(arg)
+		}
+		cols = append(cols, col+"=?")
+		args = append(args, arg)
+	}
+	return
+}
+
+// If Tags field is updated, get the tags so tags table cab be updated too.
+func (s *Shared) ExtractTags(update map[string]any) []string {
+	var tags []string
+	if val := update["Tags"]; val != nil {
+		tags, _ = val.(types.StringSlice)
+	}
+
+	return []string(tags)
+}
+
 func (s *Shared) deviceHasher(devID string) string {
 	// Generate custom key as [64-bit hash of device id] to ensure predictable length of the key
 	hasher := fnv.New64()

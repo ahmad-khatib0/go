@@ -75,7 +75,7 @@ func (p *postgres) Open(aa db.AdapterArgs) (db.Adapter, error) {
 	}
 
 	ut := utils.NewUtils()
-	sh := shared.NewShared()
+	sh := shared.NewShared(shared.SharedArgs{Utils: ut})
 
 	p.dB = idb.NewDB(idb.DBArgs{DB: p.db, Cfg: &c, Utils: ut})
 	p.users = users.NewUsers(users.UsersArgs{DB: p.db, Utils: ut, Cfg: &c, Shared: sh})
