@@ -79,13 +79,12 @@ type Files interface {
 
 type Credentials interface {
 	// Upsert adds or updates a credential record. Returns true if record was inserted, false if updated.
-	// Upsert(cred *t.Credential) (bool, error)
+	Upsert(cred *t.Credential) (bool, error)
 	// GetActive returns the currently active credential record for the given method.
-	// GetActive(uid t.Uid, method string) (*t.Credential, error)
+	GetActive(uid t.Uid, method string) (*t.Credential, error)
 	// GetAll returns credential records for the given user and method, validated only or all.
-	// GetAll(uid t.Uid, method string, validatedOnly bool) ([]t.Credential, error)
-	// Del deletes credentials for the given method/value. If method is empty, deletes all
-	// user's credentials.
+	GetAll(uid t.Uid, method string, validatedOnly bool) ([]t.Credential, error)
+	// Del deletes credentials for the given method/value. If method is empty, deletes all user's credentials.
 	Del(uid t.Uid, method, value string) error
 	// Confirm marks given credential as validated.
 	Confirm(uid t.Uid, method string) error

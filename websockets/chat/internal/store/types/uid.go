@@ -76,3 +76,10 @@ func (u *Uid) UnmarshalText(src []byte) error {
 	*u = Uid(binary.LittleEndian.Uint64(dec))
 	return nil
 }
+
+// ParseUid parses string NOT prefixed with anything.
+func ParseUid(s string) Uid {
+	var uid Uid
+	uid.UnmarshalText([]byte(s))
+	return uid
+}

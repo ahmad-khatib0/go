@@ -36,7 +36,7 @@ func (s *Shared) AddTags(ctx context.Context, tx pgx.Tx, table, keyName string, 
 	sql := fmt.Sprintf("INSERT INTO %s (%s, tag) VALUES($1, $2)", table, keyName)
 	for t := range tags {
 		if _, err := tx.Exec(ctx, sql, keyVal, t); err != nil {
-			if s.isDupe(err) {
+			if s.IsDupe(err) {
 				if ignoreDups {
 					continue
 				}
@@ -196,6 +196,11 @@ func (s *Shared) ExtractTags(update map[string]any) []string {
 	return []string(tags)
 }
 
+func (s *Shared) DecodeUidString(str string) int64 {
+	uid := types.ParseUid(str)
+	return store.DecodeUid(uid)
+}
+
 func (s *Shared) deviceHasher(devID string) string {
 	// Generate custom key as [64-bit hash of device id] to ensure predictable length of the key
 	hasher := fnv.New64()
@@ -204,7 +209,7 @@ func (s *Shared) deviceHasher(devID string) string {
 }
 
 // Check if Postgres error is an Error Code: 1062. Duplicate entry ... for key ...
-func (s *Shared) isDupe(err error) bool {
+func (s *Shared) IsDupe(err error) bool {
 	if err == nil {
 		return false
 	}

@@ -79,8 +79,8 @@ func (p *postgres) Open(aa db.AdapterArgs) (db.Adapter, error) {
 
 	p.dB = idb.NewDB(idb.DBArgs{DB: p.db, Cfg: &c, Utils: ut})
 	p.users = users.NewUsers(users.UsersArgs{DB: p.db, Utils: ut, Cfg: &c, Shared: sh})
+	p.credentials = credentials.NewCredentials(credentials.CredentialsArgs{DB: p.db, Utils: ut, Cfg: &c, Shared: sh})
 	p.auth = auth.NewAuth(auth.AuthArgs{DB: p.db})
-	p.credentials = credentials.NewCredentials(credentials.CredentialsArgs{DB: p.db})
 	p.devices = devices.NewDevices(devices.DevicesArgs{DB: p.db})
 	p.files = files.NewFiles(files.FilesArgs{DB: p.db})
 	p.messages = messages.NewMessages(messages.MessagesArgs{DB: p.db})
