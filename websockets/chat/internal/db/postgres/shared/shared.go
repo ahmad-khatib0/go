@@ -73,7 +73,7 @@ func (s *Shared) SubDelForUser(ctx context.Context, tx pgx.Tx, uid types.Uid, ha
 	var err error
 
 	if hard {
-		stmt := "DELETE FROM subscriptions WHERE userid = $1;"
+		stmt := "DELETE FROM subscriptions WHERE user_id = $1;"
 		_, err = tx.Exec(ctx, stmt, store.DecodeUid(uid))
 	} else {
 		now := types.TimeNow()
@@ -148,7 +148,7 @@ func (s *Shared) CredDel(ctx context.Context, tx pgx.Tx, uid types.Uid, method, 
 	return err
 }
 
-// AppendQuery() converts query strings like: 'where arg = ? AND arg2 = ? ...' to
+// ExpandQuery() converts query strings like: 'where arg = ? AND arg2 = ? ...' to
 //
 // a query that can be used with pgx library like: 'where arg = $1 AND arg2 = $2 ...'
 func (s *Shared) ExpandQuery(query string, args ...any) (string, []any) {

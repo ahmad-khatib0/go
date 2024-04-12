@@ -94,7 +94,7 @@ type Credentials interface {
 
 // Auth management for the basic authentication scheme
 type Auth interface {
-	// GetUniqueRecord returns authentication record for a given unique value i.e. login.
+	// GetUniqueRecord returns user_id, auth level, secret, expire for a given unique value i.e. login.
 	GetUniqueRecord(unique string) (t.Uid, auth.Level, []byte, time.Time, error)
 	// GetRecord returns authentication record given user ID and method.
 	GetRecord(user t.Uid, scheme string) (string, auth.Level, []byte, time.Time, error)
