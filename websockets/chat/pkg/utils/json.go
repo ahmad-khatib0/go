@@ -16,6 +16,21 @@ func (u *Utils) ToJSON(src any) []byte {
 	return enc
 }
 
+// Deserialize JSON data from DB.
+func (u *Utils) FromJSON(src any) any {
+	if src == nil {
+		return nil
+	}
+
+	if bb, ok := src.([]byte); ok {
+		var out any
+		json.Unmarshal(bb, &out)
+		return out
+	}
+
+	return nil
+}
+
 func (u *Utils) JsonLineAndCharErr(offset int64, pay []byte) (int, int, error) {
 	if offset < 0 {
 		return -1, -1, errors.New("offset value cannot be negative")

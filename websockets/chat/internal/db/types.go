@@ -110,36 +110,47 @@ type Auth interface {
 
 type Topics interface {
 	// Create creates a topic
-	// Create(topic *t.Topic) error
+	Create(topic *t.Topic) error
 	// CreateP2P creates a p2p topic
-	// CreateP2P(initiator, invited *t.Subscription) error
+	CreateP2P(initiator, invited *t.Subscription) error
 	// Get loads a single topic by name, if it exists. If the topic does not exist the call returns (nil, nil)
-	// Get(topic string) (*t.Topic, error)
-	// sForUser loads subscriptions for a given user. Reads public value.
+	Get(topic string) (*t.Topic, error)
+	// TopicsForUser() loads subscriptions for a given user. Reads public value.
+	//
 	// When the 'opts.IfModifiedSince' query is not nil the subscriptions with UpdatedAt > opts.IfModifiedSince
+	//
 	// are returned, where UpdatedAt can be either a subscription, a topic, or a user update timestamp.
-	// This is need in order to support paginagion of subscriptions: get subscriptions page by page
+	//
+	// This is needed in order to support paginagion of subscriptions: get subscriptions page by page
+	//
 	// from the oldest updates to most recent:
+	//
 	// 1. Client already has subscriptions with the latest update timestamp X.
+	//
 	// 2. Client asks for N updated subscriptions since X. The server returns N with updates between X and Y.
+	//
 	// 3. Client goes to step 1 with X := Y.
-	// TopicsForUser(uid t.Uid, keepDeleted bool, opts *t.QueryOpt) ([]t.Subscription, error)
-	// UsersFor loads users' subscriptions for a given topic. Public is loaded.
-	// UsersForTopic(topic string, keepDeleted bool, opts *t.QueryOpt) ([]t.Subscription, error)
-	// Owns loads a slice of topic names where the user is the owner.
-	Owns(uid t.Uid) ([]string, error)
+	TopicsForUser(uid t.Uid, keepDeleted bool, opts *t.QueryOpt) ([]t.Subscription, error)
+	// UsersForTopic loads users' subscriptions for a given topic. Public is loaded.
+	//
+	// The difference between UsersForTopic vs SubsForTopic is that the former loads user.Public,
+	//
+	// but the latter does not.
+	UsersForTopic(topic string, keepDeleted bool, opts *t.QueryOpt) ([]t.Subscription, error)
+	// OwnTopics() loads a slice of topic names where the user is the owner.
+	OwnTopics(uid t.Uid) ([]string, error)
 	// ChannelsForUser loads a slice of topic names where the user is a channel reader and notifications (P) are enabled.
 	ChannelsForUser(uid t.Uid) ([]string, error)
-	// Share creates topc subscriptions
-	// Share(subs []*t.Subscription) error
+	// Share creates topic subscriptions
+	Share(subs []*t.Subscription) error
 	// Delete deletes topic, subscription, messages
 	Delete(topic string, isChan, hard bool) error
-	// UpdateOnMessage increments Topic's or User's SeqId value and updates TouchedAt timestamp.
-	// UpdateOnMessage(topic string, msg *t.Message) error
 	// Update updates topic record.
 	Update(topic string, update map[string]any) error
-	// OwnerChange updates topic's owner
-	OwnerChange(topic string, newOwner t.Uid) error
+	// UpdateOnMessage increments Topic's or User's SeqId value and updates TouchedAt timestamp.
+	UpdateOnMessage(topic string, msg *t.Message) error
+	// UpdateTopicOwner updates topic's owner
+	UpdateTopicOwner(topic string, newOwner t.Uid) error
 }
 
 type Subscriptions interface {

@@ -29,7 +29,7 @@ type AuthArgs struct {
 }
 
 func NewAuth(ua AuthArgs) *Auth {
-	return &Auth{db: ua.DB}
+	return &Auth{db: ua.DB, utils: ua.Utils, cfg: ua.Cfg, shared: ua.Shared}
 }
 
 // GetUniqueRecord returns user_id, auth level, secret, expire for a given unique value i.e. login.

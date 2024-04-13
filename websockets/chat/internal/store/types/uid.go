@@ -77,6 +77,32 @@ func (u *Uid) UnmarshalText(src []byte) error {
 	return nil
 }
 
+// MarshalBinary converts Uid to byte slice.
+func (uid Uid) MarshalBinary() ([]byte, error) {
+	dst := make([]byte, 8)
+	binary.LittleEndian.PutUint64(dst, uint64(uid))
+	return dst, nil
+}
+
+// P2PName takes two Uids and generates a P2P topic name.
+func (uid Uid) P2PName(u2 Uid) string {
+	if !uid.IsZero() && !u2.IsZero() {
+		b1, _ := uid.MarshalBinary()
+		b2, _ := u2.MarshalBinary()
+
+		if uid < u2 {
+			b1 = append(b1, b2...)
+		} else if uid > u2 {
+			b1 = append(b2, b1...)
+		} else {
+			return "" // Explicitly disable P2P with self
+		}
+
+		return "p2p" + base64.URLEncoding.WithPadding(base64.NoPadding).EncodeToString(b1)
+	}
+	return ""
+}
+
 // ParseUid parses string NOT prefixed with anything.
 func ParseUid(s string) Uid {
 	var uid Uid

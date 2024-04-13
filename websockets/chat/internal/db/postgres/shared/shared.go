@@ -148,6 +148,88 @@ func (s *Shared) CredDel(ctx context.Context, tx pgx.Tx, uid types.Uid, method, 
 	return err
 }
 
+func (s *Shared) MessageDeleteList(ctx context.Context, tx pgx.Tx, topic string, toDel *types.DelMessage) error {
+	var err error
+
+	if toDel == nil {
+		// Whole topic is being deleted, thus also deleting all messages.
+		_, err = tx.Exec(ctx, "DELETE FROM delete_logs WHERE topic = $1", topic)
+
+		if err == nil {
+			_, err = tx.Exec(ctx, "DELETE FROM messages WHERE topic = $1", topic)
+		}
+		// file_messages_links will be deleted also because of ON DELETE CASCADE
+
+	} else {
+		// Only some messages are being deleted
+
+		// Start with making log entries
+		forUser := s.DecodeUidString(toDel.DeletedFor)
+
+		// Counter of deleted messages
+		for _, rng := range toDel.SeqIdRanges {
+			if rng.Hi == 0 {
+				// Dellog must contain valid Low and *Hi*.
+				rng.Hi = rng.Low + 1
+			}
+
+			stmt := `INSERT INTO delete_logs(topic, deleted_for, del_id, low, hi) VALUES($1, $2, $3, $4, $5)`
+			if _, err = tx.Exec(ctx, stmt, topic, forUser, toDel.DelId, rng.Low, rng.Hi); err != nil {
+				break
+			}
+		}
+
+		if err == nil && toDel.DeletedFor == "" {
+			// Hard-deleting messages requires updates to the messages table
+
+			where := " m.topic = ? AND "
+			args := []any{topic}
+
+			if len(toDel.SeqIdRanges) > 1 || toDel.SeqIdRanges[0].Hi == 0 {
+				seqRange := []int{}
+
+				for _, r := range toDel.SeqIdRanges {
+					if r.Hi == 0 {
+						seqRange = append(seqRange, r.Low)
+
+					} else {
+						for i := r.Low; i < r.Hi; i++ {
+							seqRange = append(seqRange, i)
+						}
+					}
+				}
+
+				args = append(args, seqRange)
+				where += " m.seq_id IN (?) "
+
+			} else {
+				// Optimizing for a special case of single range low..hi.
+				where += " m.seq_id BETWEEN ? AND ? "
+				// MySQL's BETWEEN is inclusive-inclusive thus decrement Hi by 1.
+				args = append(args, toDel.SeqIdRanges[0].Low, toDel.SeqIdRanges[0].Hi-1)
+			}
+
+			where += " AND m.deleted_at IS NULL "
+			stmt := ` 
+				DELETE FROM file_messages_links AS fml USING messages AS m 
+				WHERE m.id = fml.msg_id AND 
+			` + where
+
+			query, newargs := s.ExpandQuery(stmt, args...)
+			_, err = tx.Exec(ctx, query, newargs...)
+			if err != nil {
+				return err
+			}
+
+			stmt = `UPDATE messages AS m SET deleted_at = ?, del_id = ?, head = NULL, content = NULL WHERE ` + where
+			query, newargs = s.ExpandQuery(stmt, types.TimeNow(), toDel.DelId, args)
+			_, err = tx.Exec(ctx, query, newargs...)
+		}
+	}
+
+	return err
+}
+
 // ExpandQuery() converts query strings like: 'where arg = ? AND arg2 = ? ...' to
 //
 // a query that can be used with pgx library like: 'where arg = $1 AND arg2 = $2 ...'
@@ -176,10 +258,12 @@ func (s *Shared) ExpandQuery(query string, args ...any) (string, []any) {
 // Convert update to a list of columns and arguments.
 func (s *Shared) UpdateByMap(update map[string]any) (cols []string, args []any) {
 	for col, arg := range update {
+
 		col = strings.ToLower(col)
 		if col == "public" || col == "trusted" || col == "private" {
 			arg = s.utils.ToJSON(arg)
 		}
+
 		cols = append(cols, col+"=?")
 		args = append(args, arg)
 	}
@@ -189,7 +273,8 @@ func (s *Shared) UpdateByMap(update map[string]any) (cols []string, args []any) 
 // If Tags field is updated, get the tags so tags table cab be updated too.
 func (s *Shared) ExtractTags(update map[string]any) []string {
 	var tags []string
-	if val := update["Tags"]; val != nil {
+
+	if val := update["tags"]; val != nil {
 		tags, _ = val.(types.StringSlice)
 	}
 
