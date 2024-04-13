@@ -155,12 +155,12 @@ type Topics interface {
 
 type Subscriptions interface {
 	// Get reads a subscription of a user to a topic
-	// Get(topic string, user t.Uid, keepDeleted bool) (*t.Subscription, error)
+	Get(topic string, user t.Uid, keepDeleted bool) (*t.Subscription, error)
 	// SubsForUser loads all subscriptions of a given user. Does NOT load Public or Private values,
 	// does not load deleted subscriptions.
-	// SubsForUser(user t.Uid) ([]t.Subscription, error)
+	SubsForUser(user t.Uid) ([]t.Subscription, error)
 	// SubsForTopic gets a list of subscriptions to a given topic.. Does NOT load Public value.
-	// SubsForTopic(topic string, keepDeleted bool, opts *t.QueryOpt) ([]t.Subscription, error)
+	SubsForTopic(topic string, keepDeleted bool, opts *t.QueryOpt) ([]t.Subscription, error)
 	// Update updates parts of a subscription object. Pass nil for fields which don't need to be updated
 	Update(topic string, user t.Uid, update map[string]any) error
 	// Delete deletes a single subscription
