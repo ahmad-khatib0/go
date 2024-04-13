@@ -171,6 +171,67 @@ func (c *Credentials) Del(uid types.Uid, method, value string) error {
 	return tx.Commit(ctx)
 }
 
+// GetAll returns credential records for the given user and method, all or validated only.
+func (c *Credentials) GetAll(uid types.Uid, method string, validatedOnly bool) ([]types.Credential, error) {
+	query := `
+	  SELECT 
+			created_at,
+			updated_at,
+			method,
+			value,
+			response,
+			done,
+			retries 
+		FROM credentials 
+		WHERE user_id = $1 AND deleted_at IS NULL
+	`
+
+	args := []any{store.DecodeUid(uid)}
+	if method != "" {
+		query += " AND method=$2 "
+		args = append(args, method)
+	}
+
+	if validatedOnly {
+		query += " AND done=TRUE "
+	}
+
+	ctx, cancel := c.utils.GetContext(time.Duration(c.cfg.SqlTimeout))
+	if cancel != nil {
+		defer cancel()
+	}
+
+	var credentials []types.Credential
+	rows, err := c.db.Query(ctx, query, args...)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	for rows.Next() {
+		var cred types.Credential
+		if err = rows.Scan(&cred.CreatedAt,
+			&cred.UpdatedAt,
+			&cred.Method,
+			&cred.Value,
+			&cred.Response,
+			&cred.Done,
+			&cred.Retries,
+		); err != nil {
+			credentials = nil
+			break
+		}
+		credentials = append(credentials, cred)
+	}
+
+	user := uid.String()
+	for i := range credentials {
+		credentials[i].User = user
+	}
+
+	return credentials, err
+}
+
 // GetActive returns currently active unvalidated credential of the given user and method.
 func (c *Credentials) GetActive(uid types.Uid, method string) (*types.Credential, error) {
 
