@@ -70,7 +70,7 @@ type Files interface {
 	// unused records with UpdatedAt before olderThan.
 	//
 	// Returns array of FileDef.Location of deleted filerecords so actual files can be deleted too.
-	DeleteUnused(olderThan time.Time, limit int) error
+	DeleteUnused(olderThan time.Time, limit int) ([]string, error)
 	// FinishUpload marks file upload as completed, successfully or otherwise.
 	FinishUpload(fd *t.FileDef, success bool, size int64) (*t.FileDef, error)
 	// Get fetches a record of a specific file

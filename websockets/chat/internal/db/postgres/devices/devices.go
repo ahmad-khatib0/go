@@ -79,7 +79,7 @@ func (d *Devices) Upsert(uid types.Uid, def *types.DeviceDef) error {
 }
 
 // GetAll returns all devices for a given set of users
-func (d *Devices) DeviceGetAll(uids ...types.Uid) (map[types.Uid][]types.DeviceDef, int, error) {
+func (d *Devices) GetAll(uids ...types.Uid) (map[types.Uid][]types.DeviceDef, int, error) {
 	var unupg []any
 	for _, uid := range uids {
 		unupg = append(unupg, store.DecodeUid(uid))
@@ -144,7 +144,7 @@ func (d *Devices) DeviceGetAll(uids ...types.Uid) (map[types.Uid][]types.DeviceD
 }
 
 // Delete deletes a device record
-func (d *Devices) DeviceDelete(uid types.Uid, deviceID string) error {
+func (d *Devices) Delete(uid types.Uid, deviceID string) error {
 	ctx, cancel := d.utils.GetContext(time.Duration(d.cfg.TxTimeout))
 	if cancel != nil {
 		defer cancel()

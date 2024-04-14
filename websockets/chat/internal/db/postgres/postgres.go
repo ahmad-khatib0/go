@@ -89,7 +89,9 @@ func (p *postgres) Open(aa db.AdapterArgs) (db.Adapter, error) {
 	p.messages = messages.NewMessages(messages.MessagesArgs{DB: p.db, Utils: ut, Cfg: &c, Shared: sh})
 	p.devices = devices.NewDevices(devices.DevicesArgs{DB: p.db, Utils: ut, Cfg: &c, Shared: sh})
 	p.files = files.NewFiles(files.FilesArgs{DB: p.db, Utils: ut, Cfg: &c, Shared: sh})
-	p.persistentCache = persistentcache.NewPersistentCache(persistentcache.PersistentCacheArgs{DB: p.db})
+	p.persistentCache = persistentcache.NewPersistentCache(
+		persistentcache.PersistentCacheArgs{DB: p.db, Utils: ut, Cfg: &c, Shared: sh},
+	)
 
 	// TODO: check here the missing db
 	err = p.db.Ping(ctx)
