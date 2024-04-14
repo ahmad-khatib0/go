@@ -1,0 +1,46 @@
+
+The cyclical phases of the TDD working process:
+  
+1 - We start at the red phase. We begin by considering what we want to test and translating this requirement 
+    into a test. Some requirements may be made up of several smaller requirements: at this point, we test only 
+    the first small requirement. This test will fail until the new functionality is implemented, giving a name 
+    to the red phase. The failing test is key because we want to ensure that the test will fail reliably 
+    regardless of what code we write. 
+
+2- Next, we move to the green phase. We swap from test code to implementation, writing just enough code as 
+   required to make the failing test pass. The code does not need to be perfect or optimal, but it should be 
+   correct enough for the test to pass. It should focus on the requirement tested by the previously written 
+   failing test.
+
+3- Finally, we move to the refactor phase. This phase is all about cleaning up both the implementation
+   and the test code, removing duplication, and optimizing our solution.
+
+4- We repeat this process until all the requirements are tested and implemented and all tests pass. The developer 
+   frequently swaps between testing and implementing code, extending functionality and tests accordingly.
+
+
+The AAA pattern describes how to structure tests in a uniform manner:
+1 - We begin with the Arrange step, which is the setup part of the test. This is when we set up the
+    Unit Under Test (UUT) and all of the dependencies that it requires during setup. We also set
+    up the inputs and the preconditions used by the test scenario in this section.
+2 - Next, the Act step is where we perform the actions specified by the test scenario. Depending on the type 
+    of test that we are implementing, this could simply be invoking a function, an external API, or even a 
+    database function. This step uses the preconditions and inputs defined in the Arrange step.
+3 - Finally, the Assert step is where we confirm that the UUT behaves according to requirements. This
+    step compares the output from the UUT with the expected output, as defined by the requirements.
+4 - If the Assert step shows that the actual output from the UUT is not as expected, then the test
+    is considered failed and the test is finished.
+5 - If the Assert step shows that the actual output from the UUT is as expected, then we have two options: 
+    one option is that if there are no more test steps, the test is considered passed and the test is finished. 
+    The other option is that if there are more test steps, then we go back to the Act step and continue.
+6 - The Act and Assert steps can be repeated as many times as necessary for your test scenario.
+    However, you should avoid writing lengthy, complicated tests. This is described further in the
+    best practices throughout this section.
+
+Tests should cover the following:
+  • The functions you implemented
+  • The statements that your functions are composed of
+  • The different execution paths of your functions
+  • The different conditions of your Boolean variables
+  • The different parameter values that can be passed to your functions
+

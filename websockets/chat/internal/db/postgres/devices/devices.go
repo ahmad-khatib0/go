@@ -26,8 +26,8 @@ type DevicesArgs struct {
 	Shared *shared.Shared
 }
 
-func NewDevices(ua DevicesArgs) *Devices {
-	return &Devices{db: ua.DB, utils: ua.Utils, cfg: ua.Cfg, shared: ua.Shared}
+func NewDevices(da DevicesArgs) *Devices {
+	return &Devices{db: da.DB, utils: da.Utils, cfg: da.Cfg, shared: da.Shared}
 }
 
 // Upsert creates or updates a device record

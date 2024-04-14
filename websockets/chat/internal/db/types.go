@@ -63,16 +63,18 @@ type Users interface {
 
 // Files upload records. The files are stored outside of the database.
 type Files interface {
-	// FileDeleteUnused deletes records where UseCount is zero. If olderThan is non-zero, deletes
+	// StartUpload initializes a file upload.
+	StartUpload(fd *t.FileDef) error
+	// DeleteUnused deletes records where UseCount is zero. If olderThan is non-zero, deletes
+	//
 	// unused records with UpdatedAt before olderThan.
+	//
 	// Returns array of FileDef.Location of deleted filerecords so actual files can be deleted too.
 	DeleteUnused(olderThan time.Time, limit int) error
-	// StartUpload initializes a file upload.
-	// StartUpload(fd *t.FileDef) error
 	// FinishUpload marks file upload as completed, successfully or otherwise.
-	// FinishUpload(fd *t.FileDef, success bool, size int64) (*t.FileDef, error)
+	FinishUpload(fd *t.FileDef, success bool, size int64) (*t.FileDef, error)
 	// Get fetches a record of a specific file
-	// Get(fid string) (*t.FileDef, error)
+	Get(fid string) (*t.FileDef, error)
 	// LinkAttachments connects given topic or message to the file record IDs from the list.
 	LinkAttachments(topic string, userId, msgId t.Uid, fids []string) error
 }
