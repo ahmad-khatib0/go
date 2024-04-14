@@ -87,7 +87,7 @@ func (p *postgres) Open(aa db.AdapterArgs) (db.Adapter, error) {
 	)
 	p.search = search.NewSearch(search.SearchArgs{DB: p.db, Utils: ut, Cfg: &c, Shared: sh})
 	p.messages = messages.NewMessages(messages.MessagesArgs{DB: p.db, Utils: ut, Cfg: &c, Shared: sh})
-	p.devices = devices.NewDevices(devices.DevicesArgs{DB: p.db})
+	p.devices = devices.NewDevices(devices.DevicesArgs{DB: p.db, Utils: ut, Cfg: &c, Shared: sh})
 	p.files = files.NewFiles(files.FilesArgs{DB: p.db})
 	p.persistentCache = persistentcache.NewPersistentCache(persistentcache.PersistentCacheArgs{DB: p.db})
 

@@ -192,9 +192,9 @@ type Messages interface {
 // Devices (for push notifications)
 type Devices interface {
 	// Upsert creates or updates a device record
-	// Upsert(uid t.Uid, dev *t.DeviceDef) error
+	Upsert(uid t.Uid, dev *t.DeviceDef) error
 	// GetAll returns all devices for a given set of users
-	// GetAll(uid ...t.Uid) (map[t.Uid][]t.DeviceDef, int, error)
+	GetAll(uid ...t.Uid) (map[t.Uid][]t.DeviceDef, int, error)
 	// Delete deletes a device record
 	Delete(uid t.Uid, deviceID string) error
 }

@@ -56,7 +56,7 @@ func (s *Shared) DeviceDelete(ctx context.Context, tx pgx.Tx, uid types.Uid, dev
 		res, err = tx.Exec(ctx, "DELETE FROM devices WHERE user_id = $1", store.DecodeUid(uid))
 	} else {
 		stmt := "DELETE FROM devices WHERE user_id = $1 AND hash = $2"
-		res, err = tx.Exec(ctx, stmt, store.DecodeUid(uid), s.deviceHasher(deviceID))
+		res, err = tx.Exec(ctx, stmt, store.DecodeUid(uid), s.DeviceHasher(deviceID))
 	}
 
 	if err == nil {
@@ -286,7 +286,7 @@ func (s *Shared) DecodeUidString(str string) int64 {
 	return store.DecodeUid(uid)
 }
 
-func (s *Shared) deviceHasher(devID string) string {
+func (s *Shared) DeviceHasher(devID string) string {
 	// Generate custom key as [64-bit hash of device id] to ensure predictable length of the key
 	hasher := fnv.New64()
 	hasher.Write([]byte(devID))
