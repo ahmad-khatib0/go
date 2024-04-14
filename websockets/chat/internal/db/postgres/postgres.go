@@ -85,11 +85,11 @@ func (p *postgres) Open(aa db.AdapterArgs) (db.Adapter, error) {
 	p.subscriptions = subscriptions.NewSubscriptions(
 		subscriptions.SubscriptionsArgs{DB: p.db, Utils: ut, Cfg: &c, Shared: sh},
 	)
+	p.search = search.NewSearch(search.SearchArgs{DB: p.db, Utils: ut, Cfg: &c, Shared: sh})
 	p.devices = devices.NewDevices(devices.DevicesArgs{DB: p.db})
 	p.files = files.NewFiles(files.FilesArgs{DB: p.db})
 	p.messages = messages.NewMessages(messages.MessagesArgs{DB: p.db})
 	p.persistentCache = persistentcache.NewPersistentCache(persistentcache.PersistentCacheArgs{DB: p.db})
-	p.search = search.NewSearch(search.SearchArgs{DB: p.db})
 
 	// TODO: check here the missing db
 	err = p.db.Ping(ctx)

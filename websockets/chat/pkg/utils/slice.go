@@ -18,3 +18,12 @@ func (u *Utils) FlattenMap(slice []any) []any {
 
 	return result
 }
+
+// FlattenDoubleSlice turns 2d slice into a 1d slice.
+func (u *Utils) FlattenDoubleSlice(data [][]string) []string {
+	var res []string
+	for _, d := range data {
+		res = append(res, d...)
+	}
+	return res
+}

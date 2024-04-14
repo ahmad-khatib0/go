@@ -169,9 +169,11 @@ type Subscriptions interface {
 
 type Search interface {
 	// FindUsers searches for new contacts given a list of tags.
-	// FindUsers(user t.Uid, req [][]string, opt []string, activeOnly bool) ([]t.Subscription, error)
+	//
+	// Returns a list of users who match given tags, such as "email:jdoe@example.com" or "tel:+18003287448".
+	FindUsers(user t.Uid, req [][]string, opt []string, activeOnly bool) ([]t.Subscription, error)
 	// FindTopics searches for group topics given a list of tags.
-	// FindTopics(req [][]string, opt []string, activeOnly bool) ([]t.Subscription, error)
+	FindTopics(req [][]string, opt []string, activeOnly bool) ([]t.Subscription, error)
 }
 
 type Messages interface {
