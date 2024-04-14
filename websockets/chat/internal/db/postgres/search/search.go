@@ -26,7 +26,7 @@ type SearchArgs struct {
 }
 
 func NewSearch(ua SearchArgs) *Search {
-	return &Search{db: ua.DB}
+	return &Search{db: ua.DB, utils: ua.Utils, cfg: ua.Cfg, shared: ua.Shared}
 }
 
 // FindUsers searches for new contacts given a list of tags.

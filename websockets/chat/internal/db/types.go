@@ -178,14 +178,15 @@ type Search interface {
 
 type Messages interface {
 	// Save saves message to database
-	// Save(msg *t.Message) error
+	Save(msg *t.Message) error
 	// GetAll returns messages matching the query
-	// GetAll(topic string, forUser t.Uid, opts *t.QueryOpt) ([]t.Message, error)
+	GetAll(topic string, forUser t.Uid, opts *t.QueryOpt) ([]t.Message, error)
 	// DeleteList marks messages as deleted.
-	// Soft- or Hard- is defined by forUser value: forUSer.IsZero == true is hard.
-	// DeleteList(topic string, toDel *t.DelMessage) error
+	//
+	// Soft or Hard is defined by forUser value: forUSer.IsZero == true is hard.
+	DeleteList(topic string, toDel *t.DelMessage) error
 	// GetDeleted returns a list of deleted message Ids.
-	// GetDeleted(topic string, forUser t.Uid, opts *t.QueryOpt) ([]t.DelMessage, error)
+	GetDeleted(topic string, forUser t.Uid, opts *t.QueryOpt) ([]t.DelMessage, error)
 }
 
 // Devices (for push notifications)
