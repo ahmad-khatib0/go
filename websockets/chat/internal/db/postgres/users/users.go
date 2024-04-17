@@ -8,7 +8,6 @@ import (
 
 	"github.com/ahmad-khatib0/go/websockets/chat/internal/config"
 	"github.com/ahmad-khatib0/go/websockets/chat/internal/db/postgres/shared"
-	"github.com/ahmad-khatib0/go/websockets/chat/internal/store"
 	"github.com/ahmad-khatib0/go/websockets/chat/internal/store/types"
 	t "github.com/ahmad-khatib0/go/websockets/chat/internal/store/types"
 	"github.com/ahmad-khatib0/go/websockets/chat/pkg/utils"
@@ -21,6 +20,7 @@ type Users struct {
 	utils  *utils.Utils
 	cfg    *config.StorePostgresConfig
 	shared *shared.Shared
+	uGen   *types.UidGenerator
 }
 
 type UsersArgs struct {
@@ -28,10 +28,11 @@ type UsersArgs struct {
 	Utils  *utils.Utils
 	Cfg    *config.StorePostgresConfig
 	Shared *shared.Shared
+	UGen   *types.UidGenerator
 }
 
 func NewUsers(ua UsersArgs) *Users {
-	return &Users{db: ua.DB, utils: ua.Utils, cfg: ua.Cfg, shared: ua.Shared}
+	return &Users{db: ua.DB, utils: ua.Utils, cfg: ua.Cfg, shared: ua.Shared, uGen: ua.UGen}
 }
 
 // UserCreate creates a new user. Returns error and true if error
@@ -54,7 +55,7 @@ func (u *Users) Create(user *t.User) error {
 		}
 	}()
 
-	decUid := store.DecodeUid(user.Uid())
+	decUid := u.uGen.DecodeUid(user.Uid())
 	stmt := `
 	  INSERT INTO users(id, created_at, updated_at, state, access, public, trusted, tags) 
 		VALUES($1, $2, $3, $4, $5, $6, $7, $8);
@@ -92,7 +93,7 @@ func (u *Users) Get(uid t.Uid) (*t.User, error) {
 	var id int64
 
 	stmt := `SELECT * FROM users WHERE id = $1 AND state != $2`
-	row, err := u.db.Query(ctx, stmt, store.DecodeUid(uid), t.StateDeleted)
+	row, err := u.db.Query(ctx, stmt, u.uGen.DecodeUid(uid), t.StateDeleted)
 	if err != nil {
 		return nil, err
 	}
@@ -116,7 +117,7 @@ func (u *Users) Get(uid t.Uid) (*t.User, error) {
 func (u *Users) GetAll(ids ...t.Uid) ([]t.User, error) {
 	uids := make([]any, len(ids))
 	for i, id := range ids {
-		uids[i] = store.DecodeUid(id)
+		uids[i] = u.uGen.DecodeUid(id)
 	}
 
 	users := []t.User{}
@@ -156,7 +157,7 @@ func (u *Users) GetAll(ids ...t.Uid) ([]t.User, error) {
 			continue
 		}
 
-		user.SetUid(store.EncodeUid(id))
+		user.SetUid(u.uGen.EncodeUid(id))
 		users = append(users, user)
 	}
 	if err == nil {
@@ -187,7 +188,7 @@ func (u *Users) Delete(uid t.Uid, hard bool) error {
 	}()
 
 	now := t.TimeNow()
-	decUid := store.DecodeUid(uid)
+	decUid := u.uGen.DecodeUid(uid)
 
 	if hard {
 		// Delete user's devices,  if t.ErrNotFound = user  that means the user no devices.
@@ -329,7 +330,7 @@ func (u *Users) Update(uid types.Uid, update map[string]any) error {
 	}()
 
 	cols, args := u.shared.UpdateByMap(update)
-	decUid := store.DecodeUid(uid)
+	decUid := u.uGen.DecodeUid(uid)
 	args = append(args, decUid)
 
 	sql, args := u.shared.ExpandQuery("UPDATE users SET "+strings.Join(cols, ",")+" WHERE id=?", args...)
@@ -382,7 +383,7 @@ func (u *Users) UpdateTags(uid types.Uid, add, remove, reset []string) ([]string
 		}
 	}()
 
-	decID := store.DecodeUid(uid)
+	decID := u.uGen.DecodeUid(uid)
 	if reset != nil {
 		// Delete all tags first if resetting.
 		_, err = tx.Exec(ctx, "DELETE FROM user_tags WHERE user_id = $1", decID)
@@ -437,7 +438,7 @@ func (u *Users) GetByCred(method, value string) (t.Uid, error) {
 	var decID int64
 	err := u.db.QueryRow(ctx, "SELECT user_id FROM credentials WHERE synthetic = $1", method+":"+value).Scan(&decID)
 	if err == nil {
-		return store.EncodeUid(decID), nil
+		return u.uGen.EncodeUid(decID), nil
 	}
 
 	// Clear the error if user does not exist
@@ -458,7 +459,7 @@ func (u *Users) UnreadCount(ids ...types.Uid) (map[t.Uid]int, error) {
 	counts := make(map[types.Uid]int, len(ids))
 
 	for i, id := range ids {
-		uids[i] = store.DecodeUid(id)
+		uids[i] = u.uGen.DecodeUid(id)
 		// Ensure all original uids are always present.
 		counts[id] = 0
 	}
@@ -496,7 +497,7 @@ func (u *Users) UnreadCount(ids ...types.Uid) (map[t.Uid]int, error) {
 		if err = rows.Scan(&userId, &unreadCount); err != nil {
 			break
 		}
-		counts[store.EncodeUid(userId)] = unreadCount
+		counts[u.uGen.EncodeUid(userId)] = unreadCount
 	}
 	if err == nil {
 		err = rows.Err()
@@ -542,7 +543,7 @@ func (u *Users) GetUnvalidated(lastUpdatedBefore time.Time, limit int) ([]t.Uid,
 		if err = rows.Scan(&userId, &unused); err != nil {
 			break
 		}
-		uids = append(uids, store.EncodeUid(userId))
+		uids = append(uids, u.uGen.EncodeUid(userId))
 	}
 	if err == nil {
 		err = rows.Err()

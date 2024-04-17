@@ -15,28 +15,27 @@ type UidGenerator struct {
 }
 
 // Init initialises the Uid generator
-func (ug *UidGenerator) Init(workerID uint, key []byte) error {
+func NewUID(workerID uint, key []byte) (*UidGenerator, error) {
 	var err error
+	var ug UidGenerator
 
-	if ug.seq == nil {
-		ug.seq, err = snowflake.NewSnowFlake(uint32(workerID))
-	}
+	ug.seq, err = snowflake.NewSnowFlake(uint32(workerID))
+	ug.cipher, err = xtea.NewCipher(key)
 
-	if ug.cipher == nil {
-		ug.cipher, err = xtea.NewCipher(key)
-	}
-
-	return err
+	return &ug, err
 }
 
 // Get generates a unique weakly-encryped random-looking ID.
-// The Uid is a unit64 with the highest bit possibly set which makes it
+//
+// # The Uid is a unit64 with the highest bit possibly set which makes it
+//
 // incompatible with go's pre-1.9 sql package.
 func (ug *UidGenerator) Get() Uid {
 	buf, err := getIDBuffer(ug)
 	if err != nil {
 		return ZeroUid
 	}
+
 	return Uid(binary.LittleEndian.Uint64(buf))
 }
 
@@ -59,6 +58,10 @@ func (ug *UidGenerator) GetStr() string {
 //
 // for sequential primary keys.
 func (ug *UidGenerator) DecodeUid(uid Uid) int64 {
+	if uid.IsZero() {
+		return 0
+	}
+
 	src := make([]byte, 8)
 	dst := make([]byte, 8)
 	binary.LittleEndian.PutUint64(src, uint64(uid))
@@ -66,11 +69,18 @@ func (ug *UidGenerator) DecodeUid(uid Uid) int64 {
 	return int64(binary.LittleEndian.Uint64(dst))
 }
 
-// EncodeInt64 takes a positive int64 and encrypts it into a Uid.
+// EncodeUid takes a positive int64 and encrypts it into a Uid.
+//
 // This is needed for go/sql compatibility where uint64 with high bit
+//
 // set is unsupported  and possibly for other uses such as MySQL's recommendation
+//
 // for sequential primary keys.
-func (ug *UidGenerator) EncodeInt64(val int64) Uid {
+func (ug *UidGenerator) EncodeUid(val int64) Uid {
+	if val == 0 {
+		return ZeroUid
+	}
+
 	src := make([]byte, 8)
 	dst := make([]byte, 8)
 	binary.LittleEndian.PutUint64(src, uint64(val))

@@ -26,8 +26,10 @@ import (
 	"github.com/jackc/pgx/v5/pgxpool"
 )
 
-// Open opens the db connection and configure the releated fields for the adapter
-func (p *postgres) Open(aa db.AdapterArgs) (db.Adapter, error) {
+// NewPostgres opens the db connection and configure the releated fields for the adapter
+func NewPostgres(aa db.AdapterArgs) (db.Adapter, error) {
+	var p postgres
+
 	if p.db != nil {
 		return nil, errors.New("postgres db is alread connected")
 	}
@@ -43,23 +45,23 @@ func (p *postgres) Open(aa db.AdapterArgs) (db.Adapter, error) {
 	}
 
 	if c.MaxResults <= 0 {
-		p.maxResults = constants.DBDefaultMaxResults
+		c.MaxResults = constants.DBDefaultMaxResults
 	}
+
 	if c.MaxMessageResults <= 0 {
-		p.maxMessageResults = constants.DBDefaultMaxMessageResults
+		c.MaxMessageResults = constants.DBDefaultMaxMessageResults
 	}
+
 	if c.MaxOpenConn > 0 {
 		p.poolConfig.MaxConns = int32(c.MaxOpenConn)
 	}
+
 	if c.MaxIdleConn > 0 {
 		p.poolConfig.MinConns = int32(c.MaxIdleConn)
 	}
+
 	if c.MaxLifetimeConn > 0 {
 		p.poolConfig.MaxConnLifetime = time.Duration(c.MaxLifetimeConn) * time.Second
-	}
-	if c.SqlTimeout > 0 {
-		p.sqlTimeout = time.Duration(c.SqlTimeout) * time.Second
-		p.txTimeout = time.Duration(float64(c.SqlTimeout)*txTimeoutMultiplier) * time.Second
 	}
 
 	if p.poolConfig, err = pgxpool.ParseConfig(dsn); err != nil {
@@ -77,7 +79,7 @@ func (p *postgres) Open(aa db.AdapterArgs) (db.Adapter, error) {
 	ut := utils.NewUtils()
 	sh := shared.NewShared(shared.SharedArgs{Utils: ut})
 
-	p.dB = idb.NewDB(idb.DBArgs{DB: p.db, Cfg: &c, Utils: ut})
+	p.dB = idb.NewDB(idb.DBArgs{DB: p.db, Cfg: &c, Utils: ut, UGen: aa.UGen})
 	p.users = users.NewUsers(users.UsersArgs{DB: p.db, Utils: ut, Cfg: &c, Shared: sh})
 	p.credentials = credentials.NewCredentials(credentials.CredentialsArgs{DB: p.db, Utils: ut, Cfg: &c, Shared: sh})
 	p.auth = auth.NewAuth(auth.AuthArgs{DB: p.db, Cfg: &c, Utils: ut, Shared: sh})
@@ -99,7 +101,7 @@ func (p *postgres) Open(aa db.AdapterArgs) (db.Adapter, error) {
 		return nil, fmt.Errorf("postgres db failed to ping database %w", err)
 	}
 
-	return p, nil
+	return &p, nil
 }
 
 func parseConnString(c *config.StorePostgresConfig) (string, error) {

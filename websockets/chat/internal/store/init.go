@@ -5,13 +5,12 @@ import (
 	"strings"
 )
 
-func NewStore(a StoreArgs) Store {
-	return &store{
-		logger: a.Logger,
-	}
-}
-
-func (s *store) InitAuthLogicalNames(ln []string) error {
+// InitAuthLogicalNames() initializes authentication mapping "logical handler name":"actual handler name".
+//
+// Logical name must not be empty, actual name could be an empty string.
+//
+// Registered authentication handlers (what are currently supported)
+func (s *Store) InitAuthLogicalNames(ln []string) error {
 	if len(ln) == 0 {
 		return nil
 	}

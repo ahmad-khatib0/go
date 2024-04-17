@@ -5,6 +5,7 @@ import (
 	"time"
 
 	"github.com/ahmad-khatib0/go/websockets/chat/internal/auth"
+	"github.com/ahmad-khatib0/go/websockets/chat/internal/store/types"
 	t "github.com/ahmad-khatib0/go/websockets/chat/internal/store/types"
 	"github.com/ahmad-khatib0/go/websockets/chat/pkg/logger"
 )
@@ -12,6 +13,7 @@ import (
 type AdapterArgs struct {
 	Conf   any
 	Logger *logger.Logger
+	UGen   *types.UidGenerator
 }
 
 type DB interface {
@@ -27,10 +29,6 @@ type DB interface {
 	GetName() string
 	// SetMaxResults configures how many results can be returned in a single DB call.
 	SetMaxResults(val int) error
-	// CreateDb creates the database optionally dropping an existing database first.
-	CreateDb(reset bool) error
-	// UpgradeDb upgrades database to the current adapter version.
-	UpgradeDb() error
 	// Version returns adapter version
 	Version() int
 	// DB connection stats object.
@@ -39,11 +37,11 @@ type DB interface {
 
 type Users interface {
 	// UserCreate creates user record
-	// Create(user *t.User) error
+	Create(user *t.User) error
 	// Get returns record for a given user ID
-	// Get(uid t.Uid) (*t.User, error)
+	Get(uid t.Uid) (*t.User, error)
 	// GetAll returns user records for a given list of user IDs
-	// GetAll(ids ...t.Uid) ([]t.User, error)
+	GetAll(ids ...t.Uid) ([]t.User, error)
 	// Delete deletes user record
 	Delete(uid t.Uid, hard bool) error
 	// Update updates user record
@@ -214,8 +212,6 @@ type PersistentCache interface {
 }
 
 type Adapter interface {
-	// Open opens the db connection and configure the releated fields for the adapter
-	Open(aa AdapterArgs) (Adapter, error)
 	DB() DB
 	Users() Users
 	Files() Files

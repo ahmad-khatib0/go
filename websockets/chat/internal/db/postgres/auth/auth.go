@@ -7,7 +7,6 @@ import (
 	"github.com/ahmad-khatib0/go/websockets/chat/internal/auth"
 	"github.com/ahmad-khatib0/go/websockets/chat/internal/config"
 	"github.com/ahmad-khatib0/go/websockets/chat/internal/db/postgres/shared"
-	"github.com/ahmad-khatib0/go/websockets/chat/internal/store"
 	"github.com/ahmad-khatib0/go/websockets/chat/internal/store/types"
 	"github.com/ahmad-khatib0/go/websockets/chat/pkg/utils"
 	"github.com/jackc/pgx/v5"
@@ -19,6 +18,7 @@ type Auth struct {
 	utils  *utils.Utils
 	cfg    *config.StorePostgresConfig
 	shared *shared.Shared
+	uGen   *types.UidGenerator
 }
 
 type AuthArgs struct {
@@ -26,10 +26,11 @@ type AuthArgs struct {
 	Utils  *utils.Utils
 	Cfg    *config.StorePostgresConfig
 	Shared *shared.Shared
+	UGen   *types.UidGenerator
 }
 
 func NewAuth(ua AuthArgs) *Auth {
-	return &Auth{db: ua.DB, utils: ua.Utils, cfg: ua.Cfg, shared: ua.Shared}
+	return &Auth{db: ua.DB, utils: ua.Utils, cfg: ua.Cfg, shared: ua.Shared, uGen: ua.UGen}
 }
 
 // GetUniqueRecord returns user_id, auth level, secret, expire for a given unique value i.e. login.
@@ -65,7 +66,7 @@ func (a *Auth) GetUniqueRecord(unique string) (types.Uid, auth.Level, []byte, ti
 		expires = *record.Expires
 	}
 
-	return store.EncodeUid(record.Userid), record.Authlvl, record.Secret, expires, nil
+	return a.uGen.EncodeUid(record.Userid), record.Authlvl, record.Secret, expires, nil
 }
 
 // GetRecord returns authentication record given user ID and method.
@@ -85,7 +86,7 @@ func (a *Auth) GetRecord(uid types.Uid, scheme string) (string, auth.Level, []by
 	}
 
 	stmt := "SELECT user_name, secret, expires, level FROM auth WHERE user_id = $1 AND scheme = $2"
-	if err := a.db.QueryRow(ctx, stmt, store.DecodeUid(uid), scheme).Scan(
+	if err := a.db.QueryRow(ctx, stmt, a.uGen.DecodeUid(uid), scheme).Scan(
 		&record.Uname,
 		&record.Secret,
 		&record.Expires,
@@ -117,7 +118,7 @@ func (a *Auth) AddRecord(uid types.Uid, scheme, unique string, authLvl auth.Leve
 	}
 
 	stmt := "INSERT INTO auth(user_name, user_id, scheme, level, secret, expires) VALUES($1, $2, $3, $4, $5, $6)"
-	if _, err := a.db.Exec(ctx, stmt, unique, store.DecodeUid(uid), scheme, authLvl, secret, exp); err != nil {
+	if _, err := a.db.Exec(ctx, stmt, unique, a.uGen.DecodeUid(uid), scheme, authLvl, secret, exp); err != nil {
 		if a.shared.IsDupe(err) {
 			return types.ErrDuplicate
 		}
@@ -133,7 +134,7 @@ func (a *Auth) DelScheme(user types.Uid, scheme string) error {
 		defer cancel()
 	}
 
-	_, err := a.db.Exec(ctx, "DELETE FROM auth WHERE user_id = $1 AND scheme = $2", store.DecodeUid(user), scheme)
+	_, err := a.db.Exec(ctx, "DELETE FROM auth WHERE user_id = $1 AND scheme = $2", a.uGen.DecodeUid(user), scheme)
 	return err
 }
 
@@ -144,7 +145,7 @@ func (a *Auth) DelAllRecords(user types.Uid) (int, error) {
 		defer cancel()
 	}
 
-	res, err := a.db.Exec(ctx, "DELETE FROM auth WHERE user_id = $1", store.DecodeUid(user))
+	res, err := a.db.Exec(ctx, "DELETE FROM auth WHERE user_id = $1", a.uGen.DecodeUid(user))
 	if err != nil {
 		return 0, err
 	}
@@ -174,7 +175,7 @@ func (a *Auth) UpdRecord(uid types.Uid, scheme, unique string, authLvl auth.Leve
 		args = append(args, expires)
 	}
 
-	args = append(args, store.DecodeUid(uid), scheme)
+	args = append(args, a.uGen.DecodeUid(uid), scheme)
 
 	ctx, cancel := a.utils.GetContext(time.Duration(a.cfg.SqlTimeout))
 	if cancel != nil {

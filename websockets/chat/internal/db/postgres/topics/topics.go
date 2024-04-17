@@ -8,7 +8,6 @@ import (
 	"github.com/ahmad-khatib0/go/websockets/chat/internal/config"
 	"github.com/ahmad-khatib0/go/websockets/chat/internal/db/common"
 	"github.com/ahmad-khatib0/go/websockets/chat/internal/db/postgres/shared"
-	"github.com/ahmad-khatib0/go/websockets/chat/internal/store"
 	"github.com/ahmad-khatib0/go/websockets/chat/internal/store/types"
 	"github.com/ahmad-khatib0/go/websockets/chat/pkg/logger"
 	"github.com/ahmad-khatib0/go/websockets/chat/pkg/utils"
@@ -21,6 +20,7 @@ type Topics struct {
 	utils  *utils.Utils
 	cfg    *config.StorePostgresConfig
 	shared *shared.Shared
+	uGen   *types.UidGenerator
 	logger *logger.Logger
 }
 
@@ -30,10 +30,11 @@ type TopicsArgs struct {
 	Cfg    *config.StorePostgresConfig
 	Shared *shared.Shared
 	Logger *logger.Logger
+	UGen   *types.UidGenerator
 }
 
-func NewTopics(ua TopicsArgs) *Topics {
-	return &Topics{db: ua.DB, utils: ua.Utils, cfg: ua.Cfg, shared: ua.Shared}
+func NewTopics(ta TopicsArgs) *Topics {
+	return &Topics{db: ta.DB, utils: ta.Utils, cfg: ta.Cfg, shared: ta.Shared, uGen: ta.UGen, logger: ta.Logger}
 }
 
 func (t *Topics) Create(topic *types.Topic) error {
@@ -151,7 +152,7 @@ func (t *Topics) Get(topic string) (*types.Topic, error) {
 		return nil, err
 	}
 
-	tt.Owner = store.EncodeUid(owner).String()
+	tt.Owner = t.uGen.EncodeUid(owner).String()
 	return tt, nil
 }
 
@@ -180,7 +181,7 @@ func (t *Topics) TopicsForUser(uid types.Uid, keepDeleted bool, opts *types.Quer
 		FROM subscriptions WHERE user_id=? 
 	`
 
-	args := []any{store.DecodeUid(uid)}
+	args := []any{t.uGen.DecodeUid(uid)}
 	if !keepDeleted {
 		q += " AND deleted_at IS NULL " // Filter out deleted rows.
 	}
@@ -268,10 +269,10 @@ func (t *Topics) TopicsForUser(uid types.Uid, keepDeleted bool, opts *types.Quer
 			uid1, uid2, _ := types.TopicsParseP2P(tname) // user 1, and the second user ids
 
 			if uid1 == uid {
-				usrq = append(usrq, store.DecodeUid(uid2))
+				usrq = append(usrq, t.uGen.DecodeUid(uid2))
 				sub.SetWith(uid2.UserId())
 			} else {
-				usrq = append(usrq, store.DecodeUid(uid1))
+				usrq = append(usrq, t.uGen.DecodeUid(uid1))
 				sub.SetWith(uid1.UserId())
 			}
 
@@ -458,7 +459,7 @@ func (t *Topics) TopicsForUser(uid types.Uid, keepDeleted bool, opts *types.Quer
 				break
 			}
 
-			usr2.ID = store.EncodeUid(id).String()
+			usr2.ID = t.uGen.EncodeUid(id).String()
 			joinOn := uid.P2PName(types.ParseUid(usr2.ID))
 
 			if sub, ok := join[joinOn]; ok {
@@ -546,7 +547,7 @@ func (t *Topics) UsersForTopic(topic string, keepDeleted bool, opts *types.Query
 			// For p2p topics we have to fetch both users otherwise public cannot be swapped.
 			if tcat != types.TopicCatP2P {
 				q += " AND s.user_id = ?"
-				args = append(args, store.DecodeUid(opts.User))
+				args = append(args, t.uGen.DecodeUid(opts.User))
 			}
 			oneUser = opts.User
 		}
@@ -601,7 +602,7 @@ func (t *Topics) UsersForTopic(topic string, keepDeleted bool, opts *types.Query
 			break
 		}
 
-		sub.User = store.EncodeUid(userId).String()
+		sub.User = t.uGen.EncodeUid(userId).String()
 		sub.SetPublic(public)
 		sub.SetTrusted(trusted)
 		sub.SetLastSeenAndUA(lastSeen, userAgent)
@@ -835,7 +836,7 @@ func (t *Topics) UpdateTopicOwner(topic string, newOwner types.Uid) error {
 	}
 
 	stmt := `UPDATE topics SET owner = $1 WHERE name = $2`
-	_, err := t.db.Exec(ctx, stmt, store.DecodeUid(newOwner), topic)
+	_, err := t.db.Exec(ctx, stmt, t.uGen.DecodeUid(newOwner), topic)
 
 	return err
 }
@@ -866,7 +867,7 @@ func (t *Topics) createTopic(ctx context.Context, tx pgx.Tx, topic *types.Topic)
 		topic.State,
 		topic.ID,
 		topic.UseBt,
-		store.DecodeUid(types.ParseUid(topic.Owner)),
+		t.uGen.DecodeUid(types.ParseUid(topic.Owner)),
 		topic.Access,
 		t.utils.ToJSON(topic.Public),
 		t.utils.ToJSON(topic.Trusted),
@@ -886,7 +887,7 @@ func (t *Topics) createSubscription(ctx context.Context, tx pgx.Tx, sub *types.S
 	isOwner := (sub.ModeGiven & sub.ModeWant).IsOwner()
 
 	jpriv := t.utils.ToJSON(sub.Private)
-	decUID := store.DecodeUid(types.ParseUid(sub.User))
+	decUID := t.uGen.DecodeUid(types.ParseUid(sub.User))
 
 	_, err2 := tx.Exec(ctx, "SAVEPOINT createSub")
 	if err2 != nil {
@@ -994,7 +995,7 @@ func (t *Topics) getTopicNamesForUser(uid types.Uid, sqlQuery string) ([]string,
 		defer cancel()
 	}
 
-	rows, err := t.db.Query(ctx, sqlQuery, store.DecodeUid(uid))
+	rows, err := t.db.Query(ctx, sqlQuery, t.uGen.DecodeUid(uid))
 	if err != nil {
 		return nil, err
 	}

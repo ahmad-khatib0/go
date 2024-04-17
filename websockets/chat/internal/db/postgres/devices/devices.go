@@ -5,7 +5,6 @@ import (
 
 	"github.com/ahmad-khatib0/go/websockets/chat/internal/config"
 	"github.com/ahmad-khatib0/go/websockets/chat/internal/db/postgres/shared"
-	"github.com/ahmad-khatib0/go/websockets/chat/internal/store"
 	"github.com/ahmad-khatib0/go/websockets/chat/internal/store/types"
 	"github.com/ahmad-khatib0/go/websockets/chat/pkg/utils"
 	"github.com/jackc/pgx/v5"
@@ -17,6 +16,7 @@ type Devices struct {
 	utils  *utils.Utils
 	cfg    *config.StorePostgresConfig
 	shared *shared.Shared
+	uGen   *types.UidGenerator
 }
 
 type DevicesArgs struct {
@@ -24,10 +24,11 @@ type DevicesArgs struct {
 	Utils  *utils.Utils
 	Cfg    *config.StorePostgresConfig
 	Shared *shared.Shared
+	UGen   *types.UidGenerator
 }
 
 func NewDevices(da DevicesArgs) *Devices {
-	return &Devices{db: da.DB, utils: da.Utils, cfg: da.Cfg, shared: da.Shared}
+	return &Devices{db: da.DB, utils: da.Utils, cfg: da.Cfg, shared: da.Shared, uGen: da.UGen}
 }
 
 // Upsert creates or updates a device record
@@ -63,7 +64,7 @@ func (d *Devices) Upsert(uid types.Uid, def *types.DeviceDef) error {
 	_, err = tx.Exec(
 		ctx,
 		stmt,
-		store.DecodeUid(uid),
+		d.uGen.DecodeUid(uid),
 		hash,
 		def.DeviceID,
 		def.Platform,
@@ -82,7 +83,7 @@ func (d *Devices) Upsert(uid types.Uid, def *types.DeviceDef) error {
 func (d *Devices) GetAll(uids ...types.Uid) (map[types.Uid][]types.DeviceDef, int, error) {
 	var unupg []any
 	for _, uid := range uids {
-		unupg = append(unupg, store.DecodeUid(uid))
+		unupg = append(unupg, d.uGen.DecodeUid(uid))
 	}
 
 	stmt := `
@@ -123,7 +124,7 @@ func (d *Devices) GetAll(uids ...types.Uid) (map[types.Uid][]types.DeviceDef, in
 			break
 		}
 
-		uid := store.EncodeUid(device.Userid)
+		uid := d.uGen.EncodeUid(device.Userid)
 		udev := result[uid]
 		udev = append(udev, types.DeviceDef{
 			DeviceID: device.Deviceid,

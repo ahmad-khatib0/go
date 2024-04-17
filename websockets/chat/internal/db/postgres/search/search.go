@@ -5,7 +5,6 @@ import (
 
 	"github.com/ahmad-khatib0/go/websockets/chat/internal/config"
 	"github.com/ahmad-khatib0/go/websockets/chat/internal/db/postgres/shared"
-	"github.com/ahmad-khatib0/go/websockets/chat/internal/store"
 	"github.com/ahmad-khatib0/go/websockets/chat/internal/store/types"
 	"github.com/ahmad-khatib0/go/websockets/chat/pkg/utils"
 	"github.com/jackc/pgx/v5/pgxpool"
@@ -16,6 +15,7 @@ type Search struct {
 	utils  *utils.Utils
 	cfg    *config.StorePostgresConfig
 	shared *shared.Shared
+	uGen   *types.UidGenerator
 }
 
 type SearchArgs struct {
@@ -23,10 +23,11 @@ type SearchArgs struct {
 	Utils  *utils.Utils
 	Cfg    *config.StorePostgresConfig
 	Shared *shared.Shared
+	UGen   *types.UidGenerator
 }
 
-func NewSearch(ua SearchArgs) *Search {
-	return &Search{db: ua.DB, utils: ua.Utils, cfg: ua.Cfg, shared: ua.Shared}
+func NewSearch(sa SearchArgs) *Search {
+	return &Search{db: sa.DB, utils: sa.Utils, cfg: sa.Cfg, shared: sa.Shared, uGen: sa.UGen}
 }
 
 // FindUsers searches for new contacts given a list of tags.
@@ -101,7 +102,7 @@ func (s *Search) FindUsers(user types.Uid, req [][]string, opt []string, activeO
 	var ignored int
 	var sub types.Subscription
 	var subs []types.Subscription
-	thisUser := store.DecodeUid(user)
+	thisUser := s.uGen.DecodeUid(user)
 
 	for rows.Next() {
 		if err = rows.Scan(
@@ -123,7 +124,7 @@ func (s *Search) FindUsers(user types.Uid, req [][]string, opt []string, activeO
 			continue
 		}
 
-		sub.User = store.EncodeUid(userId).String()
+		sub.User = s.uGen.EncodeUid(userId).String()
 		sub.SetPublic(public)
 		sub.SetTrusted(trusted)
 		sub.SetDefaultAccess(access.Auth, access.Anon)

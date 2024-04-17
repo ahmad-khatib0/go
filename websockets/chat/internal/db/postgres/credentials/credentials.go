@@ -5,7 +5,6 @@ import (
 
 	"github.com/ahmad-khatib0/go/websockets/chat/internal/config"
 	"github.com/ahmad-khatib0/go/websockets/chat/internal/db/postgres/shared"
-	"github.com/ahmad-khatib0/go/websockets/chat/internal/store"
 	"github.com/ahmad-khatib0/go/websockets/chat/internal/store/types"
 	"github.com/ahmad-khatib0/go/websockets/chat/pkg/utils"
 	"github.com/jackc/pgx/v5"
@@ -15,6 +14,7 @@ import (
 type Credentials struct {
 	db     *pgxpool.Pool
 	utils  *utils.Utils
+	uGen   *types.UidGenerator
 	cfg    *config.StorePostgresConfig
 	shared *shared.Shared
 }
@@ -22,12 +22,13 @@ type Credentials struct {
 type CredentialsArgs struct {
 	DB     *pgxpool.Pool
 	Utils  *utils.Utils
+	UGen   *types.UidGenerator
 	Cfg    *config.StorePostgresConfig
 	Shared *shared.Shared
 }
 
-func NewCredentials(ua CredentialsArgs) *Credentials {
-	return &Credentials{db: ua.DB, utils: ua.Utils, cfg: ua.Cfg, shared: ua.Shared}
+func NewCredentials(ca CredentialsArgs) *Credentials {
+	return &Credentials{db: ca.DB, utils: ca.Utils, cfg: ca.Cfg, shared: ca.Shared, uGen: ca.UGen}
 }
 
 // Upsert adds or updates a validation record. Returns true if inserted, false if updated.
@@ -186,7 +187,7 @@ func (c *Credentials) GetAll(uid types.Uid, method string, validatedOnly bool) (
 		WHERE user_id = $1 AND deleted_at IS NULL
 	`
 
-	args := []any{store.DecodeUid(uid)}
+	args := []any{c.uGen.DecodeUid(uid)}
 	if method != "" {
 		query += " AND method=$2 "
 		args = append(args, method)
@@ -246,7 +247,7 @@ func (c *Credentials) GetActive(uid types.Uid, method string) (*types.Credential
 	  SELECT created_at, updated_at, method, value, response, done, retries 
 	  FROM credentials WHERE user_id = $1 AND deleted_at IS NULL AND method = $2 AND done = FALSE
 	`
-	err := c.db.QueryRow(ctx, stmt, store.DecodeUid(uid), method).Scan(
+	err := c.db.QueryRow(ctx, stmt, c.uGen.DecodeUid(uid), method).Scan(
 		&cred.CreatedAt,
 		&cred.UpdatedAt,
 		&cred.Method,
@@ -280,7 +281,7 @@ func (c *Credentials) Confirm(uid types.Uid, method string) error {
 	  WHERE user_id = $2 AND method = $3 AND deleted_at IS NULL AND done = FALSE	
 	`
 
-	res, err := c.db.Exec(ctx, stmt, types.TimeNow(), store.DecodeUid(uid), method)
+	res, err := c.db.Exec(ctx, stmt, types.TimeNow(), c.uGen.DecodeUid(uid), method)
 	if err != nil {
 		if c.shared.IsDupe(err) {
 			return types.ErrDuplicate
@@ -303,6 +304,6 @@ func (c *Credentials) Fail(uid types.Uid, method string) error {
 	}
 
 	stmt := "UPDATE credentials SET updated_at = $1, retries = retries+1 WHERE user_id = $2 AND method = $3 AND done = FALSE"
-	_, err := c.db.Exec(ctx, stmt, types.TimeNow(), store.DecodeUid(uid), method)
+	_, err := c.db.Exec(ctx, stmt, types.TimeNow(), c.uGen.DecodeUid(uid), method)
 	return err
 }

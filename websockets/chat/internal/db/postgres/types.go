@@ -1,8 +1,6 @@
 package postgres
 
 import (
-	"time"
-
 	"github.com/ahmad-khatib0/go/websockets/chat/internal/db"
 	"github.com/ahmad-khatib0/go/websockets/chat/internal/db/postgres/auth"
 	"github.com/ahmad-khatib0/go/websockets/chat/internal/db/postgres/credentials"
@@ -41,15 +39,7 @@ type postgres struct {
 	db         *pgxpool.Pool
 	logger     *logger.Logger
 	poolConfig *pgxpool.Config
-	// Single query timeout.
-	sqlTimeout time.Duration
-	// DB transaction timeout.
-	txTimeout time.Duration
-	// Maximum number of records to return
-	maxResults int
-	// Maximum number of message records to return
-	maxMessageResults int
-	version           int
+	version    int
 }
 
 // Auth implements db.Adapter.
@@ -64,7 +54,7 @@ func (p *postgres) Credentials() db.Credentials {
 
 // DB implements db.Adapter.
 func (p *postgres) DB() db.DB {
-	panic("unimplemented")
+	return p.dB
 }
 
 // Devices implements db.Adapter.

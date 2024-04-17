@@ -6,7 +6,6 @@ import (
 
 	"github.com/ahmad-khatib0/go/websockets/chat/internal/config"
 	"github.com/ahmad-khatib0/go/websockets/chat/internal/db/postgres/shared"
-	"github.com/ahmad-khatib0/go/websockets/chat/internal/store"
 	"github.com/ahmad-khatib0/go/websockets/chat/internal/store/types"
 	"github.com/ahmad-khatib0/go/websockets/chat/pkg/utils"
 	"github.com/jackc/pgx/v5"
@@ -18,6 +17,7 @@ type Subscriptions struct {
 	utils  *utils.Utils
 	cfg    *config.StorePostgresConfig
 	shared *shared.Shared
+	uGen   *types.UidGenerator
 }
 
 type SubscriptionsArgs struct {
@@ -25,10 +25,11 @@ type SubscriptionsArgs struct {
 	Utils  *utils.Utils
 	Cfg    *config.StorePostgresConfig
 	Shared *shared.Shared
+	UGen   *types.UidGenerator
 }
 
-func NewSubscriptions(ua SubscriptionsArgs) *Subscriptions {
-	return &Subscriptions{db: ua.DB, utils: ua.Utils, cfg: ua.Cfg, shared: ua.Shared}
+func NewSubscriptions(sa SubscriptionsArgs) *Subscriptions {
+	return &Subscriptions{db: sa.DB, utils: sa.Utils, cfg: sa.Cfg, shared: sa.Shared, uGen: sa.UGen}
 }
 
 // Get a subscription of a user to a topic.
@@ -57,7 +58,7 @@ func (s *Subscriptions) Get(topic string, user types.Uid, keepDeleted bool) (*ty
 			private 
 		FROM subscriptions WHERE topic = $1 AND user_id = $2
 	`
-	err := s.db.QueryRow(ctx, stmt, topic, store.DecodeUid(user)).Scan(
+	err := s.db.QueryRow(ctx, stmt, topic, s.uGen.DecodeUid(user)).Scan(
 		&sub.CreatedAt,
 		&sub.UpdatedAt,
 		&sub.DeletedAt,
@@ -83,7 +84,7 @@ func (s *Subscriptions) Get(topic string, user types.Uid, keepDeleted bool) (*ty
 		return nil, nil
 	}
 
-	sub.User = store.EncodeUid(userId).String()
+	sub.User = s.uGen.EncodeUid(userId).String()
 	sub.ModeWant.Scan(modeWant)
 	sub.ModeGiven.Scan(modeGiven)
 
@@ -110,7 +111,7 @@ func (s *Subscriptions) SubsForUser(forUser types.Uid) ([]types.Subscription, er
 		WHERE user_id = $1 AND deleted_at IS NULL
 	`
 
-	args := []any{store.DecodeUid(forUser)}
+	args := []any{s.uGen.DecodeUid(forUser)}
 	ctx, cancel := s.utils.GetContext(time.Duration(s.cfg.SqlTimeout))
 	if cancel != nil {
 		defer cancel()
@@ -142,7 +143,7 @@ func (s *Subscriptions) SubsForUser(forUser types.Uid) ([]types.Subscription, er
 			break
 		}
 
-		sub.User = store.EncodeUid(userId).String()
+		sub.User = s.uGen.EncodeUid(userId).String()
 		sub.ModeWant.Scan(modeWant)
 		sub.ModeGiven.Scan(modeGiven)
 		subs = append(subs, sub)
@@ -191,7 +192,7 @@ func (s *Subscriptions) SubsForTopic(topic string, keepDeleted bool, opts *types
 
 		if !opts.User.IsZero() {
 			q += " AND userid=?"
-			args = append(args, store.DecodeUid(opts.User))
+			args = append(args, s.uGen.DecodeUid(opts.User))
 		}
 
 		if opts.Limit > 0 && opts.Limit < limit {
@@ -236,7 +237,7 @@ func (s *Subscriptions) SubsForTopic(topic string, keepDeleted bool, opts *types
 			break
 		}
 
-		sub.User = store.EncodeUid(userId).String()
+		sub.User = s.uGen.EncodeUid(userId).String()
 		sub.ModeWant.Scan(modeWant)
 		sub.ModeGiven.Scan(modeGiven)
 		subs = append(subs, sub)
@@ -273,7 +274,7 @@ func (s *Subscriptions) Update(topic string, user types.Uid, update map[string]a
 
 	if !user.IsZero() {
 		// Update just one topic subscription
-		args = append(args, store.DecodeUid(user))
+		args = append(args, s.uGen.DecodeUid(user))
 		q += " AND user_id = ? "
 	}
 
@@ -303,7 +304,7 @@ func (s *Subscriptions) Delete(topic string, user types.Uid) error {
 		}
 	}()
 
-	decUID := store.DecodeUid(user)
+	decUID := s.uGen.DecodeUid(user)
 	now := types.TimeNow()
 
 	stmt := `

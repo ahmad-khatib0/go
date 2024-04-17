@@ -5,7 +5,6 @@ import (
 
 	"github.com/ahmad-khatib0/go/websockets/chat/internal/config"
 	"github.com/ahmad-khatib0/go/websockets/chat/internal/db/postgres/shared"
-	"github.com/ahmad-khatib0/go/websockets/chat/internal/store"
 	"github.com/ahmad-khatib0/go/websockets/chat/internal/store/types"
 	"github.com/ahmad-khatib0/go/websockets/chat/pkg/utils"
 	"github.com/jackc/pgx/v5"
@@ -17,6 +16,7 @@ type Messages struct {
 	utils  *utils.Utils
 	cfg    *config.StorePostgresConfig
 	shared *shared.Shared
+	uGen   *types.UidGenerator
 }
 
 type MessagesArgs struct {
@@ -24,10 +24,11 @@ type MessagesArgs struct {
 	Utils  *utils.Utils
 	Cfg    *config.StorePostgresConfig
 	Shared *shared.Shared
+	UGen   *types.UidGenerator
 }
 
-func NewMessages(ua MessagesArgs) *Messages {
-	return &Messages{db: ua.DB, utils: ua.Utils, cfg: ua.Cfg, shared: ua.Shared}
+func NewMessages(ma MessagesArgs) *Messages {
+	return &Messages{db: ma.DB, utils: ma.Utils, cfg: ma.Cfg, shared: ma.Shared, uGen: ma.UGen}
 }
 
 func (m *Messages) Save(msg *types.Message) error {
@@ -58,7 +59,7 @@ func (m *Messages) Save(msg *types.Message) error {
 		msg.UpdatedAt,
 		msg.SeqId,
 		msg.Topic,
-		store.DecodeUid(types.ParseUid(msg.From)),
+		m.uGen.DecodeUid(types.ParseUid(msg.From)),
 		msg.Head,
 		m.utils.ToJSON(msg.Content),
 	).Scan(&id)
@@ -92,7 +93,7 @@ func (m *Messages) GetAll(topic string, forUser types.Uid, opts *types.QueryOpt)
 		}
 	}
 
-	unum := store.DecodeUid(forUser)
+	unum := m.uGen.DecodeUid(forUser)
 
 	ctx, cancel := m.utils.GetContext(time.Duration(m.cfg.SqlTimeout))
 	if cancel != nil {
@@ -147,7 +148,7 @@ func (m *Messages) GetAll(topic string, forUser types.Uid, opts *types.QueryOpt)
 			break
 		}
 
-		msg.From = store.EncodeUid(from).String()
+		msg.From = m.uGen.EncodeUid(from).String()
 		msgs = append(msgs, msg)
 	}
 
@@ -192,7 +193,7 @@ func (m *Messages) GetDeleted(topic string, forUser types.Uid, opts *types.Query
 		  AND (deleted_for = 0 OR deleted_for = $4) 
 		ORDER BY del_id LIMIT $5
 	`
-	rows, err := m.db.Query(ctx, stmt, topic, lower, upper, store.DecodeUid(forUser), limit)
+	rows, err := m.db.Query(ctx, stmt, topic, lower, upper, m.uGen.DecodeUid(forUser), limit)
 	if err != nil {
 		return nil, err
 	}
@@ -228,7 +229,7 @@ func (m *Messages) GetDeleted(topic string, forUser types.Uid, opts *types.Query
 			dmsg.DelId = dellog.Delid
 			dmsg.Topic = dellog.Topic
 			if dellog.Deletedfor > 0 {
-				dmsg.DeletedFor = store.EncodeUid(dellog.Deletedfor).String()
+				dmsg.DeletedFor = m.uGen.EncodeUid(dellog.Deletedfor).String()
 			} else {
 				dmsg.DeletedFor = ""
 			}

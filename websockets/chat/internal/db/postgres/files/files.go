@@ -6,7 +6,6 @@ import (
 
 	"github.com/ahmad-khatib0/go/websockets/chat/internal/config"
 	"github.com/ahmad-khatib0/go/websockets/chat/internal/db/postgres/shared"
-	"github.com/ahmad-khatib0/go/websockets/chat/internal/store"
 	"github.com/ahmad-khatib0/go/websockets/chat/internal/store/types"
 	"github.com/ahmad-khatib0/go/websockets/chat/pkg/utils"
 	"github.com/jackc/pgx/v5"
@@ -18,6 +17,7 @@ type Files struct {
 	utils  *utils.Utils
 	cfg    *config.StorePostgresConfig
 	shared *shared.Shared
+	uGen   *types.UidGenerator
 }
 
 type FilesArgs struct {
@@ -25,10 +25,11 @@ type FilesArgs struct {
 	Utils  *utils.Utils
 	Cfg    *config.StorePostgresConfig
 	Shared *shared.Shared
+	UGen   *types.UidGenerator
 }
 
 func NewFiles(fa FilesArgs) *Files {
-	return &Files{db: fa.DB, utils: fa.Utils, cfg: fa.Cfg, shared: fa.Shared}
+	return &Files{db: fa.DB, utils: fa.Utils, cfg: fa.Cfg, shared: fa.Shared, uGen: fa.UGen}
 }
 
 // StartUpload initializes a file upload
@@ -40,7 +41,7 @@ func (f *Files) StartUpload(fd *types.FileDef) error {
 
 	var user any
 	if fd.User != "" {
-		user = store.DecodeUid(types.ParseUid(fd.User))
+		user = f.uGen.DecodeUid(types.ParseUid(fd.User))
 	}
 
 	stmt := `
@@ -53,7 +54,7 @@ func (f *Files) StartUpload(fd *types.FileDef) error {
 	_, err := f.db.Exec(
 		ctx,
 		stmt,
-		store.DecodeUid(fd.Uid()),
+		f.uGen.DecodeUid(fd.Uid()),
 		fd.CreatedAt,
 		fd.UpdatedAt,
 		user,
@@ -87,7 +88,7 @@ func (f *Files) FinishUpload(fd *types.FileDef, success bool, size int64) (*type
 	now := types.TimeNow()
 	if success {
 		stmt := ` UPDATE file_uploads SET updated_at = $1, status = $2, size = $3 WHERE id = $4 `
-		_, err = tx.Exec(ctx, stmt, now, types.UploadCompleted, size, store.DecodeUid(fd.Uid()))
+		_, err = tx.Exec(ctx, stmt, now, types.UploadCompleted, size, f.uGen.DecodeUid(fd.Uid()))
 		if err != nil {
 			return nil, err
 		}
@@ -96,7 +97,7 @@ func (f *Files) FinishUpload(fd *types.FileDef, success bool, size int64) (*type
 		fd.Size = size
 	} else {
 		// Deleting the record: there is no value in keeping it in the DB.
-		_, err = tx.Exec(ctx, "DELETE FROM file_uploads WHERE id = $1", store.DecodeUid(fd.Uid()))
+		_, err = tx.Exec(ctx, "DELETE FROM file_uploads WHERE id = $1", f.uGen.DecodeUid(fd.Uid()))
 		if err != nil {
 			return nil, err
 		}
@@ -140,7 +141,7 @@ func (f *Files) Get(fid string) (*types.FileDef, error) {
 
 	err := f.db.QueryRow(ctx,
 		stmt,
-		store.DecodeUid(id)).Scan(&ID,
+		f.uGen.DecodeUid(id)).Scan(&ID,
 		&fd.CreatedAt,
 		&fd.UpdatedAt,
 		&userId,
@@ -158,8 +159,8 @@ func (f *Files) Get(fid string) (*types.FileDef, error) {
 		return nil, err
 	}
 
-	fd.SetUid(store.EncodeUid(ID))
-	fd.User = store.EncodeUid(userId).String()
+	fd.SetUid(f.uGen.EncodeUid(ID))
+	fd.User = f.uGen.EncodeUid(userId).String()
 	return &fd, nil
 }
 
@@ -266,7 +267,7 @@ func (f *Files) LinkAttachments(topic string, userId, msgId types.Uid, fids []st
 
 	} else {
 		linkBy = "user_id"
-		linkId = store.DecodeUid(userId)
+		linkId = f.uGen.DecodeUid(userId)
 		// Only one attachment per user is permitted at this time.
 		fids = fids[0:1]
 	}
@@ -279,7 +280,7 @@ func (f *Files) LinkAttachments(topic string, userId, msgId types.Uid, fids []st
 			return types.ErrMalformed
 		}
 
-		dids = append(dids, store.DecodeUid(id))
+		dids = append(dids, f.uGen.DecodeUid(id))
 	}
 
 	for _, id := range dids {

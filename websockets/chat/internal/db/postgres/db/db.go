@@ -7,6 +7,7 @@ import (
 
 	"github.com/ahmad-khatib0/go/websockets/chat/internal/config"
 	"github.com/ahmad-khatib0/go/websockets/chat/internal/constants"
+	"github.com/ahmad-khatib0/go/websockets/chat/internal/store/types"
 	"github.com/ahmad-khatib0/go/websockets/chat/pkg/utils"
 	"github.com/jackc/pgx/v5/pgxpool"
 )
@@ -15,12 +16,14 @@ type DB struct {
 	db         *pgxpool.Pool
 	cfg        *config.StorePostgresConfig
 	adpVersion int
+	UGen       *types.UidGenerator
 	utils      *utils.Utils
 }
 
 type DBArgs struct {
 	DB    *pgxpool.Pool
 	Cfg   *config.StorePostgresConfig
+	UGen  *types.UidGenerator
 	Utils *utils.Utils
 }
 

@@ -7,7 +7,6 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/ahmad-khatib0/go/websockets/chat/internal/store"
 	"github.com/ahmad-khatib0/go/websockets/chat/internal/store/types"
 	"github.com/ahmad-khatib0/go/websockets/chat/pkg/utils"
 	"github.com/jackc/pgx/v5"
@@ -17,14 +16,16 @@ import (
 
 type Shared struct {
 	utils *utils.Utils
+	uGen  *types.UidGenerator
 }
 
 type SharedArgs struct {
 	Utils *utils.Utils
+	UGen  *types.UidGenerator
 }
 
 func NewShared(sa SharedArgs) *Shared {
-	return &Shared{utils: sa.Utils}
+	return &Shared{utils: sa.Utils, uGen: sa.UGen}
 }
 
 func (s *Shared) AddTags(ctx context.Context, tx pgx.Tx, table, keyName string, keyVal any, tags []string, ignoreDups bool) error {
@@ -53,10 +54,10 @@ func (s *Shared) DeviceDelete(ctx context.Context, tx pgx.Tx, uid types.Uid, dev
 	var err error
 	var res pgconn.CommandTag
 	if deviceID == "" {
-		res, err = tx.Exec(ctx, "DELETE FROM devices WHERE user_id = $1", store.DecodeUid(uid))
+		res, err = tx.Exec(ctx, "DELETE FROM devices WHERE user_id = $1", s.uGen.DecodeUid(uid))
 	} else {
 		stmt := "DELETE FROM devices WHERE user_id = $1 AND hash = $2"
-		res, err = tx.Exec(ctx, stmt, store.DecodeUid(uid), s.DeviceHasher(deviceID))
+		res, err = tx.Exec(ctx, stmt, s.uGen.DecodeUid(uid), s.DeviceHasher(deviceID))
 	}
 
 	if err == nil {
@@ -74,11 +75,11 @@ func (s *Shared) SubDelForUser(ctx context.Context, tx pgx.Tx, uid types.Uid, ha
 
 	if hard {
 		stmt := "DELETE FROM subscriptions WHERE user_id = $1;"
-		_, err = tx.Exec(ctx, stmt, store.DecodeUid(uid))
+		_, err = tx.Exec(ctx, stmt, s.uGen.DecodeUid(uid))
 	} else {
 		now := types.TimeNow()
 		stmt := "UPDATE subscriptions SET updated_at = $1, deleted_at = $2 WHERE user_id = $3 AND deleted_at IS NULL;"
-		_, err = tx.Exec(ctx, stmt, now, now, store.DecodeUid(uid))
+		_, err = tx.Exec(ctx, stmt, now, now, s.uGen.DecodeUid(uid))
 	}
 
 	return err
@@ -97,7 +98,7 @@ func (s *Shared) SubDelForUser(ctx context.Context, tx pgx.Tx, uid types.Uid, ha
 // 2.2 In that case mark it as soft-deleted.
 func (s *Shared) CredDel(ctx context.Context, tx pgx.Tx, uid types.Uid, method, value string) error {
 	constraints := " WHERE user_id = ? "
-	args := []any{store.DecodeUid(uid)}
+	args := []any{s.uGen.DecodeUid(uid)}
 
 	if method != "" {
 		constraints += " AND method = ? "
@@ -283,7 +284,7 @@ func (s *Shared) ExtractTags(update map[string]any) []string {
 
 func (s *Shared) DecodeUidString(str string) int64 {
 	uid := types.ParseUid(str)
-	return store.DecodeUid(uid)
+	return s.uGen.DecodeUid(uid)
 }
 
 func (s *Shared) DeviceHasher(devID string) string {

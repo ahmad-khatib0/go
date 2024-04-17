@@ -17,6 +17,7 @@ type PersistentCache struct {
 	utils  *utils.Utils
 	cfg    *config.StorePostgresConfig
 	shared *shared.Shared
+	uGen   *types.UidGenerator
 }
 
 type PersistentCacheArgs struct {
@@ -24,6 +25,7 @@ type PersistentCacheArgs struct {
 	Utils  *utils.Utils
 	Cfg    *config.StorePostgresConfig
 	Shared *shared.Shared
+	UGen   *types.UidGenerator
 }
 
 func NewPersistentCache(pc PersistentCacheArgs) *PersistentCache {
