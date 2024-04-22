@@ -12,7 +12,7 @@ import (
 // stale unvalidated user accounts which have been last updated at least 'minAccountAgeHours' hours.
 //
 // Returns channel which can be used to stop the process.
-func (u *users) InitUsersGarbageCollection(period time.Duration, blockSize, minAccountAgeHours int) {
+func (u *Users) InitUsersGarbageCollection(period time.Duration, blockSize, minAccountAgeHours int) chan<- bool {
 	// Unbuffered stop channel. Whomever stops the gc must wait for the process to finish.
 	stop := make(chan bool)
 
@@ -21,6 +21,7 @@ func (u *users) InitUsersGarbageCollection(period time.Duration, blockSize, minA
 		// 0.75 * period + rand(0, 0.5) * period.
 		period = period - (period >> 2) + time.Duration(rand.Intn(int(period>>1)))
 		gt := time.Tick(period)
+
 		u.logger.Sugar().Infof(
 			"stale account GC started with period %s, block size %d, min account age %d hours",
 			period.Round(time.Second),
@@ -29,10 +30,12 @@ func (u *users) InitUsersGarbageCollection(period time.Duration, blockSize, minA
 		)
 
 		staleAge := time.Hour * time.Duration(minAccountAgeHours)
+
 		for {
 			select {
 			case <-gt:
 				if uids, err := u.db.Users().GetUnvalidated(time.Now().Add(-staleAge), blockSize); err == nil {
+
 					if len(uids) > 0 {
 						u.logger.Info("stale account GC will delete these uids: ", zapcore.Field{Interface: uids})
 						for _, id := range uids {
@@ -41,13 +44,17 @@ func (u *users) InitUsersGarbageCollection(period time.Duration, blockSize, minA
 							}
 						}
 					}
+
 				} else {
 					u.logger.Sugar().Infof("stale account GC error %w", err)
 				}
+
 			case <-stop:
 				return
 			}
 		}
 
 	}()
+
+	return stop
 }

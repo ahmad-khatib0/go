@@ -2,7 +2,7 @@ package config
 
 type PushConfig struct {
 	Name string
-	FCM  PushFcmConfig
+	FCM  *PushFcmConfig
 }
 
 // PushCommonConfigPayload  to be sent for a specific notification type.

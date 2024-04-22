@@ -1,25 +1,12 @@
 package users
 
 import (
-	"time"
-
 	"github.com/ahmad-khatib0/go/websockets/chat/internal/auth/types"
 	dt "github.com/ahmad-khatib0/go/websockets/chat/internal/db/types"
 	"github.com/ahmad-khatib0/go/websockets/chat/pkg/logger"
 )
 
-type Users interface {
-	// GetUnvalidated(lastUpdatedBefore time.Time, limit int) ([]types.Uid, error)
-	// Delete(id types.Uid, hard bool) error
-	// InitUsersGarbageCollection() runs every 'period' and deletes up to 'blockSize'
-	//
-	// stale unvalidated user accounts which have been last updated at least 'minAccountAgeHours' hours.
-	//
-	// Returns channel which can be used to stop the process.
-	InitUsersGarbageCollection(period time.Duration, blockSize, minAccountAgeHours int)
-}
-
-type users struct {
+type Users struct {
 	logger *logger.Logger
 	db     dt.Adapter
 }
@@ -31,6 +18,6 @@ type CredValidator struct {
 	AddToTags       bool
 }
 
-func NewUser(adapter dt.Adapter, l *logger.Logger) Users {
-	return &users{db: adapter, logger: l}
+func NewUser(adapter dt.Adapter, l *logger.Logger) *Users {
+	return &Users{db: adapter, logger: l}
 }

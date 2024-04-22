@@ -8,6 +8,7 @@ import (
 
 	"github.com/ahmad-khatib0/go/websockets/chat/internal/auth/types"
 	"github.com/ahmad-khatib0/go/websockets/chat/internal/constants"
+	"github.com/ahmad-khatib0/go/websockets/chat/internal/handlers/files"
 	"github.com/ahmad-khatib0/go/websockets/chat/internal/store"
 	"github.com/ahmad-khatib0/go/websockets/chat/internal/users"
 	"go.uber.org/zap/zapcore"
@@ -28,7 +29,7 @@ func (a *application) regsisterStatsVariables() {
 	a.StatsChan.RegisterInt(constants.StatsClusterLiveNodes)  // Number of nodes currently believed to be up.
 }
 
-func (a *application) initDBAdapter(wid int) {
+func (a *application) initDBAdapter() {
 	st, err := store.NewStore(store.StoreArgs{Logger: a.Logger})
 	if err != nil {
 		a.Logger.Fatal("failed to init store: %w", zapcore.Field{Interface: err})
@@ -36,11 +37,6 @@ func (a *application) initDBAdapter(wid int) {
 
 	a.Store = st
 	a.Logger.Sugar().Infof("DB adapter: %s with version %d", a.Store.DBGetAdapterName(), a.Store.DBGetAdapterVersion())
-
-	defer func() {
-		a.Store.DBClose()
-		a.Logger.Info("Closed database connection(s)")
-	}()
 
 	if f := a.Store.DBStats(); f != nil {
 		expvar.Publish(constants.StatsDB, expvar.Func(f))
@@ -57,28 +53,32 @@ func (a *application) initAuth() {
 	// by the client, e.g. 'email' or 'tel'.
 	a.ImmutableTagNS = make(map[string]bool)
 
-	// authNames := a.Store.GetAuthNames()
-	// for _, name := range authNames {
-	// 	if ah := a.Store.GetLogicalAuthHandler(name); ah == nil {
-	// 		a.Logger.Sugar().Fatalf("unknown authenticator %s", ah)
-	// 	} else if jc := ah.GetAuthConfig(); jc != nil {
-	// 		if err := ah.Init(jc, name); err != nil {
-	// 			a.Logger.Sugar().Fatalf("failed to init auth scheme: %s, err: %w", name, err)
-	// 		}
+	authNames := a.Store.AuthGetAuthNames()
+	for _, name := range authNames {
 
-	// 		tags, err := ah.RestrictedTags()
-	// 		if err != nil {
-	// 			a.Logger.Sugar().Fatalf("failed get restricted tag namespaces (prefixes) for authenticator %s, %w", name, err)
-	// 		}
+		if ah := a.Store.AuthGetLogicalAuthHandler(name); ah == nil {
+			a.Logger.Sugar().Fatalf("unknown authenticator %s", ah)
 
-	// 		for _, t := range tags {
-	// 			if strings.Contains(t, ":") {
-	// 				a.Logger.Sugar().Fatalf("tags restricted by auth handler should not contain character ':' %s", t)
-	// 			}
-	// 			a.ImmutableTagNS[name] = true
-	// 		}
-	// 	}
-	// }
+		} else if jc := ah.GetAuthConfig(); jc != nil {
+
+			if err := ah.Init(jc, name); err != nil {
+				a.Logger.Sugar().Fatalf("failed to init auth scheme: %s, err: %w", name, err)
+			}
+
+			tags, err := ah.RestrictedTags()
+			if err != nil {
+				a.Logger.Sugar().Fatalf("failed get restricted tag namespaces (prefixes) for authenticator %s, %w", name, err)
+			}
+
+			for _, t := range tags {
+				if strings.Contains(t, ":") {
+					a.Logger.Sugar().Fatalf("tags restricted by auth handler should not contain character ':' %s", t)
+				}
+				a.ImmutableTagNS[name] = true
+			}
+
+		}
+	}
 }
 
 func (a *application) initValidators() {
@@ -107,7 +107,7 @@ func (a *application) initValidators() {
 		}
 
 		if len(vc.Required) == 0 {
-			// Skip disabled validator.
+			// Skip disabled validator.  (i.e validating email is not required)
 			continue
 		}
 
@@ -128,13 +128,15 @@ func (a *application) initValidators() {
 
 		if val := a.Store.GetValidator(name); val == nil {
 			a.Logger.Fatal("Config provided for an unknown validator '" + name + "'")
+
 		} else if err := val.Init(name, vc.Config); err != nil {
-			a.Logger.Sugar().Fatalf("Failed to init validator: %s, %w", name, err)
+			a.Logger.Sugar().Fatalf("failed to init validator: %s, %w", name, err)
 		}
 
 		if a.Validators == nil {
 			a.Validators = make(map[string]users.CredValidator)
 		}
+
 		a.Validators[name] = users.CredValidator{
 			RequiredAuthLvl: rl,
 			AddToTags:       vc.AddToTags,
@@ -148,6 +150,10 @@ func (a *application) initValidators() {
 			a.ValidatorClientConfig[k.String()] = v
 		}
 	}
+}
+
+func (a *application) initHandlers() {
+	a.Handlers.Files = files.NewFilesHandler(a.Store.Adp(), a.Logger)
 }
 
 func (a *application) initTags() {
@@ -172,49 +178,52 @@ func (a *application) initTags() {
 	for tag := range a.MaskedTagNS {
 		tags = append(tags, "'"+tag+"'")
 	}
+
 	if len(tags) > 0 {
 		a.Logger.Info("masked tags: ", zapcore.Field{Interface: tags})
 	}
 }
 
-func (a *application) initHandlers() {
-	// a.Handlers.Files = files.NewFilesHandler(a.Logger)
-}
+func (a *application) initMedia() chan<- bool {
+	var ch chan<- bool
 
-func (a *application) initMedia() {
 	if a.Cfg.Media != nil {
+
 		if a.Cfg.Media.HandlerName == "" {
 			a.Cfg.Media = nil
 		} else {
 			handlers := map[string]interface{}{}
 			n := a.Cfg.Media.HandlerName
+
 			if a.Cfg.Media.FS != nil {
 				handlers["fs"] = a.Cfg.Media.FS
 			}
 
-			if err := a.Store.UseMediaHandler(n, handlers[n]); err != nil {
+			if err := a.Store.SetDefaultMediaHandler(n, handlers[n]); err != nil {
 				a.Logger.Sugar().Fatalf("failed to init media handler %s, %w", n, err)
 			}
 
 			gp := a.Cfg.Media.GcPeriod
 			gb := a.Cfg.Media.GcBlockSize
+
 			if gp > 0 && gb > 0 {
+
 				p, err := time.ParseDuration(fmt.Sprintf("%ds", gp))
 				if err != nil {
 					a.Logger.Sugar().Fatalf("failed to parse GcPeriod duration %w", err)
 				}
-				stopGcChan := a.Handlers.Files.InitLargeFilesGarabageCollection(p, gb)
 
-				defer func() {
-					stopGcChan <- true
-					a.Logger.Info("stopped files garbage collection")
-				}()
+				ch = a.Handlers.Files.InitLargeFilesGarabageCollection(p, gb)
 			}
 		}
 	}
+
+	return ch
 }
 
-func (a *application) initAccountGC() {
+func (a *application) initAccountGC() chan<- bool {
+	var ch chan<- bool
+
 	if a.Cfg.AccountGC != nil && a.Cfg.AccountGC.Enabled {
 		gp := a.Cfg.AccountGC.GcPeriod
 		gb := a.Cfg.AccountGC.GcBlockSize
@@ -225,7 +234,15 @@ func (a *application) initAccountGC() {
 		}
 
 		period := time.Second * time.Duration(gp)
-		// stopChan :=
-
+		ch = a.users.InitUsersGarbageCollection(period, a.Cfg.AccountGC.GcBlockSize, a.Cfg.AccountGC.GcMinAccountAge)
 	}
+
+	return ch
+}
+
+func (a *application) initVideoCall() {
+	if a.Cfg.Webrtc == nil || !a.Cfg.Webrtc.Enabled {
+		return
+	}
+
 }

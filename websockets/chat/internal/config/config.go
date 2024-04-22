@@ -29,7 +29,7 @@ type Config struct {
 	Auth      AuthConfig       `json:"auth" mapstructure:"auth"`
 	Validator ValidatorConfig  `json:"validator" mapstructure:"validator"`
 	AccountGC *AccountGCConfig `json:"account_gc" mapstructure:"account_gc"`
-	Webrtc    WebrtcConfig     `json:"webrtc" mapstructure:"webrtc"`
+	Webrtc    *WebrtcConfig    `json:"webrtc" mapstructure:"webrtc"`
 }
 
 func LoadConfig() (*Config, error) {

@@ -12,11 +12,13 @@ import (
 	"github.com/ahmad-khatib0/go/websockets/chat/internal/handlers/files"
 	"github.com/ahmad-khatib0/go/websockets/chat/internal/models"
 	"github.com/ahmad-khatib0/go/websockets/chat/internal/profile"
+	"github.com/ahmad-khatib0/go/websockets/chat/internal/push"
 	"github.com/ahmad-khatib0/go/websockets/chat/internal/stats"
 	"github.com/ahmad-khatib0/go/websockets/chat/internal/store"
 	"github.com/ahmad-khatib0/go/websockets/chat/internal/users"
 	"github.com/ahmad-khatib0/go/websockets/chat/pkg/logger"
 	"github.com/ahmad-khatib0/go/websockets/chat/pkg/utils"
+	"go.uber.org/zap/zapcore"
 )
 
 type application struct {
@@ -63,11 +65,6 @@ func main() {
 	a.StatsChan = stats.NewStats(l)
 	a.regsisterStatsVariables()
 
-	// cdir, err := os.Getwd()
-	// if err != nil {
-	// 	l.Sugar().Fatalf("failed to get current dir %w", err)
-	// }
-
 	executable, _ := os.Executable()
 	a.Logger.Info(fmt.Sprintf(
 		"server: v%s%s%s pid: %d process(es): %d",
@@ -95,12 +92,39 @@ func main() {
 		}
 	}
 
-	a.initDBAdapter(workerID)
+	a.initDBAdapter()
+	defer func() {
+		a.Store.DBClose()
+		a.Logger.Info("Closed database connection(s)")
+	}()
+
 	a.initAuth()
 	a.initValidators()
-	a.initTags()
 	a.initHandlers()
-	a.initMedia()
-	// a.users = users.NewUser(a.Store, a.Logger)
+	a.initTags()
+
+	if handChan := a.initMedia(); handChan != nil {
+		defer func() {
+			handChan <- true
+			a.Logger.Info("stopped files garbage collection")
+		}()
+	}
+
+	if ch := a.initAccountGC(); ch != nil {
+		defer func() {
+			ch <- true
+			a.Logger.Info("stopped account garbage collector")
+		}()
+	}
+
+	psh, err := push.NewPush(a.Cfg.Push)
+	if err != nil {
+		a.Logger.Fatal("failed to init push notifications", zapcore.Field{Interface: err})
+	}
+
+	defer func() {
+		psh.Stop()
+		a.Logger.Info("stopped pushing notifications")
+	}()
 
 }
