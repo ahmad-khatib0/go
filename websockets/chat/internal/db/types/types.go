@@ -1,11 +1,10 @@
 // Package db contains the interfaces to be implemented by the database adapter
-package db
+package types
 
 import (
 	"time"
 
-	"github.com/ahmad-khatib0/go/websockets/chat/internal/auth"
-	"github.com/ahmad-khatib0/go/websockets/chat/internal/store/types"
+	"github.com/ahmad-khatib0/go/websockets/chat/internal/auth/types"
 	t "github.com/ahmad-khatib0/go/websockets/chat/internal/store/types"
 	"github.com/ahmad-khatib0/go/websockets/chat/pkg/logger"
 )
@@ -13,7 +12,7 @@ import (
 type AdapterArgs struct {
 	Conf   any
 	Logger *logger.Logger
-	UGen   *types.UidGenerator
+	UGen   *t.UidGenerator
 }
 
 type DB interface {
@@ -95,17 +94,17 @@ type Credentials interface {
 // Auth management for the basic authentication scheme
 type Auth interface {
 	// GetUniqueRecord returns user_id, auth level, secret, expire for a given unique value i.e. login.
-	GetUniqueRecord(unique string) (t.Uid, auth.Level, []byte, time.Time, error)
+	GetUniqueRecord(unique string) (t.Uid, types.Level, []byte, time.Time, error)
 	// GetRecord returns authentication record given user ID and method.
-	GetRecord(user t.Uid, scheme string) (string, auth.Level, []byte, time.Time, error)
+	GetRecord(user t.Uid, scheme string) (string, types.Level, []byte, time.Time, error)
 	// AddRecord creates new authentication record
-	AddRecord(user t.Uid, scheme, unique string, authLvl auth.Level, secret []byte, expires time.Time) error
+	AddRecord(user t.Uid, scheme, unique string, authLvl types.Level, secret []byte, expires time.Time) error
 	// DelScheme deletes an existing authentication scheme for the user.
 	DelScheme(user t.Uid, scheme string) error
 	// DelAllRecords deletes all records of a given user.
 	DelAllRecords(uid t.Uid) (int, error)
 	// UpdRecord modifies an authentication record. Only non-default/non-zero values are updated.
-	UpdRecord(user t.Uid, scheme, unique string, authLvl auth.Level, secret []byte, expires time.Time) error
+	UpdRecord(user t.Uid, scheme, unique string, authLvl types.Level, secret []byte, expires time.Time) error
 }
 
 type Topics interface {

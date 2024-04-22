@@ -1,5 +1,5 @@
 // Package auth provides interfaces and types required for implementing an authenticaor.
-package auth
+package types
 
 import (
 	"time"

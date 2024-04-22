@@ -1,9 +1,9 @@
 package store
 
 import (
-	"github.com/ahmad-khatib0/go/websockets/chat/internal/auth"
+	"github.com/ahmad-khatib0/go/websockets/chat/internal/auth/types"
 	"github.com/ahmad-khatib0/go/websockets/chat/internal/config"
-	"github.com/ahmad-khatib0/go/websockets/chat/internal/db"
+	dt "github.com/ahmad-khatib0/go/websockets/chat/internal/db/types"
 	"github.com/ahmad-khatib0/go/websockets/chat/pkg/logger"
 )
 
@@ -17,7 +17,7 @@ type Store struct {
 	logger *logger.Logger
 	// Logical auth handler names (supplied by config)
 	authHandlerNames map[string]string
-	authHandlers     map[string]auth.AuthHandler
-	adp              db.Adapter
+	authHandlers     map[string]types.AuthHandler
+	adp              dt.Adapter
 	cfg              *config.Config
 }

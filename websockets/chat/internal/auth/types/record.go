@@ -1,4 +1,4 @@
-package auth
+package types
 
 import "github.com/ahmad-khatib0/go/websockets/chat/internal/store/types"
 

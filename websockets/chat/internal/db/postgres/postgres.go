@@ -10,7 +10,6 @@ import (
 	"github.com/ahmad-khatib0/go/websockets/chat/internal/constants"
 	"github.com/ahmad-khatib0/go/websockets/chat/pkg/utils"
 
-	"github.com/ahmad-khatib0/go/websockets/chat/internal/db"
 	"github.com/ahmad-khatib0/go/websockets/chat/internal/db/postgres/auth"
 	"github.com/ahmad-khatib0/go/websockets/chat/internal/db/postgres/credentials"
 	idb "github.com/ahmad-khatib0/go/websockets/chat/internal/db/postgres/db"
@@ -23,11 +22,12 @@ import (
 	"github.com/ahmad-khatib0/go/websockets/chat/internal/db/postgres/subscriptions"
 	"github.com/ahmad-khatib0/go/websockets/chat/internal/db/postgres/topics"
 	"github.com/ahmad-khatib0/go/websockets/chat/internal/db/postgres/users"
+	"github.com/ahmad-khatib0/go/websockets/chat/internal/db/types"
 	"github.com/jackc/pgx/v5/pgxpool"
 )
 
 // NewPostgres opens the db connection and configure the releated fields for the adapter
-func NewPostgres(aa db.AdapterArgs) (db.Adapter, error) {
+func NewPostgres(aa types.AdapterArgs) (types.Adapter, error) {
 	var p postgres
 
 	if p.db != nil {

@@ -3,8 +3,8 @@ package users
 import (
 	"time"
 
-	"github.com/ahmad-khatib0/go/websockets/chat/internal/auth"
-	"github.com/ahmad-khatib0/go/websockets/chat/internal/db"
+	"github.com/ahmad-khatib0/go/websockets/chat/internal/auth/types"
+	dt "github.com/ahmad-khatib0/go/websockets/chat/internal/db/types"
 	"github.com/ahmad-khatib0/go/websockets/chat/pkg/logger"
 )
 
@@ -21,16 +21,16 @@ type Users interface {
 
 type users struct {
 	logger *logger.Logger
-	db     db.Adapter
+	db     dt.Adapter
 }
 
 // CredValidator holds additional config params for a credential validator.
 type CredValidator struct {
 	// AuthLevel(s) which require this validator.
-	RequiredAuthLvl []auth.Level
+	RequiredAuthLvl []types.Level
 	AddToTags       bool
 }
 
-func NewUser(adapter db.Adapter, l *logger.Logger) Users {
+func NewUser(adapter dt.Adapter, l *logger.Logger) Users {
 	return &users{db: adapter, logger: l}
 }

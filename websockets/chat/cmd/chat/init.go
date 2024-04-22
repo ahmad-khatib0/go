@@ -6,7 +6,7 @@ import (
 	"strings"
 	"time"
 
-	"github.com/ahmad-khatib0/go/websockets/chat/internal/auth"
+	"github.com/ahmad-khatib0/go/websockets/chat/internal/auth/types"
 	"github.com/ahmad-khatib0/go/websockets/chat/internal/constants"
 	"github.com/ahmad-khatib0/go/websockets/chat/internal/store"
 	"github.com/ahmad-khatib0/go/websockets/chat/internal/users"
@@ -111,16 +111,16 @@ func (a *application) initValidators() {
 			continue
 		}
 
-		var rl []auth.Level
+		var rl []types.Level
 		for _, r := range vc.Required {
-			al := auth.ParseAuthLevel(r)
-			if al == auth.LevelNone {
+			al := types.ParseAuthLevel(r)
+			if al == types.LevelNone {
 				a.Logger.Sugar().Fatalf("Invalid required AuthLevel '%s' in validator '%s'", r, name)
 			}
 
 			rl = append(rl, al)
 			if a.AuthValidators == nil {
-				a.AuthValidators = make(map[auth.Level][]string)
+				a.AuthValidators = make(map[types.Level][]string)
 			}
 
 			a.AuthValidators[al] = append(a.AuthValidators[al], name)

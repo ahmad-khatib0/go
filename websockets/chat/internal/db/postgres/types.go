@@ -1,7 +1,6 @@
 package postgres
 
 import (
-	"github.com/ahmad-khatib0/go/websockets/chat/internal/db"
 	"github.com/ahmad-khatib0/go/websockets/chat/internal/db/postgres/auth"
 	"github.com/ahmad-khatib0/go/websockets/chat/internal/db/postgres/credentials"
 	idb "github.com/ahmad-khatib0/go/websockets/chat/internal/db/postgres/db"
@@ -13,6 +12,7 @@ import (
 	"github.com/ahmad-khatib0/go/websockets/chat/internal/db/postgres/subscriptions"
 	"github.com/ahmad-khatib0/go/websockets/chat/internal/db/postgres/topics"
 	"github.com/ahmad-khatib0/go/websockets/chat/internal/db/postgres/users"
+	"github.com/ahmad-khatib0/go/websockets/chat/internal/db/types"
 	"github.com/ahmad-khatib0/go/websockets/chat/pkg/logger"
 	"github.com/jackc/pgx/v5/pgxpool"
 )
@@ -43,56 +43,56 @@ type postgres struct {
 }
 
 // Auth implements db.Adapter.
-func (p *postgres) Auth() db.Auth {
+func (p *postgres) Auth() types.Auth {
 	return p.auth
 }
 
 // Credentials implements db.Adapter.
-func (p *postgres) Credentials() db.Credentials {
+func (p *postgres) Credentials() types.Credentials {
 	return p.credentials
 }
 
 // DB implements db.Adapter.
-func (p *postgres) DB() db.DB {
+func (p *postgres) DB() types.DB {
 	return p.dB
 }
 
 // Devices implements db.Adapter.
-func (p *postgres) Devices() db.Devices {
+func (p *postgres) Devices() types.Devices {
 	return p.devices
 }
 
 // Files implements db.Adapter.
-func (p *postgres) Files() db.Files {
+func (p *postgres) Files() types.Files {
 	return p.files
 }
 
 // Messages implements db.Adapter.
-func (p *postgres) Messages() db.Messages {
+func (p *postgres) Messages() types.Messages {
 	return p.messages
 }
 
 // PersistentCache implements db.Adapter.
-func (p *postgres) PersistentCache() db.PersistentCache {
+func (p *postgres) PersistentCache() types.PersistentCache {
 	return p.persistentCache
 }
 
 // Search implements db.Adapter.
-func (p *postgres) Search() db.Search {
+func (p *postgres) Search() types.Search {
 	return p.search
 }
 
 // Subscriptions implements db.Adapter.
-func (p *postgres) Subscriptions() db.Subscriptions {
+func (p *postgres) Subscriptions() types.Subscriptions {
 	return p.subscriptions
 }
 
 // Topics implements db.Adapter.
-func (p *postgres) Topics() db.Topics {
+func (p *postgres) Topics() types.Topics {
 	return p.topics
 }
 
 // Users implements db.Adapter.
-func (p *postgres) Users() db.Users {
+func (p *postgres) Users() types.Users {
 	return p.users
 }

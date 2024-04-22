@@ -4,7 +4,7 @@ import (
 	"strings"
 	"time"
 
-	"github.com/ahmad-khatib0/go/websockets/chat/internal/auth"
+	t "github.com/ahmad-khatib0/go/websockets/chat/internal/auth/types"
 	"github.com/ahmad-khatib0/go/websockets/chat/internal/config"
 	"github.com/ahmad-khatib0/go/websockets/chat/internal/db/postgres/shared"
 	"github.com/ahmad-khatib0/go/websockets/chat/internal/store/types"
@@ -34,12 +34,12 @@ func NewAuth(ua AuthArgs) *Auth {
 }
 
 // GetUniqueRecord returns user_id, auth level, secret, expire for a given unique value i.e. login.
-func (a *Auth) GetUniqueRecord(unique string) (types.Uid, auth.Level, []byte, time.Time, error) {
+func (a *Auth) GetUniqueRecord(unique string) (types.Uid, t.Level, []byte, time.Time, error) {
 	var expires time.Time
 
 	var record struct {
 		Userid  int64
-		Authlvl auth.Level
+		Authlvl t.Level
 		Secret  []byte
 		Expires *time.Time
 	}
@@ -70,12 +70,12 @@ func (a *Auth) GetUniqueRecord(unique string) (types.Uid, auth.Level, []byte, ti
 }
 
 // GetRecord returns authentication record given user ID and method.
-func (a *Auth) GetRecord(uid types.Uid, scheme string) (string, auth.Level, []byte, time.Time, error) {
+func (a *Auth) GetRecord(uid types.Uid, scheme string) (string, t.Level, []byte, time.Time, error) {
 	var expires time.Time
 
 	var record struct {
 		Uname   string
-		Authlvl auth.Level
+		Authlvl t.Level
 		Secret  []byte
 		Expires *time.Time
 	}
@@ -106,7 +106,7 @@ func (a *Auth) GetRecord(uid types.Uid, scheme string) (string, auth.Level, []by
 }
 
 // AddRecord creates new authentication record
-func (a *Auth) AddRecord(uid types.Uid, scheme, unique string, authLvl auth.Level, secret []byte, expires time.Time) error {
+func (a *Auth) AddRecord(uid types.Uid, scheme, unique string, authLvl t.Level, secret []byte, expires time.Time) error {
 
 	var exp *time.Time
 	if !expires.IsZero() {
@@ -155,7 +155,7 @@ func (a *Auth) DelAllRecords(user types.Uid) (int, error) {
 }
 
 // UpdRecord modifies an authentication record. Only non-default/non-zero values are updated.
-func (a *Auth) UpdRecord(uid types.Uid, scheme, unique string, authLvl auth.Level, secret []byte, expires time.Time) error {
+func (a *Auth) UpdRecord(uid types.Uid, scheme, unique string, authLvl t.Level, secret []byte, expires time.Time) error {
 
 	parapg := []string{" level = ? "}
 	args := []any{authLvl}

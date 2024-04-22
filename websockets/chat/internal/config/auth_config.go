@@ -11,9 +11,11 @@ type AuthConfigBasic struct {
 	// Add 'auth-name:username' to tags making user discoverable by username.
 	AddToTags bool `json:"add_to_tags" mapstructure:"add_to_tags"`
 	// The minimum length of a login in unicode runes, i.e. "登录" is length 2, not 6.
+	//
 	// The maximum length is 32 and it cannot be changed.
 	MinLoginLength int `json:"min_login_length" mapstructure:"min_login_length"`
 	// The minimum length of a password in unicode runes, "пароль" is length 6, not 12.
+	//
 	// There is no limit on maximum length.
 	MinPasswordLength int `json:"min_password_length" mapstructure:"min_password_length"`
 }

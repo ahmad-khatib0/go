@@ -6,7 +6,7 @@ import (
 	"os"
 	"runtime"
 
-	"github.com/ahmad-khatib0/go/websockets/chat/internal/auth"
+	"github.com/ahmad-khatib0/go/websockets/chat/internal/auth/types"
 	"github.com/ahmad-khatib0/go/websockets/chat/internal/cluster"
 	"github.com/ahmad-khatib0/go/websockets/chat/internal/config"
 	"github.com/ahmad-khatib0/go/websockets/chat/internal/handlers/files"
@@ -27,7 +27,7 @@ type application struct {
 	Utils                 *utils.Utils
 	Cluster               models.Cluster
 	Profile               *profile.Profile
-	AuthValidators        map[auth.Level][]string        // Validators required for each auth level
+	AuthValidators        map[types.Level][]string       // Validators required for each auth level
 	Validators            map[string]users.CredValidator // Credential validators.
 	ValidatorClientConfig map[string][]string            // Credential validator config to pass to clients.
 
