@@ -7,8 +7,8 @@ create_table("transactions") {
     t.Column("transaction_status_id", "integer", {"unsigned": true})
 }
 
-sql("alter table transactions alter column created_at set default now();")
-sql("alter table transactions alter column updated_at set default now();")
+sql("alter table transactions MODIFY created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL;")
+sql("alter table transactions MODIFY updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL;")
 
 add_foreign_key("transactions", "transaction_status_id", {"transaction_statuses": ["id"]}, {
     "on_delete": "cascade",

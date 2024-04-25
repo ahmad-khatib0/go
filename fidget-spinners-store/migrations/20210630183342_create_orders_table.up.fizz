@@ -7,8 +7,8 @@ create_table("orders") {
     t.Column("amount", "integer", {})
 }
 
-sql("alter table orders alter column created_at set default now();")
-sql("alter table orders alter column updated_at set default now();")
+sql("alter table orders MODIFY created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL;")
+sql("alter table orders MODIFY updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL;")
 
 add_foreign_key("orders", "widget_id", {"widgets": ["id"]}, {
     "on_delete": "cascade",

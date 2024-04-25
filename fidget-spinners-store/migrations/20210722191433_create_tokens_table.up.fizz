@@ -7,5 +7,5 @@ create_table("tokens") {
 }
 
 sql("alter table tokens modify token_hash varbinary(255);")
-sql("alter table tokens alter column created_at set default now();")
-sql("alter table tokens alter column updated_at set default now();")
+sql("alter table tokens MODIFY created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL;")
+sql("alter table tokens MODIFY updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL;")
