@@ -1,4 +1,4 @@
-package cluster
+package server
 
 import (
 	"encoding/gob"
@@ -8,12 +8,12 @@ import (
 
 	"github.com/ahmad-khatib0/go/websockets/chat/internal/concurrency"
 	"github.com/ahmad-khatib0/go/websockets/chat/internal/constants"
-	"github.com/ahmad-khatib0/go/websockets/chat/internal/models"
 )
 
 // NewCluster() returns snowflake worker id (pass nil if you don't want to use cluster)
+//
 // Cluster won't be started here yet.
-func NewCluster(ca ClusterArgs) (models.Cluster, int, error) {
+func NewCluster(ca ClusterArgs) (*Cluster, int, error) {
 	if ca.Cfg == nil {
 		return nil, 1, nil
 	}
@@ -28,7 +28,7 @@ func NewCluster(ca ClusterArgs) (models.Cluster, int, error) {
 	gob.Register([]any{})
 	gob.Register(map[string]string{})
 	gob.Register(map[string]int{})
-	gob.Register(models.MsgAccessMode{})
+	gob.Register(MsgAccessMode{})
 
 	res := Cluster{
 		Logger:          ca.Logger,
@@ -68,5 +68,5 @@ func NewCluster(ca ClusterArgs) (models.Cluster, int, error) {
 	wid := sort.SearchStrings(nodeNames, ca.Cfg.MainName) + 1
 	ca.Stats.IntStatsSet(constants.StatsClusterTotalNodes, int64(len(res.nodes)+1))
 
-	return res, wid, nil
+	return &res, wid, nil
 }

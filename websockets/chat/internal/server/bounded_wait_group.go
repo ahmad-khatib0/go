@@ -1,8 +1,15 @@
-package session
+package server
 
 import (
+	"sync"
+
 	"github.com/rs/zerolog/log"
 )
+
+type boundedWaitGroup struct {
+	wg  sync.WaitGroup
+	sem chan struct{}
+}
 
 func newBoundedWaitGroup(capacity int) *boundedWaitGroup {
 	return &boundedWaitGroup{sem: make(chan struct{}, capacity)}

@@ -1,4 +1,4 @@
-package cluster
+package server
 
 import (
 	"net"
@@ -18,6 +18,18 @@ type ClusterArgs struct {
 	Logger *logger.Logger
 	Stats  *stats.Stats
 }
+
+// Individual request types.
+const (
+	ProxyReqNone      ProxyReqType = iota
+	ProxyReqJoin                   // {sub}.
+	ProxyReqLeave                  // {leave}
+	ProxyReqMeta                   // {meta set|get}
+	ProxyReqBroadcast              // {pub}, {note}
+	ProxyReqBgSession
+	ProxyReqMeUserAgent
+	ProxyReqCall // Used in video call proxy sessions for routing call events.
+)
 
 // ProxyReqType is the type of proxy requests.
 type ProxyReqType int
@@ -98,9 +110,9 @@ type ClusterReq struct {
 	feqType ProxyReqType
 
 	// Client message. Set for C2S requests.
-	// cliMsg *ClientComMessage
+	cliMsg *ClientComMessage
 	// Message to be routed. Set for intra-cluster route requests.
-	// srvMsg *ServerComMessage
+	srvMsg *ServerComMessage
 
 	// Expanded (routable) topic name
 	rcptTo string
@@ -108,6 +120,63 @@ type ClusterReq struct {
 	sess *ClusterSess
 	// True when the topic proxy is gone.
 	gone bool
+}
+
+// ClusterRoute is intra-cluster routing request message.
+type ClusterRoute struct {
+	// Name of the node sending this request
+	Node string
+
+	// Ring hash signature of the node sending this request
+	// Signature must match the signature of the receiver, otherwise the
+	// Cluster is desynchronized.
+	Signature string
+
+	// Fingerprint of the node sending this request.
+	// Fingerprint changes when the node is restarted.
+	Fingerprint int64
+
+	// Message to be routed. Set for intra-cluster route requests.
+	SrvMsg *ServerComMessage
+
+	// Originating session
+	Sess *ClusterSess
+}
+
+// ClusterPing is used to detect node restarts.
+type ClusterPing struct {
+	// Name of the node sending this request.
+	Node string
+
+	// Fingerprint of the node sending this request.
+	// Fingerprint changes when the node restarts.
+	Fingerprint int64
+}
+
+// ClusterResp is a Master to Proxy response message.
+type ClusterResp struct {
+	// Server message with the response.
+	SrvMsg *ServerComMessage
+	// Originating session ID to forward response to, if any.
+	OrigSid string
+	// Expanded (routable) topic name
+	RcptTo string
+
+	// Parameters sent back by the topic master in response a topic proxy request.
+
+	// Original request type.
+	OrigReqType ProxyReqType
+}
+
+// ClusterSessUpdate represents a request to update a session.
+// User Agent change or background session comes to foreground.
+type ClusterSessUpdate struct {
+	// User this session represents.
+	Uid types.Uid
+	// Session id.
+	Sid string
+	// Session user agent.
+	UserAgent string
 }
 
 // ClusterSess is a basic info on a remote session where the message was created.

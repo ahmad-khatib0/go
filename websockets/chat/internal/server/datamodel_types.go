@@ -1,4 +1,4 @@
-package models
+package server
 
 import (
 	"encoding/json"
@@ -326,7 +326,7 @@ type ServerComMessage struct {
 	Timestamp time.Time `json:"-"`
 
 	// Originating session to send an aknowledgement to. Could be nil.
-	Sess Session
+	sess *Session
 	// Session ID to skip when sendng packet to sessions. Used to skip sending to original session.
 	// Could be either empty.
 	SkipSid string `json:"-"`

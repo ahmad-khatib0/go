@@ -1,22 +1,38 @@
-/******************************************************************************
- *
- *  Description:
- *
- *  Session management.
- *
- *****************************************************************************/
-package session
+package server
 
 import (
+	"container/list"
 	"net/http"
 	"time"
 
-	"github.com/ahmad-khatib0/go/websockets/chat-protobuf/chat"
-	"github.com/ahmad-khatib0/go/websockets/chat/internal/constants"
-	"github.com/ahmad-khatib0/go/websockets/chat/internal/models"
 	"github.com/gorilla/websocket"
 	"github.com/rs/zerolog/log"
+
+	"github.com/ahmad-khatib0/go/websockets/chat-protobuf/chat"
+	"github.com/ahmad-khatib0/go/websockets/chat/internal/constants"
+	"github.com/ahmad-khatib0/go/websockets/chat/internal/stats"
+	st "github.com/ahmad-khatib0/go/websockets/chat/internal/store/types"
 )
+
+type SessionArgs struct {
+	Lifetime time.Duration
+	Stats    *stats.Stats
+	UGen     *st.UidGenerator
+}
+
+// NewSessionStore initializes a session store.
+func NewSessionStore(sa SessionArgs) *SessionStore {
+	sa.Stats.RegisterInt(constants.StatsLiveSessions)
+	sa.Stats.RegisterInt(constants.StatsTotalSessions)
+
+	return &SessionStore{
+		lru:       list.New(),
+		lifeTime:  sa.Lifetime,
+		sessCache: make(map[string]*Session),
+		stats:     sa.Stats,
+	}
+
+}
 
 // NewSession creates a new session and saves it to the session store.
 func (ss *SessionStore) NewSession(conn any, sid string) (*Session, int) {
@@ -36,16 +52,16 @@ func (ss *SessionStore) NewSession(conn any, sid string) (*Session, int) {
 
 	switch c := conn.(type) {
 	case *websocket.Conn:
-		s.proto = models.WEBSOCK
+		s.proto = WEBSOCK
 		s.ws = c
 	case http.ResponseWriter:
-		s.proto = models.LPOLL
+		s.proto = LPOLL
 		// no need to store c for long polling, it changes with every request
-	case models.ClusterNode:
-		s.proto = models.MULTIPLEX
+	case *ClusterNode:
+		s.proto = MULTIPLEX
 		s.clnode = c
 	case chat.Node_MessageLoopServer:
-		s.proto = models.GRPC
+		s.proto = GRPC
 		s.grpcCNode = c
 	default:
 		log.Panic().Msgf("session: unknown connection type %+v", conn)
@@ -65,7 +81,7 @@ func (ss *SessionStore) NewSession(conn any, sid string) (*Session, int) {
 	s.lastTouched = time.Now()
 	ss.lock.Lock()
 
-	if s.proto == models.LPOLL {
+	if s.proto == LPOLL {
 		// Only LP sessions need to be sorted by last active
 		s.lpTracker = ss.lru.PushFront(&s)
 	}
@@ -95,9 +111,38 @@ func (ss *SessionStore) NewSession(conn any, sid string) (*Session, int) {
 
 	// Deleting long polling sessions.
 	for _, sess := range expired {
-		// This locks the session. Thus cleaning up outside of the
-		// sessionStore lock. Otherwise deadlock.
-		// sess.cl
+		// This locks the session. Thus cleaning up outside of the sessionStore lock. Otherwise deadlock.
+		sess.cleanUp(true, ss)
 	}
 
+	s.sessStore = ss
+
+	return &s, sessCount
+}
+
+// Get fetches a session from store by session ID.
+func (ss *SessionStore) Get(sid string) *Session {
+	ss.lock.Lock()
+	defer ss.lock.Unlock()
+
+	if sess := ss.sessCache[sid]; sess != nil {
+		if sess.proto == LPOLL {
+			ss.lru.MoveToFront(sess.lpTracker)
+			sess.lastTouched = time.Now()
+		}
+		return sess
+	}
+
+	return nil
+}
+
+// Range calls given function for all sessions. It stops if the function returns false.
+func (ss *SessionStore) Range(f func(sid string, s *Session) bool) {
+	ss.lock.Lock()
+	for sid, s := range ss.sessCache {
+		if !f(sid, s) {
+			break
+		}
+	}
+	ss.lock.Unlock()
 }

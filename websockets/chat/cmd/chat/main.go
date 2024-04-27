@@ -7,12 +7,11 @@ import (
 	"runtime"
 
 	"github.com/ahmad-khatib0/go/websockets/chat/internal/auth/types"
-	"github.com/ahmad-khatib0/go/websockets/chat/internal/cluster"
 	"github.com/ahmad-khatib0/go/websockets/chat/internal/config"
 	"github.com/ahmad-khatib0/go/websockets/chat/internal/handlers/files"
-	"github.com/ahmad-khatib0/go/websockets/chat/internal/models"
 	"github.com/ahmad-khatib0/go/websockets/chat/internal/profile"
 	"github.com/ahmad-khatib0/go/websockets/chat/internal/push"
+	"github.com/ahmad-khatib0/go/websockets/chat/internal/server"
 	"github.com/ahmad-khatib0/go/websockets/chat/internal/stats"
 	"github.com/ahmad-khatib0/go/websockets/chat/internal/store"
 	"github.com/ahmad-khatib0/go/websockets/chat/internal/users"
@@ -27,7 +26,7 @@ type application struct {
 	Store                 *store.Store
 	StatsChan             *stats.Stats
 	Utils                 *utils.Utils
-	Cluster               models.Cluster
+	Cluster               *server.Cluster
 	Profile               *profile.Profile
 	AuthValidators        map[types.Level][]string       // Validators required for each auth level
 	Validators            map[string]users.CredValidator // Credential validators.
@@ -75,7 +74,7 @@ func main() {
 		runtime.GOMAXPROCS(runtime.NumCPU()),
 	))
 
-	c, workerID, err := cluster.NewCluster(cluster.ClusterArgs{
+	c, workerID, err := server.NewCluster(server.ClusterArgs{
 		Cfg:    &a.Cfg.Cluster,
 		Logger: l,
 		Stats:  a.StatsChan,

@@ -1,4 +1,4 @@
-package session
+package server
 
 import (
 	"container/list"
@@ -7,19 +7,45 @@ import (
 
 	"github.com/ahmad-khatib0/go/websockets/chat-protobuf/chat"
 	at "github.com/ahmad-khatib0/go/websockets/chat/internal/auth/types"
-	"github.com/ahmad-khatib0/go/websockets/chat/internal/models"
 	"github.com/ahmad-khatib0/go/websockets/chat/internal/stats"
 	"github.com/ahmad-khatib0/go/websockets/chat/internal/store/types"
+	"github.com/ahmad-khatib0/go/websockets/chat/pkg/logger"
 	"github.com/gorilla/websocket"
 )
 
 // Maximum number of queued messages before session is considered stale and dropped.
 const sendQueueLimit = 128
 
+// SessionProto is the type of the wire transport.
+type SessionProto int
+
+// Constants defining individual types of wire transports.
+const (
+	// NONE is undefined/not set.
+	NONE SessionProto = iota
+	// WEBSOCK represents websocket connection.
+	WEBSOCK
+	// LPOLL represents a long polling connection.
+	LPOLL
+	// GRPC is a gRPC connection
+	GRPC
+	// PROXY is temporary session used as a proxy at master node.
+	PROXY
+	// MULTIPLEX is a multiplexing session representing a connection from proxy topic to master.
+	MULTIPLEX
+)
+
 type Session struct {
+	// reference to the session store struct
+	sessStore *SessionStore
+
+	cluster *Cluster
+	// Reference to the cluster node where the session has originated. Set only for cluster RPC sessions.
+	clnode *ClusterNode
+	logger *logger.Logger
 
 	// protocol - NONE (unset), WEBSOCK, LPOLL, GRPC, PROXY, MULTIPLEX
-	proto models.SessionProto
+	proto SessionProto
 	// Session ID
 	sid string
 
@@ -32,11 +58,8 @@ type Session struct {
 	// gRPC handle. Set only for gRPC clients.
 	grpcCNode chat.Node_MessageLoopServer
 
-	// Reference to the cluster node where the session has originated. Set only for cluster RPC sessions.
-	clnode models.ClusterNode
-
 	// Reference to multiplexing session. Set only for proxy sessions.
-	uulit        *Session
+	multi        *Session
 	proxiedTopic string
 
 	// IP address of the client. For long polling this is the IP of the last poll.
@@ -116,8 +139,7 @@ type Session struct {
 	lock sync.Mutex
 
 	// Field used only in cluster mode by topic master node.
-
-	// ProxyReq ProxyReqType
+	proxyReq ProxyReqType
 }
 
 // SessionStore holds live sessions. Long polling sessions are stored in a linked list with
@@ -140,16 +162,16 @@ type SessionStore struct {
 // Subscription is a mapper of sessions to topics.
 type Subscription struct {
 	// Channel to communicate with the topic, copy of Topic.clientMsg
-	Broadcast chan<- models.ClientComMessage
+	droadcast chan<- *ClientComMessage
 
 	// Session sends a signal to Topic when this session is unsubscribed This is a copy of Topic.unreg
-	Done chan<- models.ClientComMessage
+	done chan<- *ClientComMessage
 
 	// Channel to send {meta} requests, copy of Topic.meta
-	Meta chan<- models.ClientComMessage
+	deta chan<- *ClientComMessage
 
 	// Channel to ping topic with session's updates, copy of Topic.supd
-	Supd chan<- *SessionUpdate
+	supd chan<- *SessionUpdate
 }
 
 // Session update: user agent change or background session becoming normal.
@@ -158,9 +180,4 @@ type Subscription struct {
 type SessionUpdate struct {
 	Sess      *Session
 	UserAgent string
-}
-
-type boundedWaitGroup struct {
-	wg  sync.WaitGroup
-	sem chan struct{}
 }

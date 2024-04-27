@@ -1,18 +1,17 @@
-package hub
+package server
 
 import (
 	"sync"
 
-	"github.com/ahmad-khatib0/go/websockets/chat/internal/models"
 	"github.com/ahmad-khatib0/go/websockets/chat/internal/store/types"
 )
 
 // Request to hub to remove the topic
 type TopicUnreg struct {
 	// Original request, could be nil.
-	Pkt *models.ClientComMessage
+	pkt *ClientComMessage
 	// Session making the request, could be nil.
-	Sess models.Session
+	sess *Session
 	// Routable name of the topic to drop. Duplicated here because pkt could be nil.
 	RcptTo string
 	// UID of the user being deleted. Duplicated here because pkt could be nil.
@@ -27,7 +26,7 @@ type UserStatusReq struct {
 	// UID of the user being affected.
 	ForUser types.Uid
 	// New topic state value. Only types.StateSuspended is supported at this time.
-	// state types.ObjState
+	state types.ObjState
 }
 
 // Hub is the core structure which holds topics.
@@ -40,16 +39,16 @@ type Hub struct {
 	NumTopics int
 
 	// Channel for routing client-side messages, buffered at 4096
-	RouteCli chan *models.ClientComMessage
+	RouteCli chan *ClientComMessage
 
 	// Process get.info requests for topic not subscribed to, buffered 128.
-	Meta chan *models.ClientComMessage
+	Meta chan *ClientComMessage
 
 	// Channel for routing server-generated messages, buffered at 4096
-	RouteSrv chan *models.ServerComMessage
+	RouteSrv chan *ServerComMessage
 
 	// subscribe session to topic, possibly creating a new topic, buffered at 256
-	Join chan *models.ClientComMessage
+	Join chan *ClientComMessage
 
 	// Remove topic from hub, possibly deleting it afterwards, buffered at 32
 	Unreg chan *TopicUnreg
