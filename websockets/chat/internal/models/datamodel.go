@@ -2,6 +2,8 @@ package models
 
 import (
 	"encoding/json"
+	"strconv"
+	"strings"
 	"time"
 
 	"github.com/ahmad-khatib0/go/websockets/chat/internal/store/types"
@@ -322,13 +324,14 @@ type ServerComMessage struct {
 	// Timestamp for consistency of timestamps in {ctrl} messages
 	// (corresponds to originating client message receipt timestamp).
 	Timestamp time.Time `json:"-"`
+
 	// Originating session to send an aknowledgement to. Could be nil.
-	// sess *Session
+	Sess Session
 	// Session ID to skip when sendng packet to sessions. Used to skip sending to original session.
 	// Could be either empty.
 	SkipSid string `json:"-"`
 	// User id affected by this message.
-	uid types.Uid
+	Uid types.Uid
 }
 
 // MsgServerCtrl is a server control message {ctrl}.
@@ -538,4 +541,203 @@ type MsgCredServer struct {
 	Value string `json:"val,omitempty"`
 	// Indicates that the credential is validated.
 	Done bool `json:"done,omitempty"`
+}
+
+func (src *ServerComMessage) Describe() string {
+	if src == nil {
+		return "-"
+	}
+
+	switch {
+	case src.Ctrl != nil:
+		return "{ctrl " + src.Ctrl.describe() + "}"
+	case src.Data != nil:
+		return "{data " + src.Data.describe() + "}"
+	case src.Meta != nil:
+		return "{meta " + src.Meta.describe() + "}"
+	case src.Pres != nil:
+		return "{pres " + src.Pres.describe() + "}"
+	case src.Info != nil:
+		return "{info " + src.Info.describe() + "}"
+	default:
+		return "{nil}"
+	}
+}
+
+func (src *MsgServerCtrl) describe() string {
+	return src.Topic + " id=" + src.Id + " code=" + strconv.Itoa(src.Code) + " txt=" + src.Text
+}
+
+func (src *MsgServerData) describe() string {
+	s := src.Topic + " from=" + src.From + " seq=" + strconv.Itoa(src.SeqId)
+	if src.DeletedAt != nil {
+		s += " deleted"
+	} else {
+		if src.Head != nil {
+			s += " head=..."
+		}
+		s += " content='...'"
+	}
+	return s
+}
+
+func (src *MsgServerMeta) describe() string {
+	s := src.Topic + " id=" + src.Id
+
+	if src.Desc != nil {
+		s += " desc={" + src.Desc.describe() + "}"
+	}
+
+	if src.Sub != nil {
+		var x []string
+		for _, sub := range src.Sub {
+			x = append(x, sub.describe())
+		}
+		s += " sub=[{" + strings.Join(x, "},{") + "}]"
+	}
+
+	if src.Del != nil {
+		x, _ := json.Marshal(src.Del)
+		s += " del={" + string(x) + "}"
+	}
+
+	if src.Tags != nil {
+		s += " tags=[" + strings.Join(src.Tags, ",") + "]"
+	}
+	if src.Cred != nil {
+		x, _ := json.Marshal(src.Cred)
+		s += " cred=[" + string(x) + "]"
+	}
+
+	return s
+}
+
+func (src *MsgServerPres) describe() string {
+	s := src.Topic
+	if src.Src != "" {
+		s += " src=" + src.Src
+	}
+	if src.What != "" {
+		s += " what=" + src.What
+	}
+	if src.UserAgent != "" {
+		s += " ua=" + src.UserAgent
+	}
+	if src.SeqId != 0 {
+		s += " seq=" + strconv.Itoa(src.SeqId)
+	}
+	if src.DelId != 0 {
+		s += " clear=" + strconv.Itoa(src.DelId)
+	}
+	if src.DelSeq != nil {
+		s += " delseq"
+	}
+	if src.AcsTarget != "" {
+		s += " tgt=" + src.AcsTarget
+	}
+	if src.AcsActor != "" {
+		s += " actor=" + src.AcsActor
+	}
+	if src.Acs != nil {
+		s += " dacs=" + src.Acs.describe()
+	}
+
+	return s
+}
+
+// Basic description.
+func (src *MsgServerInfo) describe() string {
+	s := src.Topic
+	if src.Src != "" {
+		s += " src=" + src.Src
+	}
+	s += " what=" + src.What + " from=" + src.From
+	if src.SeqId > 0 {
+		s += " seq=" + strconv.Itoa(src.SeqId)
+	}
+	if len(src.Payload) > 0 {
+		s += " payload=<..." + strconv.Itoa(len(src.Payload)) + " bytes ...>"
+	}
+	return s
+}
+
+func (src *MsgTopicDesc) describe() string {
+	var s string
+	if src.State != "" {
+		s = " state=" + src.State
+	}
+	s += " online=" + strconv.FormatBool(src.Online)
+	if src.Acs != nil {
+		s += " acs={" + src.Acs.describe() + "}"
+	}
+	if src.SeqId != 0 {
+		s += " seq=" + strconv.Itoa(src.SeqId)
+	}
+	if src.ReadSeqId != 0 {
+		s += " read=" + strconv.Itoa(src.ReadSeqId)
+	}
+	if src.RecvSeqId != 0 {
+		s += " recv=" + strconv.Itoa(src.RecvSeqId)
+	}
+	if src.DelId != 0 {
+		s += " clear=" + strconv.Itoa(src.DelId)
+	}
+	if src.Public != nil {
+		s += " pub='...'"
+	}
+	if src.Trusted != nil {
+		s += " trst='...'"
+	}
+	if src.Private != nil {
+		s += " priv='...'"
+	}
+	return s
+}
+
+func (src *MsgAccessMode) describe() string {
+	var s string
+	if src.Want != "" {
+		s = "w=" + src.Want
+	}
+	if src.Given != "" {
+		s += " g=" + src.Given
+	}
+	if src.Mode != "" {
+		s += " m=" + src.Mode
+	}
+	return strings.TrimSpace(s)
+}
+
+func (src *MsgTopicSub) describe() string {
+	s := src.Topic + ":" + src.User + " online=" + strconv.FormatBool(src.Online) + " acs=" + src.Acs.describe()
+
+	if src.SeqId != 0 {
+		s += " seq=" + strconv.Itoa(src.SeqId)
+	}
+	if src.ReadSeqId != 0 {
+		s += " read=" + strconv.Itoa(src.ReadSeqId)
+	}
+	if src.RecvSeqId != 0 {
+		s += " recv=" + strconv.Itoa(src.RecvSeqId)
+	}
+	if src.DelId != 0 {
+		s += " clear=" + strconv.Itoa(src.DelId)
+	}
+	if src.Public != nil {
+		s += " pub='...'"
+	}
+	if src.Trusted != nil {
+		s += " trst='...'"
+	}
+	if src.Private != nil {
+		s += " priv='...'"
+	}
+	if src.LastSeen != nil {
+		s += " seen={" + src.LastSeen.describe() + "}"
+	}
+	return s
+}
+
+func (src *MsgLastSeenInfo) describe() string {
+	return "'" + src.UserAgent + "' @ " + src.When.String()
 }

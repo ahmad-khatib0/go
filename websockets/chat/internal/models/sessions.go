@@ -21,14 +21,18 @@ const (
 	MULTIPLEX
 )
 
-type Session interface{}
+type Session interface {
+	ProxyReq() ProxyReqType
+	Sid() string
+	Uid() types.Uid
+}
 
 type Subscription interface{}
 
 type SessionUpdate interface{}
 
 type SessionStore interface {
-	Delete(s *Session)
+	Delete(s Session)
 	EvictUser(uid types.Uid, skipSid string)
 	Get(sid string) *Session
 	NewSession(conn any, sid string) (*Session, int)
