@@ -65,12 +65,12 @@ func main() {
 	gob.Register(TransactionData{})
 	var cfg config
 
-	flag.IntVar(&cfg.port, "port", 4000, "Server port to listen on")
+	flag.IntVar(&cfg.port, "port", 4011, "Server port to listen on")
 	flag.StringVar(&cfg.env, "env", "development", "Application environment {development|production}")
-	flag.StringVar(&cfg.db.dsn, "dsn", "root:@tcp(localhost:3306)/fidgets-store?parseTime=true&tls=false", "DSN")
-	flag.StringVar(&cfg.api, "api", "http://localhost:4001", "URL to api")
+	flag.StringVar(&cfg.db.dsn, "dsn", "test:test@tcp(localhost:3306)/fidgets-store?parseTime=true&tls=false", "DSN")
+	flag.StringVar(&cfg.api, "api", "http://localhost:4010", "URL to api")
 	flag.StringVar(&cfg.secretkey, "secret", "bRWmrwNUTqNUuzckjxsFlHZjxHkjrzKP", "secret key")
-	flag.StringVar(&cfg.frontend, "frontend", "http://localhost:4000", "url to front end")
+	flag.StringVar(&cfg.frontend, "frontend", "http://localhost:4011", "url to front end")
 
 	flag.Parse()
 

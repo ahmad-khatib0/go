@@ -10,7 +10,7 @@ import (
 )
 
 // NewStore() configure the selected db adapter (AdapterName), and opens the db connection
-// TODO: register the avaiable auth methods from the auth pkg
+// TODO: register the available auth methods from the auth pkg
 func NewStore(a StoreArgs) (*Store, error) {
 	var adp dt.Adapter
 	var err error

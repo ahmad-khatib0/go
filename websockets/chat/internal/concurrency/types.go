@@ -1,12 +1,10 @@
 package concurrency
 
-// Task represents a work task to be run on the specified thread pool.
-type Task func()
+import "github.com/ahmad-khatib0/go/websockets/chat/internal/models"
 
-// GoRoutinePool is a pull of Go routines with associated locking mechanism.
-type GoRoutinePool struct {
+type goRoutinePool struct {
 	// Work queue.
-	work chan Task
+	work chan models.Task
 	// Counter to control the number of already allocated/running goroutines.
 	sem chan struct{}
 	// Exit knob.

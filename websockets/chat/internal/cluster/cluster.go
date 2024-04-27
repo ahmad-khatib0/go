@@ -59,7 +59,7 @@ func NewCluster(ca ClusterArgs) (models.Cluster, int, error) {
 	}
 
 	if len(res.nodes) == 0 {
-		return nil, 1, errors.New("invalid cluster size: Cluster needs at least two nodes.")
+		return nil, 1, errors.New("invalid cluster size: Cluster needs at least two nodes")
 	}
 
 	// TODO: add the failoverInit here

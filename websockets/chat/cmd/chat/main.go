@@ -63,7 +63,7 @@ func main() {
 	}
 
 	a.StatsChan = stats.NewStats(l)
-	a.regsisterStatsVariables()
+	a.registerStatsVariables()
 
 	executable, _ := os.Executable()
 	a.Logger.Info(fmt.Sprintf(

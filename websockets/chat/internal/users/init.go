@@ -9,7 +9,7 @@ import (
 
 // InitUsersGarbageCollection() runs every 'period' and deletes up to 'blockSize'
 //
-// stale unvalidated user accounts which have been last updated at least 'minAccountAgeHours' hours.
+// stale un-validated user accounts which have been last updated at least 'minAccountAgeHours' hours.
 //
 // Returns channel which can be used to stop the process.
 func (u *Users) InitUsersGarbageCollection(period time.Duration, blockSize, minAccountAgeHours int) chan<- bool {

@@ -24,9 +24,9 @@ type ClientComMessage struct {
 
 	// Internal fields, routed only within the cluster.
 
-	// Message ID denormalized
+	// Message ID de-normalized
 	ID string `json:"-"`
-	// Un-routable (original) topic name denormalized from XXX.Topic.
+	// Un-routable (original) topic name de-normalized from XXX.Topic.
 	Original string `json:"-"`
 	// Routable (expanded) topic name.
 	RcptTo string `json:"-"`
@@ -34,13 +34,13 @@ type ClientComMessage struct {
 	AsUser string `json:"-"`
 	// Sender's authentication level.
 	AuthLvl int `json:"-"`
-	// Denormalized 'what' field of meta messages (set, get, del).
+	// De-normalized 'what' field of meta messages (set, get, del).
 	MetaWhat int `json:"-"`
 	// Timestamp when this message was received by the server.
 	Timestamp time.Time `json:"-"`
 
-	// Originating session to send an aknowledgement to.
-	Sess *Session
+	// Originating session to send an acknowledgement to.
+	Sess Session
 	// The message is initialized (true) as opposite to being used as a wrapper for session.
 	Init bool
 }
@@ -323,7 +323,7 @@ type ServerComMessage struct {
 	// (corresponds to originating client message receipt timestamp).
 	Timestamp time.Time `json:"-"`
 	// Originating session to send an aknowledgement to. Could be nil.
-	sess *Session
+	// sess *Session
 	// Session ID to skip when sendng packet to sessions. Used to skip sending to original session.
 	// Could be either empty.
 	SkipSid string `json:"-"`
@@ -368,7 +368,7 @@ type MsgServerPres struct {
 	// to allow different handling on the client
 	Acs *MsgAccessMode `json:"dacs,omitempty"`
 
-	// UNroutable params. All marked with `json:"-"` to exclude from json marshaling.
+	// UN-routable params. All marked with `json:"-"` to exclude from json marshaling.
 	// They are still serialized for intra-cluster communication.
 
 	// Flag to break the reply loop

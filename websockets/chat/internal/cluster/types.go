@@ -6,8 +6,8 @@ import (
 	"sync"
 	"time"
 
-	"github.com/ahmad-khatib0/go/websockets/chat/internal/concurrency"
 	"github.com/ahmad-khatib0/go/websockets/chat/internal/config"
+	"github.com/ahmad-khatib0/go/websockets/chat/internal/models"
 	"github.com/ahmad-khatib0/go/websockets/chat/internal/stats"
 	"github.com/ahmad-khatib0/go/websockets/chat/internal/store/types"
 	"github.com/ahmad-khatib0/go/websockets/chat/pkg/logger"
@@ -51,7 +51,7 @@ type Cluster struct {
 	// In large Tinode deployments (10s of thousands of topics, tens of nodes),
 	// running a separate event processing goroutine for each proxy session
 	// leads to a rather large memory usage and excessive scheduling overhead.
-	proxyEventQueue *concurrency.GoRoutinePool
+	proxyEventQueue models.GoRoutinePool
 }
 
 // ClusterNode is a client's connection to another node.
@@ -115,7 +115,7 @@ type ClusterSess struct {
 	// IP address of the client. For long polling this is the IP of the last poll
 	remoteAddr string
 
-	// User agent, a string provived by an authenticated client in {login} packet
+	// User agent, a string provided by an authenticated client in {login} packet
 	userAgent string
 
 	// ID of the current user or 0
@@ -146,9 +146,9 @@ type ClusterSess struct {
 }
 
 /*
-																+----------------+
-																| CLUSTER LEADER |
-																+----------------+
+								+----------------+
+								| CLUSTER LEADER |
+								+----------------+
 	*****************************************************************************
 	*****************************************************************************
 	*****************************************************************************
@@ -160,7 +160,7 @@ type ClusterFailover struct {
 	leader string
 	// Current election term
 	term int
-	// Hearbeat interval
+	// Heartbeat interval
 	heartBeat time.Duration
 	// Vote timeout: the number of missed heartbeats before a new election is initiated.
 	voteTimeout int

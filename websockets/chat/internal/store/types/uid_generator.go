@@ -106,3 +106,7 @@ func getIDBuffer(ug *UidGenerator) ([]byte, error) {
 
 	return dst, nil
 }
+
+func (ug *UidGenerator) GetUidString() string {
+	return ug.GetStr()
+}

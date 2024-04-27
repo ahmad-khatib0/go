@@ -8,6 +8,8 @@ const (
 	StatsClusterTotalNodes = "ClusterTotalNodes"
 	StatsClusterLiveNodes  = "ClusterLiveNodes"
 	StatsDB                = "DB"
+	StatsLiveSessions      = "LiveSessions"
+	StatsTotalSessions     = "TotalSessions"
 )
 
 const (

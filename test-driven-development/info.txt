@@ -44,3 +44,71 @@ Tests should cover the following:
   • The different conditions of your Boolean variables
   • The different parameter values that can be passed to your functions
 
+
+Functional tests cover the correctness of a system, while non-functional tests cover the usability and performance 
+  of a system. Both types of tests are required to ensure that the system satisfies the customers’ needs.
+
+achieving full separation between the source and test code. Using the dedicated test package brings the 
+  following advantages:
+  
+• Prevents brittle tests: Restricting access to only exported functionality does not give test code visibility 
+  into package internals, such as state variables, which would otherwise cause inconsistent results.
+  
+• Separates test and core package dependencies: The test package allows the test to import any dependencies 
+  required, without adding those dependencies to the core package. In practice, test code will often have its 
+  own dedicated verifiers and functionality, which we would not want to be visible to production code. The 
+  test package is a seamless way to guarantee separation.
+  
+• Allows developers to integrate with their own packages: We previously mentioned that packages allow developers 
+  to build their internal code as small APIs. Writing tests from a dedicated test package allows developers to 
+  see how easy it is to integrate with their designed external interfaces, ensuring that their code is maintainable.
+
+Here are some of the important types from the testing library that we will be using:
+
+- <testing.T: All tests must use this type to interact with the test runner. It contains a method
+  for declaring failing tests, skipping tests, and running tests in parallel.
+    
+- testing.B: Analogous to the test runner, this type is Go’s benchmark runner. It has the same methods for 
+  failing tests, skipping tests, and running benchmarks in parallel. Benchmarks are special kinds of tests that 
+  are used for verifying the performance of your code, as opposed to its functionality.
+
+- testing.F: This type is used to set up and run fuzz tests and was added to the Go standard toolchain in Go 
+  1.18. It creates a randomized seed for the testing target and works together with the testing.T type to provide 
+  test-running functionality. Fuzz tests are special kinds of tests that use random inputs to find edge cases 
+  and bugs in our code
+
+a look at the testing.T type: 
+  it exposes he following methods for logging, skipping, and failing tests that are important to understand:
+  
+- t.Log(args): This prints the given arguments to the error log after the test has finished executing.
+
+- t.Logf(format, args): This has the same functionality as the t.Log method, but
+  allows the arguments to be formatted before printing.
+  
+- t.Fail(): This marks the current test as failed but continues execution until the end.
+
+- t.FailNow(): This marks the current test as failed and immediately stops the execution of
+  the current test. The next test will be run while continuing the suite.
+  
+- t.Error(args): This is equivalent to calling t.Log(args) and t.Fail(). This method
+  makes it convenient to log an error to the error log and mark the current test as failed.
+  
+- t.Errorf(format, args): This is equivalent to calling t.Logf(format, args) and t.Fail(). This method 
+  makes it convenient to fail a test, then format and print an error line in one call.
+  
+- t.Fatal(args): This is equivalent to calling t.Log(args) and t.FailNow(). This
+  method makes it convenient to fail a test and print an error line in one call.
+  
+- t.Fatalf(format, args): This is equivalent to calling t.Logf(format, args) and t.FailNow(). This method 
+  makes it convenient to fail a test, then format and print an error line in one method call.
+  
+- t.SkipNow(): This marks the current test as skipped and immediately stops its execution.
+  Note that if the test has already been marked as failed, then it remains failed, not skipped.
+  
+- t.Skip(args): This is equivalent to calling t.Log(args), followed by t.SkipNow(). This method makes 
+  it convenient to skip a test and print an error line in one call.
+  
+- T.Skipf(format, args): This is equivalent to calling t.Logf(format, args), followed by t.SkipNow(). 
+  This method makes it convenient to skip a test, then format and print an error line in one call.
+
+

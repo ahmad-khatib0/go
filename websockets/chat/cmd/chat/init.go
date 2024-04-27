@@ -14,7 +14,7 @@ import (
 	"go.uber.org/zap/zapcore"
 )
 
-func (a *application) regsisterStatsVariables() {
+func (a *application) registerStatsVariables() {
 	a.StatsChan.RegisterInt(constants.StatsVersion)
 	decVer := a.Utils.Base10Version(a.Utils.ParseBuildstampVersion(a.Cfg.App.BuildStampCommand))
 	if decVer <= 0 {
@@ -213,7 +213,7 @@ func (a *application) initMedia() chan<- bool {
 					a.Logger.Sugar().Fatalf("failed to parse GcPeriod duration %w", err)
 				}
 
-				ch = a.Handlers.Files.InitLargeFilesGarabageCollection(p, gb)
+				ch = a.Handlers.Files.InitLargeFilesGarbageCollection(p, gb)
 			}
 		}
 	}

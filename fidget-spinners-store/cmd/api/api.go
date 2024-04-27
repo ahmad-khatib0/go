@@ -60,15 +60,15 @@ func (app *application) serve() error {
 func main() {
 	var cfg config
 
-	flag.IntVar(&cfg.port, "port", 4001, "Server port to listen on")
+	flag.IntVar(&cfg.port, "port", 4010, "Server port to listen on")
 	flag.StringVar(&cfg.env, "env", "development", "Application environment {development|production|maintenance}")
-	flag.StringVar(&cfg.db.dsn, "dsn", "root:@tcp(localhost:3306)/fidgets-store?parseTime=true&tls=false", "DSN")
+	flag.StringVar(&cfg.db.dsn, "dsn", "test:test@tcp(localhost:3306)/fidgets-store?parseTime=true&tls=false", "DSN")
 	flag.StringVar(&cfg.smtp.host, "smtphost", "smtp.mailtrap.io", "smtp host")
 	flag.StringVar(&cfg.smtp.username, "smtpuser", "5d7b1dd624d30a", "smtp user")
 	flag.StringVar(&cfg.smtp.password, "smtppass", "beed634b873b58", "smtp password")
 	flag.IntVar(&cfg.smtp.port, "smtpport", 587, "smtp port")
 	flag.StringVar(&cfg.secretkey, "secret", "bRWmrwNUTqNUuzckjxsFlHZjxHkjrzKP", "secret key")
-	flag.StringVar(&cfg.frontend, "frontend", "http://localhost:4000", "url to front end")
+	flag.StringVar(&cfg.frontend, "frontend", "http://localhost:4010", "url to front end")
 
 	flag.Parse()
 

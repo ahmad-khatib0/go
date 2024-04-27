@@ -54,7 +54,7 @@ func (f *Feature) UnmarshalText(b []byte) error {
 	return err
 }
 
-// String Featureto a string representation.
+// String Feature to a string representation.
 func (f Feature) String() string {
 	res, err := f.MarshalText()
 	if err != nil {

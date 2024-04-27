@@ -32,7 +32,7 @@ type application struct {
 func main() {
 	var cfg config
 
-	flag.IntVar(&cfg.port, "port", 5000, "Server port to listen on")
+	flag.IntVar(&cfg.port, "port", 4012, "Server port to listen on")
 	flag.StringVar(&cfg.smtp.host, "smtphost", "smtp.mailtrap.io", "smtp host")
 	flag.StringVar(&cfg.smtp.username, "smtpuser", "30980d8770302b02e", "smtp user")
 	flag.StringVar(&cfg.smtp.password, "smtppass", "33c58457afcc76", "smtp password")
