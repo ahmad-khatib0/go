@@ -3,7 +3,7 @@ package server
 import (
 	"sync"
 
-	"github.com/rs/zerolog/log"
+	"log"
 )
 
 type boundedWaitGroup struct {
@@ -31,11 +31,11 @@ func (b *boundedWaitGroup) Done() {
 	select {
 	case _, ok := <-b.sem:
 		if !ok {
-			log.Panic().Msg("boundedWaitGroup.sem closed.")
+			log.Panic("boundedWaitGroup.sem closed.")
 		}
 
 	default:
-		log.Panic().Msg("boundedWaitGroup.Done() called before Add().")
+		log.Panic("boundedWaitGroup.Done() called before Add().")
 	}
 
 	b.wg.Done()

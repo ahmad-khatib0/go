@@ -5,7 +5,7 @@ go 1.22
 require (
 	github.com/CloudyKit/jet/v6 v6.2.0
 	github.com/alexedwards/scs/postgresstore v0.0.0-20230327161757-10d4299e3b24
-	github.com/alexedwards/scs/v2 v2.5.1
+	github.com/alexedwards/scs/v2 v2.8.0
 	github.com/aymerick/douceur v0.2.0
 	github.com/go-chi/chi/v5 v5.0.12
 	github.com/jackc/pgconn v1.14.3
@@ -13,8 +13,8 @@ require (
 	github.com/justinas/nosurf v1.1.1
 	github.com/pusher/pusher-http-go v4.0.1+incompatible
 	github.com/robfig/cron/v3 v3.0.1
-	github.com/xhit/go-simple-mail/v2 v2.13.0
-	golang.org/x/crypto v0.21.0
+	github.com/xhit/go-simple-mail/v2 v2.16.0
+	golang.org/x/crypto v0.22.0
 	jaytaylor.com/html2text v0.0.0-20230321000545-74c2419ad056
 )
 
@@ -43,6 +43,6 @@ require (
 	github.com/stretchr/testify v1.9.0 // indirect
 	github.com/toorop/go-dkim v0.0.0-20201103131630-e1cd1a0a5208 // indirect
 	golang.org/x/net v0.22.0 // indirect
-	golang.org/x/sys v0.18.0 // indirect
+	golang.org/x/sys v0.19.0 // indirect
 	golang.org/x/text v0.14.0 // indirect
 )

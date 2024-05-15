@@ -21,7 +21,7 @@ require (
 	github.com/davecgh/go-spew v1.1.2-0.20180830191138-d8f796af33cc // indirect
 	github.com/go-logr/logr v1.4.1 // indirect
 	github.com/go-logr/stdr v1.2.2 // indirect
-	github.com/go-sql-driver/mysql v1.8.0 // indirect
+	github.com/go-sql-driver/mysql v1.8.1 // indirect
 	github.com/golang/protobuf v1.5.4 // indirect
 	github.com/jinzhu/inflection v1.0.0 // indirect
 	github.com/jinzhu/now v1.1.5 // indirect
@@ -30,7 +30,7 @@ require (
 	github.com/uptrace/opentelemetry-go-extra/otelsql v0.2.3 // indirect
 	go.opentelemetry.io/otel/metric v1.24.0 // indirect
 	golang.org/x/net v0.22.0 // indirect
-	golang.org/x/sys v0.18.0 // indirect
+	golang.org/x/sys v0.19.0 // indirect
 	golang.org/x/text v0.14.0 // indirect
 	google.golang.org/genproto/googleapis/rpc v0.0.0-20240318140521-94a12d6c2237 // indirect
 	google.golang.org/protobuf v1.33.0 // indirect

@@ -6,7 +6,6 @@ import (
 	"time"
 
 	"github.com/gorilla/websocket"
-	"github.com/rs/zerolog/log"
 
 	"github.com/ahmad-khatib0/go/websockets/chat-protobuf/chat"
 	"github.com/ahmad-khatib0/go/websockets/chat/internal/constants"
@@ -46,7 +45,7 @@ func (ss *SessionStore) NewSession(conn any, sid string) (*Session, int) {
 
 	ss.lock.Lock()
 	if _, found := ss.sessCache[s.sid]; found {
-		log.Fatal().Msg("ERROR! duplicate session ID" + s.sid)
+		ss.logger.Sugar().Fatalf("ERROR! duplicate session ID" + s.sid)
 	}
 	ss.lock.Unlock()
 
@@ -64,7 +63,7 @@ func (ss *SessionStore) NewSession(conn any, sid string) (*Session, int) {
 		s.proto = GRPC
 		s.grpcCNode = c
 	default:
-		log.Panic().Msgf("session: unknown connection type %+v", conn)
+		ss.logger.Sugar().Panicf("session: unknown connection type %+v", conn)
 	}
 
 	s.subs = make(map[string]*Subscription)

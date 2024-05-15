@@ -146,7 +146,8 @@ type Session struct {
 //
 // most recent sessions on top. In addition all sessions are stored in a map indexed by session ID.
 type SessionStore struct {
-	lock sync.Mutex
+	logger *logger.Logger
+	lock   sync.Mutex
 
 	// Support for long polling sessions: a list of sessions sorted by last access time.
 	// Needed for cleaning abandoned sessions.

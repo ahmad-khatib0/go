@@ -4,7 +4,7 @@ go 1.22
 
 require (
 	github.com/alexedwards/scs/redisstore v0.0.0-20230327161757-10d4299e3b24
-	github.com/alexedwards/scs/v2 v2.5.1
+	github.com/alexedwards/scs/v2 v2.8.0
 	github.com/bwmarrin/go-alone v0.0.0-20190806015146-742bb55d1631
 	github.com/go-chi/chi/v5 v5.0.12
 	github.com/gomodule/redigo v2.0.0+incompatible
@@ -12,8 +12,8 @@ require (
 	github.com/jackc/pgx/v4 v4.18.3
 	github.com/phpdave11/gofpdf v1.4.2
 	github.com/vanng822/go-premailer v1.20.2
-	github.com/xhit/go-simple-mail/v2 v2.13.0
-	golang.org/x/crypto v0.21.0
+	github.com/xhit/go-simple-mail/v2 v2.16.0
+	golang.org/x/crypto v0.22.0
 )
 
 require (
@@ -38,6 +38,6 @@ require (
 	github.com/toorop/go-dkim v0.0.0-20201103131630-e1cd1a0a5208 // indirect
 	github.com/vanng822/css v1.0.1 // indirect
 	golang.org/x/net v0.22.0 // indirect
-	golang.org/x/sys v0.18.0 // indirect
+	golang.org/x/sys v0.19.0 // indirect
 	golang.org/x/text v0.14.0 // indirect
 )
