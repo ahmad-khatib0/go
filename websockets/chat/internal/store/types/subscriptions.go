@@ -120,3 +120,28 @@ func (s *Subscription) GetUserAgent() string {
 	}
 	return ""
 }
+
+// LastModified returns the greater of either TouchedAt or UpdatedAt.
+func (s *Subscription) LastModified() time.Time {
+	if s.UpdatedAt.Before(s.touchedAt) {
+		return s.touchedAt
+	}
+	return s.UpdatedAt
+}
+
+// SetDefaultAccess updates default access values.
+func (s *Subscription) SetDefaultAccess(auth, anon AccessMode) {
+	s.modeDefault = &DefaultAccess{auth, anon}
+}
+
+// SetLastSeenAndUA updates lastSeen time and userAgent.
+func (s *Subscription) SetLastSeenAndUA(when *time.Time, ua string) {
+	if when != nil && !when.IsZero() {
+		s.lastSeenUA = &LastSeenUA{
+			When:      *when,
+			UserAgent: ua,
+		}
+	} else {
+		s.lastSeenUA = nil
+	}
+}

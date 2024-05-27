@@ -20,6 +20,14 @@ func (gr *goRoutinePool) Schedule(t models.Task) {
 	}
 }
 
+// Stop sends a stop signal to all running goroutines.
+func (p *goRoutinePool) Stop() {
+	numWorkers := cap(p.sem)
+	for i := 0; i < numWorkers; i++ {
+		p.stop <- struct{}{}
+	}
+}
+
 // Thread pool worker goroutine.
 func (gr *goRoutinePool) worker(t models.Task) {
 	defer func() {

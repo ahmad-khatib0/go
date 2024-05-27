@@ -94,3 +94,7 @@ func (s *Store) AuthGetLogicalAuthHandler(name string) types.AuthHandler {
 
 	return s.authHandlers[name]
 }
+
+func (s *Store) GetAuthHandler(name string) types.AuthHandler {
+	return s.authHandlers[strings.ToLower(name)]
+}

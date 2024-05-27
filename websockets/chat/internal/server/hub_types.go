@@ -32,33 +32,33 @@ type UserStatusReq struct {
 // Hub is the core structure which holds topics.
 type Hub struct {
 
-	// Topics must be indexed by name
-	Topics *sync.Map
+	// topics must be indexed by name
+	topics *sync.Map
 
 	// Current number of loaded topics
-	NumTopics int
+	numTopics int
 
 	// Channel for routing client-side messages, buffered at 4096
-	RouteCli chan *ClientComMessage
+	routeCli chan *ClientComMessage
 
 	// Process get.info requests for topic not subscribed to, buffered 128.
-	Meta chan *ClientComMessage
+	meta chan *ClientComMessage
 
 	// Channel for routing server-generated messages, buffered at 4096
-	RouteSrv chan *ServerComMessage
+	routeSrv chan *ServerComMessage
 
 	// subscribe session to topic, possibly creating a new topic, buffered at 256
-	Join chan *ClientComMessage
+	join chan *ClientComMessage
 
 	// Remove topic from hub, possibly deleting it afterwards, buffered at 32
-	Unreg chan *TopicUnreg
+	unreg chan *TopicUnreg
 
 	// Channel for suspending/resuming users, buffered 128.
-	UserStatus chan *UserStatusReq
+	userStatus chan *UserStatusReq
 
 	// Cluster request to rehash topics, unbuffered
-	Rehash chan bool
+	rehash chan bool
 
 	// Request to shutdown, unbuffered
-	Shutdown chan chan<- bool
+	shutdown chan chan<- bool
 }

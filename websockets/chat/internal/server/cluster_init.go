@@ -31,7 +31,6 @@ func NewCluster(ca ClusterArgs) (*Cluster, int, error) {
 	gob.Register(MsgAccessMode{})
 
 	res := Cluster{
-		Logger:          ca.Logger,
 		thisNodeName:    ca.Cfg.MainName,
 		fingerprint:     time.Now().Unix(),
 		nodes:           make(map[string]*ClusterNode),

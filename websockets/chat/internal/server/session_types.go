@@ -74,7 +74,7 @@ type Session struct {
 	// Device ID of the client
 	deviceID string
 	// Platform: web, ios, android
-	platform string
+	platf string
 
 	// Human language of the client
 	lang string
@@ -133,7 +133,7 @@ type Session struct {
 	subs map[string]*Subscription
 
 	// Mutex for subs access: both topic go routines and network go routines access subs concurrently.
-	subLock sync.RWMutex
+	subsLock sync.RWMutex
 
 	// Needed for long polling and grpc.
 	lock sync.Mutex

@@ -6,4 +6,5 @@ type Task func()
 // GoRoutinePool is a pull of Go routines with associated locking mechanism.
 type GoRoutinePool interface {
 	Schedule(task Task)
+	Stop()
 }

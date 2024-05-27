@@ -6,11 +6,26 @@ import (
 	"sync"
 	"time"
 
+	at "github.com/ahmad-khatib0/go/websockets/chat/internal/auth/types"
 	"github.com/ahmad-khatib0/go/websockets/chat/internal/config"
 	"github.com/ahmad-khatib0/go/websockets/chat/internal/models"
+	"github.com/ahmad-khatib0/go/websockets/chat/internal/ringhash"
 	"github.com/ahmad-khatib0/go/websockets/chat/internal/stats"
 	"github.com/ahmad-khatib0/go/websockets/chat/internal/store/types"
 	"github.com/ahmad-khatib0/go/websockets/chat/pkg/logger"
+)
+
+const (
+	// Network connection timeout.
+	clusterNetworkTimeout = 3 * time.Second
+	// Default timeout before attempting to reconnect to a node.
+	clusterDefaultReconnectTime = 200 * time.Millisecond
+	// Number of replicas in ringhash.
+	clusterHashReplicas = 20
+	// Buffer size for sending requests from proxy to master.
+	clusterProxyToMasterBuffer = 64
+	// Buffer size for receiving responses from other nodes, per node.
+	clusterRpcCompletionBuffer = 64
 )
 
 type ClusterArgs struct {
@@ -36,8 +51,6 @@ type ProxyReqType int
 
 // Cluster is the representation of the cluster.
 type Cluster struct {
-	Logger *logger.Logger
-
 	// Cluster nodes with RPC endpoints (excluding current node).
 	nodes map[string]*ClusterNode
 
@@ -53,10 +66,10 @@ type Cluster struct {
 	// Socket for inbound connections
 	inbound *net.TCPListener
 	// Ring hash for mapping topic names to nodes
-	// ring *rh.Ring
+	ring *ringhash.Ring
 
 	// Failover parameters. Could be nil if failover is not enabled
-	fo *ClusterFailover
+	fo *clusterFailover
 
 	// Thread pool to use for running proxy session (write) event processing logic.
 	// The number of proxy sessions grows as O(number of topics x number of cluster nodes).
@@ -97,29 +110,29 @@ type ClusterNode struct {
 
 // ClusterReq is either a Proxy to Master or Topic Proxy to Topic Master or intra-cluster routing request message.
 type ClusterReq struct {
-	// Name of the node sending this request
-	node string
-	// Ring hash signature of the node sending this request Signature must match
-	// the signature of the receiver, otherwise the Cluster is desynchronized.
-	signature string
+	// Name of the Node sending this request
+	Node string
+	// Ring hash Signature of the node sending this request Signature must match
+	// the Signature of the receiver, otherwise the Cluster is desynchronized.
+	Signature string
 	// Fingerprint of the node sending this request.
 	// Fingerprint changes when the node is restarted.
-	fingerprint int64
+	Fingerprint int64
 
 	// Type of request.
-	feqType ProxyReqType
+	ReqType ProxyReqType
 
 	// Client message. Set for C2S requests.
-	cliMsg *ClientComMessage
+	CliMsg *ClientComMessage
 	// Message to be routed. Set for intra-cluster route requests.
-	srvMsg *ServerComMessage
+	SrvMsg *ServerComMessage
 
 	// Expanded (routable) topic name
-	rcptTo string
+	RcptTo string
 	// Originating session
-	sess *ClusterSess
-	// True when the topic proxy is gone.
-	gone bool
+	Sess *ClusterSess
+	// True when the topic proxy is Gone.
+	Gone bool
 }
 
 // ClusterRoute is intra-cluster routing request message.
@@ -182,36 +195,36 @@ type ClusterSessUpdate struct {
 // ClusterSess is a basic info on a remote session where the message was created.
 type ClusterSess struct {
 	// IP address of the client. For long polling this is the IP of the last poll
-	remoteAddr string
+	RemoteAddr string
 
 	// User agent, a string provided by an authenticated client in {login} packet
-	userAgent string
+	UserAgent string
 
 	// ID of the current user or 0
-	uid types.Uid
+	Uid types.Uid
 
 	// User's authentication level
-	// authLvl AuthLevel
+	AuthLvl at.Level
 
 	// Protocol version of the client: ((major & 0xff) << 8) | (minor & 0xff)
-	ver int
+	Ver int
 
 	// Human language of the client
-	lang string
+	Lang string
 	// Country of the client
-	countryCode string
+	CountryCode string
 
 	// Device ID
-	deviceID string
+	DeviceID string
 
-	// Device platform: "web", "ios", "android"
-	platform string
+	// Device Platform: "web", "ios", "android"
+	Platform string
 
 	// Session ID
-	sid string
+	Sid string
 
 	// Background session
-	background bool
+	Background bool
 }
 
 /*
@@ -248,36 +261,72 @@ type ClusterFailover struct {
 	done chan bool
 }
 
+// Failover config.
+type clusterFailover struct {
+	// Current leader
+	leader string
+	// Current election term
+	term int
+	// Hearbeat interval
+	heartBeat time.Duration
+	// Vote timeout: the number of missed heartbeats before a new election is initiated.
+	voteTimeout int
+
+	// The list of nodes the leader considers active
+	activeNodes     []string
+	activeNodesLock sync.RWMutex
+	// The number of heartbeats a node can fail before being declared dead
+	nodeFailCountLimit int
+
+	// Channel for processing leader health checks.
+	healthCheck chan *ClusterHealth
+	// Channel for processing election votes.
+	electionVote chan *ClusterVote
+	// Channel for stopping the failover runner.
+	done chan bool
+}
+
+type clusterFailoverConfig struct {
+	// Failover is enabled
+	Enabled bool `json:"enabled"`
+	// Time in milliseconds between heartbeats
+	Heartbeat int `json:"heartbeat"`
+	// Number of failed heartbeats before a leader election is initiated.
+	VoteAfter int `json:"vote_after"`
+	// Number of failures before a node is considered dead
+	NodeFailAfter int `json:"node_fail_after"`
+}
+
 // ClusterHealth is content of a leader's health check of a follower node.
 type ClusterHealth struct {
 	// Name of the leader node
-	leader string
+	Leader string
 	// Election term
-	term int
+	Term int
 	// Ring hash signature that represents the cluster
-	signature string
+	Signature string
 	// Names of nodes currently active in the cluster
-	nodes []string
+	Nodes []string
+}
+
+// ClusterVoteRequest is a request from a leader candidate to a node to vote for the candidate.
+type ClusterVoteRequest struct {
+	// Candidate node which issued this request
+	Node string
+	// Election term
+	Term int
+}
+
+// ClusterVoteResponse is a vote from a node.
+type ClusterVoteResponse struct {
+	// Actual vote
+	Result bool
+	// Node's term after the vote
+	Term int
 }
 
 // ClusterVote is a vote request and a response in leader election.
 type ClusterVote struct {
 	req  *ClusterVoteRequest
 	resp chan ClusterVoteResponse
-}
-
-// ClusterVoteRequest is a request from a leader candidate to a node to vote for the candidate.
-type ClusterVoteRequest struct {
-	// Candidate node which issued this request
-	node string
-	// Election term
-	term int
-}
-
-// ClusterVoteResponse is a vote from a node.
-type ClusterVoteResponse struct {
-	// Actual vote
-	result bool
-	// Node's term after the vote
-	term int
 }

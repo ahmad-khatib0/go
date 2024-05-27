@@ -8,7 +8,6 @@ import (
 
 	"github.com/ahmad-khatib0/go/websockets/chat/internal/auth/types"
 	"github.com/ahmad-khatib0/go/websockets/chat/internal/constants"
-	"github.com/ahmad-khatib0/go/websockets/chat/internal/handlers/files"
 	"github.com/ahmad-khatib0/go/websockets/chat/internal/store"
 	"github.com/ahmad-khatib0/go/websockets/chat/internal/users"
 	"go.uber.org/zap/zapcore"
@@ -150,10 +149,6 @@ func (a *application) initValidators() {
 			a.ValidatorClientConfig[k.String()] = v
 		}
 	}
-}
-
-func (a *application) initHandlers() {
-	a.Handlers.Files = files.NewFilesHandler(a.Store.Adp(), a.Logger)
 }
 
 func (a *application) initTags() {

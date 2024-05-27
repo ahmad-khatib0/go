@@ -2,7 +2,6 @@ package types
 
 import (
 	"errors"
-	"time"
 )
 
 // Various access mode constants.
@@ -139,29 +138,60 @@ func (m AccessMode) IsOwner() bool {
 	return m&ModeOwner != 0
 }
 
-// LastModified returns the greater of either TouchedAt or UpdatedAt.
-func (s *Subscription) LastModified() time.Time {
-	if s.UpdatedAt.Before(s.touchedAt) {
-		return s.touchedAt
-	}
-	return s.UpdatedAt
+// IsWriter checks if allowed to publish (writer flag W is set).
+func (m AccessMode) IsWriter() bool {
+	return m&ModeWrite != 0
 }
 
-// SetDefaultAccess updates default access values.
-func (s *Subscription) SetDefaultAccess(auth, anon AccessMode) {
-	s.modeDefault = &DefaultAccess{auth, anon}
+// IsJoiner checks if joiner flag J is set.
+func (m AccessMode) IsJoiner() bool {
+	return m&ModeJoin != 0
 }
 
-// SetLastSeenAndUA updates lastSeen time and userAgent.
-func (s *Subscription) SetLastSeenAndUA(when *time.Time, ua string) {
-	if when != nil && !when.IsZero() {
-		s.lastSeenUA = &LastSeenUA{
-			When:      *when,
-			UserAgent: ua,
-		}
-	} else {
-		s.lastSeenUA = nil
-	}
+// IsApprover checks if approver A bit is set.
+func (m AccessMode) IsApprover() bool {
+	return m&ModeApprove != 0
+}
+
+// IsAdmin check if owner O or approver A flag is set.
+func (m AccessMode) IsAdmin() bool {
+	return m.IsOwner() || m.IsApprover()
+}
+
+// IsSharer checks if approver A or sharer S or owner O flag is set.
+func (m AccessMode) IsSharer() bool {
+	return m.IsAdmin() || (m&ModeShare != 0)
+}
+
+// IsReader checks if reader flag R is set.
+func (m AccessMode) IsReader() bool {
+	return m&ModeRead != 0
+}
+
+// IsPresencer checks if user receives presence updates (P flag set).
+func (m AccessMode) IsPresencer() bool {
+	return m&ModePres != 0
+}
+
+// IsDeleter checks if user can hard-delete messages (D flag is set).
+func (m AccessMode) IsDeleter() bool {
+	return m&ModeDelete != 0
+}
+
+// IsZero checks if no flags are set.
+func (m AccessMode) IsZero() bool {
+	return m == ModeNone
+}
+
+// IsInvalid checks if mode is invalid.
+func (m AccessMode) IsInvalid() bool {
+	return m == ModeInvalid
+}
+
+// IsDefined checks if the mode is defined: not invalid and not unset.
+// ModeNone is considered to be defined.
+func (m AccessMode) IsDefined() bool {
+	return m != ModeInvalid && m != ModeUnset
 }
 
 // ParseAcs parses AccessMode from a byte array.

@@ -170,7 +170,7 @@ func pbDelQuerySerialize(in []MsgDelRange) []*pbx.SeqRange {
 
 	out := make([]*pbx.SeqRange, len(in))
 	for i, dq := range in {
-		out[i] = &pbx.SeqRange{Low: int32(dq.LowID), Hi: int32(dq.HiID)}
+		out[i] = &pbx.SeqRange{Low: int32(dq.LowId), Hi: int32(dq.HiId)}
 	}
 
 	return out

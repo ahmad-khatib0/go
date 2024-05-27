@@ -8,7 +8,6 @@ import (
 
 	"github.com/ahmad-khatib0/go/websockets/chat/internal/auth/types"
 	"github.com/ahmad-khatib0/go/websockets/chat/internal/config"
-	"github.com/ahmad-khatib0/go/websockets/chat/internal/handlers/files"
 	"github.com/ahmad-khatib0/go/websockets/chat/internal/profile"
 	"github.com/ahmad-khatib0/go/websockets/chat/internal/push"
 	"github.com/ahmad-khatib0/go/websockets/chat/internal/server"
@@ -38,10 +37,6 @@ type application struct {
 	// user can only mutate tags he owns.
 	MaskedTagNS map[string]bool
 	users       users.Users
-
-	Handlers struct {
-		Files *files.FilesHandler
-	}
 }
 
 func main() {
@@ -99,7 +94,6 @@ func main() {
 
 	a.initAuth()
 	a.initValidators()
-	a.initHandlers()
 	a.initTags()
 
 	if handChan := a.initMedia(); handChan != nil {

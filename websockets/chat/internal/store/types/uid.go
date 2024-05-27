@@ -4,6 +4,7 @@ import (
 	"encoding/base64"
 	"encoding/binary"
 	"errors"
+	"strings"
 )
 
 // Uid is a database-specific record id, suitable to be used as a primary key.
@@ -103,9 +104,41 @@ func (uid Uid) P2PName(u2 Uid) string {
 	return ""
 }
 
+// Compare returns 0 if uid is equal to u2, 1 if u2 is greater than uid, -1 if u2 is smaller.
+func (uid Uid) Compare(u2 Uid) int {
+	if uid < u2 {
+		return -1
+	} else if uid > u2 {
+		return 1
+	}
+	return 0
+}
+
 // ParseUid parses string NOT prefixed with anything.
 func ParseUid(s string) Uid {
 	var uid Uid
 	uid.UnmarshalText([]byte(s))
 	return uid
+}
+
+// ParseUserId parses user ID of the form "usrXXXXXX".
+func ParseUserId(s string) Uid {
+	var uid Uid
+	if strings.HasPrefix(s, "usr") {
+		(&uid).UnmarshalText([]byte(s)[3:])
+	}
+	return uid
+}
+
+// GrpToChn converts group topic name to corresponding channel name.
+func GrpToChn(grp string) string {
+	if strings.HasPrefix(grp, "grp") {
+		return strings.Replace(grp, "grp", "chn", 1)
+	}
+
+	// Return unchanged if it's a channel already.
+	if strings.HasPrefix(grp, "chn") {
+		return grp
+	}
+	return ""
 }

@@ -5,6 +5,7 @@ import (
 	"github.com/ahmad-khatib0/go/websockets/chat/internal/config"
 	dt "github.com/ahmad-khatib0/go/websockets/chat/internal/db/types"
 	mt "github.com/ahmad-khatib0/go/websockets/chat/internal/media/types"
+	st "github.com/ahmad-khatib0/go/websockets/chat/internal/store/types"
 	"github.com/ahmad-khatib0/go/websockets/chat/internal/validate"
 	"github.com/ahmad-khatib0/go/websockets/chat/pkg/logger"
 )
@@ -25,4 +26,5 @@ type Store struct {
 	validators       map[string]validate.Validator
 	mediaHandlers    map[string]mt.Handler
 	mediaHandler     mt.Handler
+	UidGen           *st.UidGenerator
 }

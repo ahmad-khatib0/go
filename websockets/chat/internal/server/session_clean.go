@@ -118,13 +118,13 @@ func (s *Session) purgeChannels() {
 //
 // No need to check for s.multi because it's not called for PROXY sessions.
 func (s *Session) unsubAll() {
-	s.subLock.RLock()
-	defer s.subLock.Unlock()
+	s.subsLock.RLock()
+	defer s.subsLock.Unlock()
 
 	for _, sub := range s.subs {
 		// sub.done is the same as topic.unreg, The whole session is being dropped; ClientComMessage is a wrapper
 		// for session, ClientComMessage.init is false. keep redundant init: false so it can be searched for.
-		sub.done <- &ClientComMessage{Init: false}
+		sub.done <- &ClientComMessage{init: false}
 	}
 }
 
@@ -242,4 +242,47 @@ func (s *Session) closeRPC() {
 	if s.isMultiplex() {
 		s.logger.Info("cluster: session proxy closed: " + s.sid)
 	}
+}
+
+// Disconnects session from topic if either one of the following is true:
+//
+// * 's' is an ordinary session AND ('asUid' is zero OR 'asUid' matches subscribed user).
+//
+// * 's' is a multiplexing session and it's being dropped all together ('asUid' is zero ).
+//
+// If 's' is a multiplexing session and asUid is not zero, it's removed from the list of session users 'muids'.
+//
+// Returns perSessionData if it was found and true if session was actually detached from topic.
+func (t *Topic) remSession(sess *Session, asUid types.Uid) (*perSessionData, bool) {
+	s := sess
+	if sess.multi != nil {
+		s = s.multi
+	}
+
+	pssd, ok := t.sessions[s]
+	if !ok {
+		// Session not found at all.
+		return nil, false
+	}
+
+	if pssd.uid == asUid || asUid.IsZero() {
+		delete(t.sessions, s)
+		return &pssd, true
+	}
+
+	for i := range pssd.muids {
+		if pssd.muids[i] == asUid {
+			pssd.muids[i] = pssd.muids[len(pssd.muids)-1]
+			pssd.muids = pssd.muids[:len(pssd.muids)-1]
+			t.sessions[s] = pssd
+			if len(pssd.muids) == 0 {
+				delete(t.sessions, s)
+				return &pssd, true
+			}
+
+			return &pssd, false
+		}
+	}
+
+	return nil, false
 }

@@ -1,7 +1,10 @@
 package server
 
 import (
+	"encoding/json"
 	"net/http"
+	"strconv"
+	"strings"
 	"time"
 )
 
@@ -19,7 +22,7 @@ func NoErrExplicitTs(id, topic string, serverTs, incomingReqTs time.Time) *Serve
 
 // NoErrReply indicates successful completion as a reply to a client message (200).
 func NoErrReply(msg *ClientComMessage, ts time.Time) *ServerComMessage {
-	return NoErrExplicitTs(msg.ID, msg.Original, ts, msg.Timestamp)
+	return NoErrExplicitTs(msg.Id, msg.Original, ts, msg.Timestamp)
 }
 
 // NoErrParams indicates successful completion with additional parameters (200).
@@ -47,7 +50,7 @@ func NoErrParamsExplicitTs(id, topic string, serverTs, incomingReqTs time.Time, 
 // NoErrParamsReply indicates successful completion with additional parameters
 // and explicit server and incoming request timestamps (200).
 func NoErrParamsReply(msg *ClientComMessage, ts time.Time, params any) *ServerComMessage {
-	return NoErrParamsExplicitTs(msg.ID, msg.Original, ts, msg.Timestamp, params)
+	return NoErrParamsExplicitTs(msg.Id, msg.Original, ts, msg.Timestamp, params)
 }
 
 // NoErrCreated indicated successful creation of an object (201).
@@ -104,7 +107,7 @@ func NoContentParams(id, topic string, serverTs, incomingReqTs time.Time, params
 // NoContentParamsReply indicates request was processed but resulted in no content
 // in response to a client request (204).
 func NoContentParamsReply(msg *ClientComMessage, ts time.Time, params any) *ServerComMessage {
-	return NoContentParams(msg.ID, msg.Original, ts, msg.Timestamp, params)
+	return NoContentParams(msg.Id, msg.Original, ts, msg.Timestamp, params)
 }
 
 // NoErrEvicted indicates that the user was disconnected from topic for no fault of the user (205).
@@ -216,7 +219,7 @@ func InfoUseOther(id, topic, other string, serverTs, incomingReqTs time.Time) *S
 
 // InfoUseOtherReply is a response to a subscription request redirecting client to another topic (303).
 func InfoUseOtherReply(msg *ClientComMessage, other string, ts time.Time) *ServerComMessage {
-	return InfoUseOther(msg.ID, msg.Original, other, ts, msg.Timestamp)
+	return InfoUseOther(msg.Id, msg.Original, other, ts, msg.Timestamp)
 }
 
 // InfoAlreadySubscribed response means request to subscribe was ignored because user is already subscribed (304).
@@ -267,7 +270,7 @@ func InfoNoAction(id, topic string, serverTs, incomingReqTs time.Time) *ServerCo
 // InfoNoActionReply response means request was ignored because the object was already in the desired state
 // in response to a client request (304).
 func InfoNoActionReply(msg *ClientComMessage, ts time.Time) *ServerComMessage {
-	return InfoNoAction(msg.ID, msg.Original, ts, msg.Timestamp)
+	return InfoNoAction(msg.Id, msg.Original, ts, msg.Timestamp)
 }
 
 // InfoNotModified response means update request was a noop (304).
@@ -278,7 +281,7 @@ func InfoNotModified(id, topic string, ts time.Time) *ServerComMessage {
 // InfoNotModifiedReply response means update request was a noop
 // in response to a client request (304).
 func InfoNotModifiedReply(msg *ClientComMessage, ts time.Time) *ServerComMessage {
-	return InfoNotModifiedExplicitTs(msg.ID, msg.Original, ts, msg.Timestamp)
+	return InfoNotModifiedExplicitTs(msg.Id, msg.Original, ts, msg.Timestamp)
 }
 
 // InfoNotModifiedExplicitTs response means update request was a noop
@@ -322,7 +325,7 @@ func ErrMalformed(id, topic string, ts time.Time) *ServerComMessage {
 // ErrMalformedReply request malformed
 // in response to a client request (400).
 func ErrMalformedReply(msg *ClientComMessage, ts time.Time) *ServerComMessage {
-	return ErrMalformedExplicitTs(msg.ID, msg.Original, ts, msg.Timestamp)
+	return ErrMalformedExplicitTs(msg.Id, msg.Original, ts, msg.Timestamp)
 }
 
 // ErrMalformedExplicitTs request malformed with explicit server and incoming request timestamps (400).
@@ -358,7 +361,7 @@ func ErrAuthRequired(id, topic string, serverTs, incomingReqTs time.Time) *Serve
 // ErrAuthRequiredReply authentication required  - user must authenticate first
 // in response to a client request (401).
 func ErrAuthRequiredReply(msg *ClientComMessage, ts time.Time) *ServerComMessage {
-	return ErrAuthRequired(msg.ID, msg.Original, ts, msg.Timestamp)
+	return ErrAuthRequired(msg.Id, msg.Original, ts, msg.Timestamp)
 }
 
 // ErrAuthFailed authentication failed
@@ -416,7 +419,7 @@ func ErrPermissionDeniedExplicitTs(id, topic string, serverTs, incomingReqTs tim
 // ErrPermissionDeniedReply user is authenticated but operation is not permitted
 // with explicit server and incoming request timestamps in response to a client request (403).
 func ErrPermissionDeniedReply(msg *ClientComMessage, ts time.Time) *ServerComMessage {
-	return ErrPermissionDeniedExplicitTs(msg.ID, msg.Original, ts, msg.Timestamp)
+	return ErrPermissionDeniedExplicitTs(msg.Id, msg.Original, ts, msg.Timestamp)
 }
 
 // ErrAPIKeyRequired  valid API key is required (403).
@@ -461,7 +464,7 @@ func ErrTopicNotFound(id, topic string, serverTs, incomingReqTs time.Time) *Serv
 // with explicit server and incoming request timestamps
 // in response to a client request (404).
 func ErrTopicNotFoundReply(msg *ClientComMessage, ts time.Time) *ServerComMessage {
-	return ErrTopicNotFound(msg.ID, msg.Original, ts, msg.Timestamp)
+	return ErrTopicNotFound(msg.Id, msg.Original, ts, msg.Timestamp)
 }
 
 // ErrUserNotFound user is not found
@@ -483,7 +486,7 @@ func ErrUserNotFound(id, topic string, serverTs, incomingReqTs time.Time) *Serve
 // ErrUserNotFoundReply user is not found
 // with explicit server and incoming request timestamps in response to a client request (404).
 func ErrUserNotFoundReply(msg *ClientComMessage, ts time.Time) *ServerComMessage {
-	return ErrUserNotFound(msg.ID, msg.Original, ts, msg.Timestamp)
+	return ErrUserNotFound(msg.Id, msg.Original, ts, msg.Timestamp)
 }
 
 // ErrNotFound is an error for missing objects other than user or topic (404).
@@ -510,7 +513,7 @@ func ErrNotFoundExplicitTs(id, topic string, serverTs, incomingReqTs time.Time) 
 // ErrNotFoundReply is an error for missing objects other than user or topic
 // with explicit server and incoming request timestamps in response to a client request (404).
 func ErrNotFoundReply(msg *ClientComMessage, ts time.Time) *ServerComMessage {
-	return ErrNotFoundExplicitTs(msg.ID, msg.Original, ts, msg.Timestamp)
+	return ErrNotFoundExplicitTs(msg.Id, msg.Original, ts, msg.Timestamp)
 }
 
 // ErrOperationNotAllowed a valid operation is not permitted in this context (405).
@@ -537,7 +540,7 @@ func ErrOperationNotAllowedExplicitTs(id, topic string, serverTs, incomingReqTs 
 // ErrOperationNotAllowedReply a valid operation is not permitted in this context
 // with explicit server and incoming request timestamps (405).
 func ErrOperationNotAllowedReply(msg *ClientComMessage, ts time.Time) *ServerComMessage {
-	return ErrOperationNotAllowedExplicitTs(msg.ID, msg.Original, ts, msg.Timestamp)
+	return ErrOperationNotAllowedExplicitTs(msg.Id, msg.Original, ts, msg.Timestamp)
 }
 
 // ErrInvalidResponse indicates that the client's response in invalid
@@ -592,13 +595,13 @@ func ErrDuplicateCredential(id, topic string, serverTs, incomingReqTs time.Time)
 func ErrAttachFirst(msg *ClientComMessage, ts time.Time) *ServerComMessage {
 	return &ServerComMessage{
 		Ctrl: &MsgServerCtrl{
-			Id:        msg.ID,
+			Id:        msg.Id,
 			Code:      http.StatusConflict, // 409
 			Text:      "must attach first",
 			Topic:     msg.Original,
 			Timestamp: ts,
 		},
-		Id:        msg.ID,
+		Id:        msg.Id,
 		Timestamp: msg.Timestamp,
 	}
 }
@@ -686,7 +689,7 @@ func ErrPolicyExplicitTs(id, topic string, serverTs, incomingReqTs time.Time) *S
 // ErrPolicyReply request violates a policy (e.g. password is too weak or too many subscribers)
 // with explicit server and incoming request timestamps in response to a client request (422).
 func ErrPolicyReply(msg *ClientComMessage, ts time.Time) *ServerComMessage {
-	return ErrPolicyExplicitTs(msg.ID, msg.Original, ts, msg.Timestamp)
+	return ErrPolicyExplicitTs(msg.Id, msg.Original, ts, msg.Timestamp)
 }
 
 // ErrCallBusyExplicitTs indicates a "busy" reply to a video call request (486).
@@ -706,7 +709,7 @@ func ErrCallBusyExplicitTs(id, topic string, serverTs, incomingReqTs time.Time) 
 
 // ErrCallBusyReply indicates a "busy" reply in response to a video call request (486)
 func ErrCallBusyReply(msg *ClientComMessage, ts time.Time) *ServerComMessage {
-	return ErrCallBusyExplicitTs(msg.ID, msg.Original, ts, msg.Timestamp)
+	return ErrCallBusyExplicitTs(msg.Id, msg.Original, ts, msg.Timestamp)
 }
 
 // ErrUnknown database or other server error (500).
@@ -731,7 +734,7 @@ func ErrUnknownExplicitTs(id, topic string, serverTs, incomingReqTs time.Time) *
 
 // ErrUnknownReply database or other server error in response to a client request (500).
 func ErrUnknownReply(msg *ClientComMessage, ts time.Time) *ServerComMessage {
-	return ErrUnknownExplicitTs(msg.ID, msg.Original, ts, msg.Timestamp)
+	return ErrUnknownExplicitTs(msg.Id, msg.Original, ts, msg.Timestamp)
 }
 
 // ErrNotImplemented feature not implemented with explicit server and incoming request timestamps (501).
@@ -752,12 +755,12 @@ func ErrNotImplemented(id, topic string, serverTs, incomingReqTs time.Time) *Ser
 
 // ErrNotImplementedReply feature not implemented error in response to a client request (501).
 func ErrNotImplementedReply(msg *ClientComMessage, ts time.Time) *ServerComMessage {
-	return ErrNotImplemented(msg.ID, msg.Original, ts, msg.Timestamp)
+	return ErrNotImplemented(msg.Id, msg.Original, ts, msg.Timestamp)
 }
 
 // ErrClusterUnreachableReply in-cluster communication has failed error as response to a client request (502).
 func ErrClusterUnreachableReply(msg *ClientComMessage, ts time.Time) *ServerComMessage {
-	return ErrClusterUnreachableExplicitTs(msg.ID, msg.Original, ts, msg.Timestamp)
+	return ErrClusterUnreachableExplicitTs(msg.Id, msg.Original, ts, msg.Timestamp)
 }
 
 // ErrClusterUnreachable in-cluster communication has failed error with explicit server and
@@ -778,7 +781,7 @@ func ErrClusterUnreachableExplicitTs(id, topic string, serverTs, incomingReqTs t
 
 // ErrServiceUnavailableReply server overloaded error in response to a client request (503).
 func ErrServiceUnavailableReply(msg *ClientComMessage, ts time.Time) *ServerComMessage {
-	return ErrServiceUnavailableExplicitTs(msg.ID, msg.Original, ts, msg.Timestamp)
+	return ErrServiceUnavailableExplicitTs(msg.Id, msg.Original, ts, msg.Timestamp)
 }
 
 // ErrServiceUnavailableExplicitTs server overloaded error with explicit server and
@@ -805,7 +808,7 @@ func ErrLocked(id, topic string, ts time.Time) *ServerComMessage {
 // ErrLockedReply operation rejected because the topic is being deleted in response
 // to a client request (503).
 func ErrLockedReply(msg *ClientComMessage, ts time.Time) *ServerComMessage {
-	return ErrLockedExplicitTs(msg.ID, msg.Original, ts, msg.Timestamp)
+	return ErrLockedExplicitTs(msg.Id, msg.Original, ts, msg.Timestamp)
 }
 
 // ErrLockedExplicitTs operation rejected because the topic is being deleted
@@ -836,4 +839,299 @@ func ErrVersionNotSupported(id string, ts time.Time) *ServerComMessage {
 		Id:        id,
 		Timestamp: ts,
 	}
+}
+
+// *****************************************************************************
+// *****************************************************************************
+// *****************************************************************************
+
+// Deep-shallow copy of ServerComMessage. Deep copy of service fields,
+// shallow copy of session and payload.
+func (src *ServerComMessage) copy() *ServerComMessage {
+	if src == nil {
+		return nil
+	}
+
+	dst := &ServerComMessage{
+		Id:        src.Id,
+		RcptTo:    src.RcptTo,
+		AsUser:    src.AsUser,
+		Timestamp: src.Timestamp,
+		sess:      src.sess,
+		SkipSid:   src.SkipSid,
+		uid:       src.uid,
+	}
+
+	dst.Ctrl = src.Ctrl.copy()
+	dst.Data = src.Data.copy()
+	dst.Meta = src.Meta.copy()
+	dst.Pres = src.Pres.copy()
+	dst.Info = src.Info.copy()
+
+	return dst
+}
+
+// Deep-shallow copy.
+func (src *MsgServerCtrl) copy() *MsgServerCtrl {
+	if src == nil {
+		return nil
+	}
+	dst := *src
+	return &dst
+}
+
+// Deep-shallow copy.
+func (src *MsgServerData) copy() *MsgServerData {
+	if src == nil {
+		return nil
+	}
+	dst := *src
+	return &dst
+}
+
+// Deep-shallow copy of meta message. Deep copy of Id and Topic fields, shallow copy of payload.
+func (src *MsgServerMeta) copy() *MsgServerMeta {
+	if src == nil {
+		return nil
+	}
+	dst := *src
+	return &dst
+}
+
+// Deep-shallow copy.
+func (src *MsgServerPres) copy() *MsgServerPres {
+	if src == nil {
+		return nil
+	}
+	dst := *src
+	return &dst
+}
+
+// Deep copy.
+func (src *MsgServerInfo) copy() *MsgServerInfo {
+	if src == nil {
+		return nil
+	}
+	dst := *src
+	return &dst
+}
+
+func (src *ServerComMessage) describe() string {
+	if src == nil {
+		return "-"
+	}
+
+	switch {
+	case src.Ctrl != nil:
+		return "{ctrl " + src.Ctrl.describe() + "}"
+	case src.Data != nil:
+		return "{data " + src.Data.describe() + "}"
+	case src.Meta != nil:
+		return "{meta " + src.Meta.describe() + "}"
+	case src.Pres != nil:
+		return "{pres " + src.Pres.describe() + "}"
+	case src.Info != nil:
+		return "{info " + src.Info.describe() + "}"
+	default:
+		return "{nil}"
+	}
+}
+
+func (src *MsgServerCtrl) describe() string {
+	return src.Topic + " id=" + src.Id + " code=" + strconv.Itoa(src.Code) + " txt=" + src.Text
+}
+
+func (src *MsgServerData) describe() string {
+	s := src.Topic + " from=" + src.From + " seq=" + strconv.Itoa(src.SeqId)
+	if src.DeletedAt != nil {
+		s += " deleted"
+	} else {
+		if src.Head != nil {
+			s += " head=..."
+		}
+		s += " content='...'"
+	}
+	return s
+}
+
+func (src *MsgServerPres) describe() string {
+	s := src.Topic
+	if src.Src != "" {
+		s += " src=" + src.Src
+	}
+	if src.What != "" {
+		s += " what=" + src.What
+	}
+	if src.UserAgent != "" {
+		s += " ua=" + src.UserAgent
+	}
+	if src.SeqId != 0 {
+		s += " seq=" + strconv.Itoa(src.SeqId)
+	}
+	if src.DelId != 0 {
+		s += " clear=" + strconv.Itoa(src.DelId)
+	}
+	if src.DelSeq != nil {
+		s += " delseq"
+	}
+	if src.AcsTarget != "" {
+		s += " tgt=" + src.AcsTarget
+	}
+	if src.AcsActor != "" {
+		s += " actor=" + src.AcsActor
+	}
+	if src.Acs != nil {
+		s += " dacs=" + src.Acs.describe()
+	}
+
+	return s
+}
+
+// Basic description.
+func (src *MsgServerInfo) describe() string {
+	s := src.Topic
+	if src.Src != "" {
+		s += " src=" + src.Src
+	}
+	s += " what=" + src.What + " from=" + src.From
+	if src.SeqId > 0 {
+		s += " seq=" + strconv.Itoa(src.SeqId)
+	}
+	if len(src.Payload) > 0 {
+		s += " payload=<..." + strconv.Itoa(len(src.Payload)) + " bytes ...>"
+	}
+	return s
+}
+
+func (src *MsgServerMeta) describe() string {
+	s := src.Topic + " id=" + src.Id
+
+	if src.Desc != nil {
+		s += " desc={" + src.Desc.describe() + "}"
+	}
+
+	if src.Sub != nil {
+		var x []string
+		for _, sub := range src.Sub {
+			x = append(x, sub.describe())
+		}
+		s += " sub=[{" + strings.Join(x, "},{") + "}]"
+	}
+
+	if src.Del != nil {
+		x, _ := json.Marshal(src.Del)
+		s += " del={" + string(x) + "}"
+	}
+
+	if src.Tags != nil {
+		s += " tags=[" + strings.Join(src.Tags, ",") + "]"
+	}
+	if src.Cred != nil {
+		x, _ := json.Marshal(src.Cred)
+		s += " cred=[" + string(x) + "]"
+	}
+
+	return s
+}
+
+func (src *ServerComMessage) Describe() string {
+	if src == nil {
+		return "-"
+	}
+
+	switch {
+	case src.Ctrl != nil:
+		return "{ctrl " + src.Ctrl.describe() + "}"
+	case src.Data != nil:
+		return "{data " + src.Data.describe() + "}"
+	case src.Meta != nil:
+		return "{meta " + src.Meta.describe() + "}"
+	case src.Pres != nil:
+		return "{pres " + src.Pres.describe() + "}"
+	case src.Info != nil:
+		return "{info " + src.Info.describe() + "}"
+	default:
+		return "{nil}"
+	}
+}
+
+func (src *MsgTopicDesc) describe() string {
+	var s string
+	if src.State != "" {
+		s = " state=" + src.State
+	}
+	s += " online=" + strconv.FormatBool(src.Online)
+	if src.Acs != nil {
+		s += " acs={" + src.Acs.describe() + "}"
+	}
+	if src.SeqId != 0 {
+		s += " seq=" + strconv.Itoa(src.SeqId)
+	}
+	if src.ReadSeqId != 0 {
+		s += " read=" + strconv.Itoa(src.ReadSeqId)
+	}
+	if src.RecvSeqId != 0 {
+		s += " recv=" + strconv.Itoa(src.RecvSeqId)
+	}
+	if src.DelId != 0 {
+		s += " clear=" + strconv.Itoa(src.DelId)
+	}
+	if src.Public != nil {
+		s += " pub='...'"
+	}
+	if src.Trusted != nil {
+		s += " trst='...'"
+	}
+	if src.Private != nil {
+		s += " priv='...'"
+	}
+	return s
+}
+
+func (src *MsgAccessMode) describe() string {
+	var s string
+	if src.Want != "" {
+		s = "w=" + src.Want
+	}
+	if src.Given != "" {
+		s += " g=" + src.Given
+	}
+	if src.Mode != "" {
+		s += " m=" + src.Mode
+	}
+	return strings.TrimSpace(s)
+}
+
+func (src *MsgTopicSub) describe() string {
+	s := src.Topic + ":" + src.User + " online=" + strconv.FormatBool(src.Online) + " acs=" + src.Acs.describe()
+
+	if src.SeqId != 0 {
+		s += " seq=" + strconv.Itoa(src.SeqId)
+	}
+	if src.ReadSeqId != 0 {
+		s += " read=" + strconv.Itoa(src.ReadSeqId)
+	}
+	if src.RecvSeqId != 0 {
+		s += " recv=" + strconv.Itoa(src.RecvSeqId)
+	}
+	if src.DelId != 0 {
+		s += " clear=" + strconv.Itoa(src.DelId)
+	}
+	if src.Public != nil {
+		s += " pub='...'"
+	}
+	if src.Trusted != nil {
+		s += " trst='...'"
+	}
+	if src.Private != nil {
+		s += " priv='...'"
+	}
+	if src.LastSeen != nil {
+		s += " seen={" + src.LastSeen.describe() + "}"
+	}
+	return s
+}
+
+func (src *MsgLastSeenInfo) describe() string {
+	return "'" + src.UserAgent + "' @ " + src.When.String()
 }

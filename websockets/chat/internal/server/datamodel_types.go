@@ -2,8 +2,6 @@ package server
 
 import (
 	"encoding/json"
-	"strconv"
-	"strings"
 	"time"
 
 	"github.com/ahmad-khatib0/go/websockets/chat/internal/store/types"
@@ -26,8 +24,8 @@ type ClientComMessage struct {
 
 	// Internal fields, routed only within the cluster.
 
-	// Message ID de-normalized
-	ID string `json:"-"`
+	// Message Id de-normalized
+	Id string `json:"-"`
 	// Un-routable (original) topic name de-normalized from XXX.Topic.
 	Original string `json:"-"`
 	// Routable (expanded) topic name.
@@ -42,9 +40,9 @@ type ClientComMessage struct {
 	Timestamp time.Time `json:"-"`
 
 	// Originating session to send an acknowledgement to.
-	Sess Session
+	sess *Session
 	// The message is initialized (true) as opposite to being used as a wrapper for session.
-	Init bool
+	init bool
 }
 
 /****************************************************************
@@ -53,7 +51,7 @@ type ClientComMessage struct {
 
 // MsgClientHi is a handshake {hi} message
 type MsgClientHi struct {
-	ID        string `json:"id"`
+	Id        string `json:"id"`
 	UserAgent string `json:"user_agent"`
 	Version   int    `json:"version"`   // Protocol version, i.e. "0.13"
 	DeviceID  string `json:"device_id"` // Client's unique device ID
@@ -66,7 +64,7 @@ type MsgClientHi struct {
 // MsgClientAcc is an {acc} message for creating or updating a user account.
 type MsgClientAcc struct {
 	// message id
-	ID string
+	Id string
 	// "newXYZ" to create a new user or UserId to update a user; default: current user.
 	User string
 	// Temporary authentication parameters for one-off actions, like password reset.
@@ -120,7 +118,7 @@ type MsgCredClient struct {
 // MsgClientLogin is a login {login} message.
 type MsgClientLogin struct {
 	// message id
-	ID string
+	Id string
 	// Authentication scheme
 	Scheme string
 	// Shared secret
@@ -131,7 +129,7 @@ type MsgClientLogin struct {
 
 // MsgClientSub  is a subscription request {sub} message.
 type MsgClientSub struct {
-	ID    string `json:"id"`
+	Id    string `json:"id"`
 	Topic string `json:"topic"`
 
 	// Mirrors {set}.
@@ -171,14 +169,14 @@ type MsgSetSub struct {
 
 // MsgClientLeave is an unsubscribe {leave} request message.
 type MsgClientLeave struct {
-	ID    string `json:"id"`
+	Id    string `json:"id"`
 	Topic string `json:"topic"`
 	Unsub bool   `json:"unsub"`
 }
 
 // MsgClientPub is client's request to publish data to topic subscribers {pub}.
 type MsgClientPub struct {
-	ID      string         `json:"id"`
+	Id      string         `json:"id"`
 	Topic   string         `json:"topic"`
 	NoEcho  bool           `json:"no_echo"`
 	Head    map[string]any `json:"head"`
@@ -194,14 +192,14 @@ type MsgClientGet struct {
 
 // MsgClientSet is an update of topic state {set}.
 type MsgClientSet struct {
-	ID    string `json:"id,omitempty"`
+	Id    string `json:"id,omitempty"`
 	Topic string `json:"topic"`
 	MsgSetQuery
 }
 
 // MsgClientDel delete messages or topic {del}.
 type MsgClientDel struct {
-	ID    string `json:"id,omitempty"`
+	Id    string `json:"id,omitempty"`
 	Topic string `json:"topic,omitempty"`
 	// What to delete:
 	// * "msg" to delete messages (default)
@@ -268,9 +266,9 @@ type MsgGetOpts struct {
 	// Return results modified since this timespamp.
 	IfModifiedSince *time.Time `json:"if_modified_since"`
 	// Load messages/ranges with IDs equal or greater than this (inclusive or closed)
-	SinceID int `json:"since_id"`
+	SinceId int `json:"since_id"`
 	// Load messages/ranges with IDs lower than this (exclusive or open)
-	BeforeID string `json:"before_id"`
+	BeforeId int `json:"before_id"`
 	// Limit the number of messages loaded
 	Limit int `json:"limit"`
 }
@@ -279,8 +277,8 @@ type MsgGetOpts struct {
 //
 // low end inclusive (closed), high-end exclusive (open): [LowId .. HiId), e.g. 1..5 -> 1, 2, 3, 4.
 type MsgDelRange struct {
-	LowID int `json:"low,omitempty"`
-	HiID  int `json:"hi,omitempty"`
+	LowId int `json:"low,omitempty"`
+	HiId  int `json:"hi,omitempty"`
 }
 
 // MsgAccessMode is a definition of access mode.
@@ -331,7 +329,7 @@ type ServerComMessage struct {
 	// Could be either empty.
 	SkipSid string `json:"-"`
 	// User id affected by this message.
-	Uid types.Uid
+	uid types.Uid
 }
 
 // MsgServerCtrl is a server control message {ctrl}.
@@ -541,203 +539,4 @@ type MsgCredServer struct {
 	Value string `json:"val,omitempty"`
 	// Indicates that the credential is validated.
 	Done bool `json:"done,omitempty"`
-}
-
-func (src *ServerComMessage) Describe() string {
-	if src == nil {
-		return "-"
-	}
-
-	switch {
-	case src.Ctrl != nil:
-		return "{ctrl " + src.Ctrl.describe() + "}"
-	case src.Data != nil:
-		return "{data " + src.Data.describe() + "}"
-	case src.Meta != nil:
-		return "{meta " + src.Meta.describe() + "}"
-	case src.Pres != nil:
-		return "{pres " + src.Pres.describe() + "}"
-	case src.Info != nil:
-		return "{info " + src.Info.describe() + "}"
-	default:
-		return "{nil}"
-	}
-}
-
-func (src *MsgServerCtrl) describe() string {
-	return src.Topic + " id=" + src.Id + " code=" + strconv.Itoa(src.Code) + " txt=" + src.Text
-}
-
-func (src *MsgServerData) describe() string {
-	s := src.Topic + " from=" + src.From + " seq=" + strconv.Itoa(src.SeqId)
-	if src.DeletedAt != nil {
-		s += " deleted"
-	} else {
-		if src.Head != nil {
-			s += " head=..."
-		}
-		s += " content='...'"
-	}
-	return s
-}
-
-func (src *MsgServerMeta) describe() string {
-	s := src.Topic + " id=" + src.Id
-
-	if src.Desc != nil {
-		s += " desc={" + src.Desc.describe() + "}"
-	}
-
-	if src.Sub != nil {
-		var x []string
-		for _, sub := range src.Sub {
-			x = append(x, sub.describe())
-		}
-		s += " sub=[{" + strings.Join(x, "},{") + "}]"
-	}
-
-	if src.Del != nil {
-		x, _ := json.Marshal(src.Del)
-		s += " del={" + string(x) + "}"
-	}
-
-	if src.Tags != nil {
-		s += " tags=[" + strings.Join(src.Tags, ",") + "]"
-	}
-	if src.Cred != nil {
-		x, _ := json.Marshal(src.Cred)
-		s += " cred=[" + string(x) + "]"
-	}
-
-	return s
-}
-
-func (src *MsgServerPres) describe() string {
-	s := src.Topic
-	if src.Src != "" {
-		s += " src=" + src.Src
-	}
-	if src.What != "" {
-		s += " what=" + src.What
-	}
-	if src.UserAgent != "" {
-		s += " ua=" + src.UserAgent
-	}
-	if src.SeqId != 0 {
-		s += " seq=" + strconv.Itoa(src.SeqId)
-	}
-	if src.DelId != 0 {
-		s += " clear=" + strconv.Itoa(src.DelId)
-	}
-	if src.DelSeq != nil {
-		s += " delseq"
-	}
-	if src.AcsTarget != "" {
-		s += " tgt=" + src.AcsTarget
-	}
-	if src.AcsActor != "" {
-		s += " actor=" + src.AcsActor
-	}
-	if src.Acs != nil {
-		s += " dacs=" + src.Acs.describe()
-	}
-
-	return s
-}
-
-// Basic description.
-func (src *MsgServerInfo) describe() string {
-	s := src.Topic
-	if src.Src != "" {
-		s += " src=" + src.Src
-	}
-	s += " what=" + src.What + " from=" + src.From
-	if src.SeqId > 0 {
-		s += " seq=" + strconv.Itoa(src.SeqId)
-	}
-	if len(src.Payload) > 0 {
-		s += " payload=<..." + strconv.Itoa(len(src.Payload)) + " bytes ...>"
-	}
-	return s
-}
-
-func (src *MsgTopicDesc) describe() string {
-	var s string
-	if src.State != "" {
-		s = " state=" + src.State
-	}
-	s += " online=" + strconv.FormatBool(src.Online)
-	if src.Acs != nil {
-		s += " acs={" + src.Acs.describe() + "}"
-	}
-	if src.SeqId != 0 {
-		s += " seq=" + strconv.Itoa(src.SeqId)
-	}
-	if src.ReadSeqId != 0 {
-		s += " read=" + strconv.Itoa(src.ReadSeqId)
-	}
-	if src.RecvSeqId != 0 {
-		s += " recv=" + strconv.Itoa(src.RecvSeqId)
-	}
-	if src.DelId != 0 {
-		s += " clear=" + strconv.Itoa(src.DelId)
-	}
-	if src.Public != nil {
-		s += " pub='...'"
-	}
-	if src.Trusted != nil {
-		s += " trst='...'"
-	}
-	if src.Private != nil {
-		s += " priv='...'"
-	}
-	return s
-}
-
-func (src *MsgAccessMode) describe() string {
-	var s string
-	if src.Want != "" {
-		s = "w=" + src.Want
-	}
-	if src.Given != "" {
-		s += " g=" + src.Given
-	}
-	if src.Mode != "" {
-		s += " m=" + src.Mode
-	}
-	return strings.TrimSpace(s)
-}
-
-func (src *MsgTopicSub) describe() string {
-	s := src.Topic + ":" + src.User + " online=" + strconv.FormatBool(src.Online) + " acs=" + src.Acs.describe()
-
-	if src.SeqId != 0 {
-		s += " seq=" + strconv.Itoa(src.SeqId)
-	}
-	if src.ReadSeqId != 0 {
-		s += " read=" + strconv.Itoa(src.ReadSeqId)
-	}
-	if src.RecvSeqId != 0 {
-		s += " recv=" + strconv.Itoa(src.RecvSeqId)
-	}
-	if src.DelId != 0 {
-		s += " clear=" + strconv.Itoa(src.DelId)
-	}
-	if src.Public != nil {
-		s += " pub='...'"
-	}
-	if src.Trusted != nil {
-		s += " trst='...'"
-	}
-	if src.Private != nil {
-		s += " priv='...'"
-	}
-	if src.LastSeen != nil {
-		s += " seen={" + src.LastSeen.describe() + "}"
-	}
-	return s
-}
-
-func (src *MsgLastSeenInfo) describe() string {
-	return "'" + src.UserAgent + "' @ " + src.When.String()
 }

@@ -48,3 +48,41 @@ func (p *Push) Stop() {
 		}
 	}
 }
+
+// ChannelSub handles a channel (FCM topic) subscription/unsubscription request.
+func (p *Push) ChannelSub(msg *types.ChannelReq) {
+	if p.handlers == nil {
+		return
+	}
+
+	for _, hnd := range p.handlers {
+		if !hnd.IsReady() {
+			continue
+		}
+
+		// Send without delay or skip.
+		select {
+		case hnd.Channel() <- msg:
+		default:
+		}
+	}
+}
+
+// Push a single message to devices.
+func (p *Push) Push(msg *types.Receipt) {
+	if p.handlers == nil {
+		return
+	}
+
+	for _, hnd := range p.handlers {
+		if !hnd.IsReady() {
+			continue
+		}
+
+		// Push without delay or skip
+		select {
+		case hnd.Push() <- msg:
+		default:
+		}
+	}
+}

@@ -36,3 +36,12 @@ func (h *ObjHeader) MergeTimes(h2 *ObjHeader) {
 		h.UpdatedAt = h2.UpdatedAt
 	}
 }
+
+// InitTimes initializes time.Time variables in the header to current time.
+func (h *ObjHeader) InitTimes() {
+	if h.CreatedAt.IsZero() {
+		h.CreatedAt = TimeNow()
+	}
+
+	h.UpdatedAt = h.CreatedAt
+}
