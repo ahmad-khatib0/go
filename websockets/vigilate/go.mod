@@ -14,7 +14,7 @@ require (
 	github.com/pusher/pusher-http-go v4.0.1+incompatible
 	github.com/robfig/cron/v3 v3.0.1
 	github.com/xhit/go-simple-mail/v2 v2.16.0
-	golang.org/x/crypto v0.22.0
+	golang.org/x/crypto v0.23.0
 	jaytaylor.com/html2text v0.0.0-20230321000545-74c2419ad056
 )
 
@@ -43,6 +43,6 @@ require (
 	github.com/stretchr/testify v1.9.0 // indirect
 	github.com/toorop/go-dkim v0.0.0-20201103131630-e1cd1a0a5208 // indirect
 	golang.org/x/net v0.22.0 // indirect
-	golang.org/x/sys v0.19.0 // indirect
-	golang.org/x/text v0.14.0 // indirect
+	golang.org/x/sys v0.20.0 // indirect
+	golang.org/x/text v0.15.0 // indirect
 )

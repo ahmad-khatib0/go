@@ -13,7 +13,7 @@ require (
 	github.com/phpdave11/gofpdf v1.4.2
 	github.com/stripe/stripe-go/v72 v72.122.0
 	github.com/xhit/go-simple-mail/v2 v2.16.0
-	golang.org/x/crypto v0.22.0
+	golang.org/x/crypto v0.23.0
 )
 
 require (
@@ -26,5 +26,5 @@ require (
 	github.com/stretchr/testify v1.9.0 // indirect
 	github.com/toorop/go-dkim v0.0.0-20201103131630-e1cd1a0a5208 // indirect
 	golang.org/x/net v0.22.0 // indirect
-	golang.org/x/sys v0.19.0 // indirect
+	golang.org/x/sys v0.20.0 // indirect
 )
