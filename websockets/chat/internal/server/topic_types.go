@@ -190,14 +190,6 @@ type perSessionData struct {
 	muids []types.Uid
 }
 
-// Session update: user agent change or background session becoming normal.
-//
-// If sess is nil then user agent change, otherwise bg to fg update.
-type sessionUpdate struct {
-	sess      *Session
-	userAgent string
-}
-
 // Topic shutdown
 type shutDown struct {
 	// Channel to report back completion of topic shutdown. Could be nil

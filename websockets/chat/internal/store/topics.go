@@ -86,3 +86,15 @@ func (s *Store) TopGetTopicSubs(topic string, opts *types.QueryOpt) ([]types.Sub
 func (s *Store) TopGetTopicSubsAny(topic string, opts *types.QueryOpt) ([]types.Subscription, error) {
 	return s.adp.Subscriptions().SubsForTopic(topic, true, opts)
 }
+
+// GetSubs loads a list of subscriptions to the given topic, user.Public+Trusted and deleted
+// subscriptions are not loaded. Suspended subscriptions are loaded.
+func (s *Store) TopGetSubs(topic string, opts *types.QueryOpt) ([]types.Subscription, error) {
+	return s.adp.Subscriptions().SubsForTopic(topic, false, opts)
+}
+
+// GetSubsAny loads a list of subscriptions to the given topic including deleted subscription.
+// user.Public/Trusted are not loaded
+func (s *Store) TopGetSubsAny(topic string, opts *types.QueryOpt) ([]types.Subscription, error) {
+	return s.adp.Subscriptions().SubsForTopic(topic, true, opts)
+}

@@ -33,7 +33,7 @@ func NewDevices(da DevicesArgs) *Devices {
 
 // Upsert creates or updates a device record
 func (d *Devices) Upsert(uid types.Uid, def *types.DeviceDef) error {
-	hash := d.shared.DeviceHasher(def.DeviceID)
+	hash := d.shared.DeviceHasher(def.DeviceId)
 	ctx, cancel := d.utils.GetContext(time.Duration(d.cfg.TxTimeout))
 	if cancel != nil {
 		defer cancel()
@@ -66,7 +66,7 @@ func (d *Devices) Upsert(uid types.Uid, def *types.DeviceDef) error {
 		stmt,
 		d.uGen.DecodeUid(uid),
 		hash,
-		def.DeviceID,
+		def.DeviceId,
 		def.Platform,
 		def.LastSeen,
 		def.Lang,
@@ -127,7 +127,7 @@ func (d *Devices) GetAll(uids ...types.Uid) (map[types.Uid][]types.DeviceDef, in
 		uid := d.uGen.EncodeUid(device.Userid)
 		udev := result[uid]
 		udev = append(udev, types.DeviceDef{
-			DeviceID: device.Deviceid,
+			DeviceId: device.Deviceid,
 			Platform: device.Platform,
 			LastSeen: device.Lastseen,
 			Lang:     device.Lang,

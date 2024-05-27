@@ -6,7 +6,7 @@ import "time"
 // push notifications.
 type DeviceDef struct {
 	// Device registration ID
-	DeviceID string
+	DeviceId string
 	// Device platform (iOS, Android, Web)
 	Platform string
 	// Last logged in

@@ -160,7 +160,7 @@ type MsgClientSub struct {
 	// user's subscription was created (as a part of new topic creation or just alone).
 	Created bool `json:"-"`
 	// True if this is a new subscription.
-	NewSub bool `json:"-"`
+	Newsub bool `json:"-"`
 }
 
 // MsgSetQuery is an update to topic or user metadata: description, subscriptions, tags, credentials.

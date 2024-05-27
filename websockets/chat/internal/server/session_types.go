@@ -16,6 +16,13 @@ import (
 // Maximum number of queued messages before session is considered stale and dropped.
 const sendQueueLimit = 128
 
+var minSupportedVersionValue = parseVersion("0.19")
+
+// Time given to a background session to terminate to avoid tiggering presence notifications.
+//
+// If session terminates (or unsubscribes from topic) in this time frame notifications are not sent at all.
+const deferredNotificationsTimeout = time.Second * 5
+
 // SessionProto is the type of the wire transport.
 type SessionProto int
 
@@ -163,22 +170,22 @@ type SessionStore struct {
 // Subscription is a mapper of sessions to topics.
 type Subscription struct {
 	// Channel to communicate with the topic, copy of Topic.clientMsg
-	droadcast chan<- *ClientComMessage
+	broadcast chan<- *ClientComMessage
 
 	// Session sends a signal to Topic when this session is unsubscribed This is a copy of Topic.unreg
 	done chan<- *ClientComMessage
 
 	// Channel to send {meta} requests, copy of Topic.meta
-	deta chan<- *ClientComMessage
+	meta chan<- *ClientComMessage
 
 	// Channel to ping topic with session's updates, copy of Topic.supd
-	supd chan<- *SessionUpdate
+	supd chan<- *sessionUpdate
 }
 
 // Session update: user agent change or background session becoming normal.
 //
 // If sess is nil then user agent change, otherwise bg to fg update.
-type SessionUpdate struct {
-	Sess      *Session
-	UserAgent string
+type sessionUpdate struct {
+	sess      *Session
+	userAgent string
 }
