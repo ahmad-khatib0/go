@@ -44,7 +44,7 @@ func NewApiKey(l *logger.Logger, salt []byte) *ApiKey {
 //	key: client's secret key
 //
 // Returns application id, key type.
-func (ak *ApiKey) checkAPIKey(apikey string) (isValid, isRoot bool) {
+func (ak *ApiKey) CheckAPIKey(apikey string) (isValid, isRoot bool) {
 	if declen := base64.URLEncoding.DecodedLen(len(apikey)); declen != apikeyLength {
 		return
 	}

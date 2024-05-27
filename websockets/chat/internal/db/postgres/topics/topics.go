@@ -87,7 +87,7 @@ func (t *Topics) CreateP2P(initiator, invited *types.Subscription) error {
 		return err
 	}
 
-	topic := &types.Topic{ObjHeader: types.ObjHeader{ID: initiator.Topic}}
+	topic := &types.Topic{ObjHeader: types.ObjHeader{Id: initiator.Topic}}
 	topic.ObjHeader.MergeTimes(&initiator.ObjHeader)
 	topic.TouchedAt = initiator.GetTouchedAt()
 	err = t.createTopic(ctx, tx, topic)
@@ -134,7 +134,7 @@ func (t *Topics) Get(topic string) (*types.Topic, error) {
 		&tt.State,
 		&tt.StateAt,
 		&tt.TouchedAt,
-		&tt.ID,
+		&tt.Id,
 		&tt.UseBt,
 		&tt.Access,
 		&owner,
@@ -363,7 +363,7 @@ func (t *Topics) TopicsForUser(uid types.Uid, keepDeleted bool, opts *types.Quer
 				&top.State,
 				&top.StateAt,
 				&top.TouchedAt,
-				&top.ID,
+				&top.Id,
 				&top.UseBt,
 				&top.Access,
 				&top.SeqId,
@@ -375,7 +375,7 @@ func (t *Topics) TopicsForUser(uid types.Uid, keepDeleted bool, opts *types.Quer
 				break
 			}
 
-			sub := join[top.ID]
+			sub := join[top.Id]
 			// Check if sub.UpdatedAt needs to be adjusted to earlier or later time.
 			sub.UpdatedAt = common.SelectLatestTime(sub.UpdatedAt, top.UpdatedAt)
 			sub.SetState(top.State)
@@ -388,7 +388,7 @@ func (t *Topics) TopicsForUser(uid types.Uid, keepDeleted bool, opts *types.Quer
 			}
 
 			// Put back the updated value of a subsription, will process further below
-			join[top.ID] = sub
+			join[top.Id] = sub
 		}
 
 		if err == nil {
@@ -459,8 +459,8 @@ func (t *Topics) TopicsForUser(uid types.Uid, keepDeleted bool, opts *types.Quer
 				break
 			}
 
-			usr2.ID = t.uGen.EncodeUid(id).String()
-			joinOn := uid.P2PName(types.ParseUid(usr2.ID))
+			usr2.Id = t.uGen.EncodeUid(id).String()
+			joinOn := uid.P2PName(types.ParseUid(usr2.Id))
 
 			if sub, ok := join[joinOn]; ok {
 				sub.UpdatedAt = common.SelectLatestTime(sub.UpdatedAt, usr2.UpdatedAt)
@@ -865,7 +865,7 @@ func (t *Topics) createTopic(ctx context.Context, tx pgx.Tx, topic *types.Topic)
 		topic.UpdatedAt,
 		topic.TouchedAt,
 		topic.State,
-		topic.ID,
+		topic.Id,
 		topic.UseBt,
 		t.uGen.DecodeUid(types.ParseUid(topic.Owner)),
 		topic.Access,
@@ -878,7 +878,7 @@ func (t *Topics) createTopic(ctx context.Context, tx pgx.Tx, topic *types.Topic)
 	}
 
 	// Save topic's tags to a separate table to make topic findable.
-	return t.shared.AddTags(ctx, tx, "topic_tags", "topic", topic.ID, topic.Tags, false)
+	return t.shared.AddTags(ctx, tx, "topic_tags", "topic", topic.Id, topic.Tags, false)
 }
 
 // createSubscription() If undelete = true - update subscription on duplicate key,

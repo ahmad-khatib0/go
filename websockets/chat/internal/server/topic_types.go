@@ -18,6 +18,18 @@ const (
 	topicStatusReadOnly = 0x20
 )
 
+// Reasons why topic is being shut down.
+const (
+	// StopNone no reason given/default.
+	StopNone = iota
+	// StopShutdown terminated due to system shutdown.
+	StopShutdown
+	// StopDeleted terminated due to being deleted.
+	StopDeleted
+	// StopRehashing terminated due to cluster rehashing (moved to a different node).
+	StopRehashing
+)
+
 var (
 	nilPresParams  = &presParams{}
 	nilPresFilters = &presFilters{}

@@ -461,13 +461,6 @@ func (c *Cluster) topicProxyGone(topicName string) error {
 	return n.proxyToMasterAsync(req)
 }
 
-// Proxied session is being closed at the Master node.
-func (sess *Session) closeRPC() {
-	if sess.isMultiplex() {
-		globals.l.Sugar().Infof("cluster: session proxy closed", sess.sid)
-	}
-}
-
 // Start accepting connections.
 func (c *Cluster) start() {
 	addr, err := net.ResolveTCPAddr("tcp", c.listenOn)
@@ -621,82 +614,6 @@ func (c *Cluster) gcProxySessionsForNode(node string) {
 	for sid := range msess {
 		if sess := globals.sessionStore.Get(sid); sess != nil {
 			sess.stop <- nil
-		}
-	}
-}
-
-// clusterWriteLoop implements write loop for multiplexing (proxy) session at a node which hosts master topic.
-// The session is a multiplexing session, i.e. it handles requests for multiple sessions at origin.
-func (sess *Session) clusterWriteLoop(forTopic string) {
-	terminate := true
-	defer func() {
-		if terminate {
-			sess.closeRPC()
-			globals.sessionStore.Delete(sess)
-			sess.inflightReqs = nil
-			sess.unsubAll()
-		}
-	}()
-
-	for {
-		select {
-		case msg, ok := <-sess.send:
-			if !ok || sess.clnode.endpoint == nil {
-				// channel closed
-				return
-			}
-			srvMsg := msg.(*ServerComMessage)
-			response := &ClusterResp{SrvMsg: srvMsg}
-			if srvMsg.sess == nil {
-				response.OrigSid = "*"
-			} else {
-				response.OrigReqType = srvMsg.sess.proxyReq
-				response.OrigSid = srvMsg.sess.sid
-				srvMsg.AsUser = srvMsg.sess.uid.UserId()
-
-				switch srvMsg.sess.proxyReq {
-				case ProxyReqJoin, ProxyReqLeave, ProxyReqMeta, ProxyReqBgSession, ProxyReqMeUserAgent, ProxyReqCall:
-				// Do nothing
-				case ProxyReqBroadcast, ProxyReqNone:
-					if srvMsg.Data != nil || srvMsg.Pres != nil || srvMsg.Info != nil {
-						response.OrigSid = "*"
-					} else if srvMsg.Ctrl == nil {
-						globals.l.Sugar().Warnf(
-							"cluster: request type not set in clusterWriteLoop",
-							sess.sid,
-							srvMsg.describe(),
-							"src_sid:",
-							srvMsg.sess.sid,
-						)
-					}
-				default:
-					globals.l.Sugar().Panicf("cluster: unknown request type in clusterWriteLoop", srvMsg.sess.proxyReq)
-				}
-			}
-
-			srvMsg.RcptTo = forTopic
-			response.RcptTo = forTopic
-
-			if err := sess.clnode.masterToProxyAsync(response); err != nil {
-				globals.l.Sugar().Warnf("cluster: response to proxy failed \"%s\": %s", sess.sid, err.Error())
-				return
-			}
-
-		case msg := <-sess.stop:
-			if msg == nil {
-				// Terminating multiplexing session.
-				return
-			}
-			// There are two cases of msg != nil:
-			//  * user is being deleted
-			//  * node shutdown
-			// In both cases the msg does not need to be forwarded to the proxy.
-
-		case <-sess.detach:
-			return
-		default:
-			terminate = false
-			return
 		}
 	}
 }

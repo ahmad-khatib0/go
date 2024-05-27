@@ -3,9 +3,56 @@ package store
 import (
 	"errors"
 	"strings"
+	"time"
+
+	auth "github.com/ahmad-khatib0/go/websockets/chat/internal/auth/types"
 
 	"github.com/ahmad-khatib0/go/websockets/chat/internal/auth/types"
+	st "github.com/ahmad-khatib0/go/websockets/chat/internal/store/types"
 )
+
+// GetAuthRecord takes a user ID and a authentication scheme name,
+//
+// fetches unique scheme-dependent identifier and authentication secret.
+func (s *Store) GetAuthRecord(user st.Uid, scheme string) (string, auth.Level, []byte, time.Time, error) {
+	unique, authLvl, secret, expires, err := s.adp.Auth().GetRecord(user, scheme)
+
+	if err == nil {
+		parts := strings.Split(unique, ":")
+		if len(parts) > 1 {
+			unique = parts[1]
+		} else {
+			err = st.ErrInternal
+		}
+	}
+
+	return unique, authLvl, secret, expires, err
+}
+
+// GetAuthUniqueRecord takes a unique identifier and a authentication scheme name, fetches user ID and
+// authentication secret.
+func (s *Store) AuthGetUniqueRecord(scheme, unique string) (st.Uid, auth.Level, []byte, time.Time, error) {
+	return s.adp.Auth().GetUniqueRecord(scheme + ":" + unique)
+}
+
+// AddAuthRecord creates a new authentication record for the given user.
+func (s *Store) AddAuthRecord(uid st.Uid, authLvl auth.Level, scheme, unique string, secret []byte,
+	expires time.Time) error {
+
+	return s.adp.Auth().AddRecord(uid, scheme, scheme+":"+unique, authLvl, secret, expires)
+}
+
+// UpdateAuthRecord updates authentication record with a new secret and expiration time.
+func (s *Store) UpdateAuthRecord(uid st.Uid, authLvl auth.Level, scheme, unique string,
+	secret []byte, expires time.Time) error {
+
+	return s.adp.Auth().UpdRecord(uid, scheme, scheme+":"+unique, authLvl, secret, expires)
+}
+
+// DelAuthRecords deletes user's auth records of the given scheme.
+func (s *Store) DelAuthRecords(uid st.Uid, scheme string) error {
+	return s.adp.Auth().DelScheme(uid, scheme)
+}
 
 // InitAuthLogicalNames() initializes authentication mapping "logical handler name":"actual handler name".
 //

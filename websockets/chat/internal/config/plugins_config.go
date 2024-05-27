@@ -26,7 +26,7 @@ type PluginConfig struct {
 // "pub,pres;me,p2p;"
 type PluginRpcFilterConfig struct {
 	// Filter by packet name, topic type [or exact name - not supported yet]. 2D: "pub,pres;p2p,me"
-	FireHost *string `json:"fire_host" mapstructure:"fire_host"`
+	FireHose *string `json:"fire_host" mapstructure:"fire_host"`
 	// Filter by CUD, [exact user name - not supported yet]. 1D: "C"
 	Account *string `json:"account" mapstructure:"account"`
 	// Filter by CUD, topic type[, exact name]: "p2p;CU"

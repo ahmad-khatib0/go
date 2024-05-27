@@ -39,7 +39,7 @@ func (t *Topic) addToPerSubs(topic string, online, enabled bool) {
 // perSubs contains (a) topics that the user wants to notify of his presence and
 // (b) those which want to receive notifications from this user.
 func (t *Topic) loadContacts(uid types.Uid) error {
-	subs, err := globals.store.SubsGetSubs(uid)
+	subs, err := globals.store.UsersGetSubs(uid)
 	if err != nil {
 		return err
 	}

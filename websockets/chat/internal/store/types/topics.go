@@ -59,6 +59,64 @@ type Topic struct {
 	perUser map[Uid]*perUserData // deserialized from Subscription
 }
 
+func (t *Topic) GiveAccess(uid Uid, want, given AccessMode) {
+	if t.perUser == nil {
+		t.perUser = make(map[Uid]*perUserData, 1)
+	}
+
+	pud := t.perUser[uid]
+	if pud == nil {
+		pud = &perUserData{}
+	}
+
+	pud.want = want
+	pud.given = given
+
+	t.perUser[uid] = pud
+	if want&given&ModeOwner != 0 && t.Owner == "" {
+		t.Owner = uid.String()
+	}
+}
+
+// SetPrivate updates private value for the given user.
+func (t *Topic) SetPrivate(uid Uid, private interface{}) {
+	if t.perUser == nil {
+		t.perUser = make(map[Uid]*perUserData, 1)
+	}
+	pud := t.perUser[uid]
+	if pud == nil {
+		pud = &perUserData{}
+	}
+	pud.private = private
+	t.perUser[uid] = pud
+}
+
+// GetPrivate returns given user's private value.
+func (t *Topic) GetPrivate(uid Uid) (private interface{}) {
+	if t.perUser == nil {
+		return
+	}
+	pud := t.perUser[uid]
+	if pud == nil {
+		return
+	}
+	private = pud.private
+	return
+}
+
+// GetAccess returns given user's access mode.
+func (t *Topic) GetAccess(uid Uid) (mode AccessMode) {
+	if t.perUser == nil {
+		return
+	}
+	pud := t.perUser[uid]
+	if pud == nil {
+		return
+	}
+	mode = pud.given & pud.want
+	return
+}
+
 // TopicsParseP2P extracts uids from the name of a p2p topic.
 func TopicsParseP2P(p2p string) (uid1, uid2 Uid, err error) {
 	if strings.HasPrefix(p2p, "p2p") {

@@ -65,7 +65,7 @@ func (s *Session) isCluster() bool {
 
 func (s *Session) serialize(msg *ServerComMessage) (int, any) {
 	if s.proto == GRPC {
-		msg := PbServSerialize(msg)
+		msg := pbServSerialize(msg)
 		// TODO: calculate and return the size of `msg`.
 		return -1, msg
 	}

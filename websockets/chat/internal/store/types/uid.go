@@ -11,7 +11,7 @@ import (
 type Uid uint64
 
 // ZeroUid is a constant representing uninitialized Uid.
-const ZeroUid = 0
+const ZeroUid Uid = 0
 
 // NullValue is a Unicode DEL character which indicated that the value is being deleted.
 const NullValue = "\u2421"
@@ -112,6 +112,11 @@ func (uid Uid) Compare(u2 Uid) int {
 		return 1
 	}
 	return 0
+}
+
+// FndName generates 'fnd' topic name for the given Uid.
+func (uid Uid) FndName() string {
+	return uid.PrefixId("fnd")
 }
 
 // ParseUid parses string NOT prefixed with anything.

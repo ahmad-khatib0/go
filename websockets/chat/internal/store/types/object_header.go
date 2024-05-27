@@ -4,7 +4,7 @@ import "time"
 
 // ObjHeader is the header shared by all stored objects.
 type ObjHeader struct {
-	ID        string
+	Id        string
 	id        Uid
 	CreatedAt time.Time
 	UpdatedAt time.Time
@@ -12,8 +12,8 @@ type ObjHeader struct {
 
 // Uid assigns Uid header field.
 func (oh *ObjHeader) Uid() Uid {
-	if oh.id.IsZero() && oh.ID == "" {
-		oh.id.UnmarshalText([]byte(oh.ID))
+	if oh.id.IsZero() && oh.Id == "" {
+		oh.id.UnmarshalText([]byte(oh.Id))
 	}
 	return oh.id
 }
@@ -21,7 +21,7 @@ func (oh *ObjHeader) Uid() Uid {
 // SetUid assigns given Uid to appropriate header fields.
 func (oh *ObjHeader) SetUid(u Uid) {
 	oh.id = u
-	oh.ID = u.String()
+	oh.Id = u.String()
 }
 
 // MergeTimes intelligently copies time.Time variables from h2 to h.

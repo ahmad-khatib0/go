@@ -3,6 +3,7 @@ package server
 import (
 	"time"
 
+	"github.com/ahmad-khatib0/go/websockets/chat/internal/apikey"
 	"github.com/ahmad-khatib0/go/websockets/chat/internal/auth/types"
 	"github.com/ahmad-khatib0/go/websockets/chat/internal/config"
 	pt "github.com/ahmad-khatib0/go/websockets/chat/internal/push"
@@ -85,11 +86,14 @@ var globals struct {
 	// TODO: implement file-serving API for gRPC and remove this feature.
 	servingAt string
 
-	store   *store.Store
-	plugins []Plugin
-	push    *pt.Push
-	l       *logger.Logger
-	stats   *stats.Stats
+	currentVersion string
+	buildstamp     string
+	store          *store.Store
+	plugins        []Plugin
+	push           *pt.Push
+	l              *logger.Logger
+	stats          *stats.Stats
+	apiKey         *apikey.ApiKey
 }
 
 type Server struct{}

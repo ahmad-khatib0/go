@@ -7,6 +7,23 @@ import (
 	"github.com/ahmad-khatib0/go/websockets/chat/internal/store/types"
 )
 
+const (
+	constMsgMetaDesc = 1 << iota
+	constMsgMetaSub
+	constMsgMetaData
+	constMsgMetaTags
+	constMsgMetaDel
+	constMsgMetaCred
+)
+
+const (
+	constMsgDelTopic = iota + 1
+	constMsgDelMsg
+	constMsgDelSub
+	constMsgDelUser
+	constMsgDelCred
+)
+
 // ClientComMessage is a wrapper for client messages.
 type ClientComMessage struct {
 	Hi    *MsgClientHi    `json:"hi"`
@@ -53,7 +70,7 @@ type ClientComMessage struct {
 type MsgClientHi struct {
 	Id        string `json:"id"`
 	UserAgent string `json:"user_agent"`
-	Version   int    `json:"version"`   // Protocol version, i.e. "0.13"
+	Version   string `json:"version"`   // Protocol version, i.e. "0.13"
 	DeviceID  string `json:"device_id"` // Client's unique device ID
 	Lang      string `json:"lang"`      // ISO 639-1 human language of the connected device
 	Platform  string `json:"platform"`  // Platform code: ios, android, web.
@@ -68,7 +85,7 @@ type MsgClientAcc struct {
 	// "newXYZ" to create a new user or UserId to update a user; default: current user.
 	User string
 	// Temporary authentication parameters for one-off actions, like password reset.
-	TmpSchema string
+	TmpScheme string
 	TmpSecret []byte
 	// Account state: normal, suspended.
 	State string
@@ -91,10 +108,10 @@ type MsgClientAcc struct {
 
 // MsgSetDesc is a C2S in set.what == "desc", acc, sub message.
 type MsgSetDesc struct {
-	DFM     *MsgDefaultAcsMode `json:"dfm"`     // default access mode
-	Public  any                `json:"public"`  // description of the user or topic
-	Trusted any                `json:"trusted"` // trusted (system-provided) user or topic data
-	Private any                `json:"private"` // per-subscription private data
+	DefaultAcs *MsgDefaultAcsMode `json:"dfm"`     // default access mode
+	Public     any                `json:"public"`  // description of the user or topic
+	Trusted    any                `json:"trusted"` // trusted (system-provided) user or topic data
+	Private    any                `json:"private"` // per-subscription private data
 }
 
 // MsgDefaultAcsMode is a C2S in set.what == "desc", acc, sub message.
