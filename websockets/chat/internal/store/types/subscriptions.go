@@ -105,6 +105,26 @@ func (s *Subscription) GetTrusted() interface{} {
 	return s.trusted
 }
 
+// SetDummy marks this subscription object as only partially intialized.
+func (s *Subscription) SetDummy(dummy bool) {
+	s.dummy = dummy
+}
+
+// IsDummy is true if this subscription object as only partially intialized.
+func (s *Subscription) IsDummy() bool {
+	return s.dummy
+}
+
+// GetSeqId returns seqId.
+func (s *Subscription) GetSeqId() int {
+	return s.seqId
+}
+
+// GetDefaultAccess returns default access.
+func (s *Subscription) GetDefaultAccess() *DefaultAccess {
+	return s.modeDefault
+}
+
 // GetLastSeen returns lastSeen.
 func (s *Subscription) GetLastSeen() *time.Time {
 	if s.lastSeenUA != nil {

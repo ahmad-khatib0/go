@@ -5,7 +5,16 @@ type ValidatorConfig struct {
 }
 
 type ValidatorConfigEmail struct {
-	AddToTags bool `json:"add_to_tags" mapstructure:"add_to_tags"`
+	// Path to email validation templates, either a template itself or a literal string.
+	ValidationTemplFile string `json:"validation_templ" mapstructure:"validation_templ_file"`
+	// Path to templates for resetting the authentication secret.
+	ResetTemplFile string `json:"reset_secret_templ" mapstructure:"reset_templ_file"`
+	// Optional list of human languages to try to load templates for. If you don't care about i18n,
+	// leave it blank or remove. The first language in the list is the default language.
+	Languages []string `json:"languages" mapstructure:"languages"`
+	// Length of secret numeric code to sent for validation.
+	CodeLength int  `json:"code_length"`
+	AddToTags  bool `json:"add_to_tags" mapstructure:"add_to_tags"`
 	//  Authentication level which triggers this validator: "auth", "anon"... or ""
 	Required []string `json:"required" mapstructure:"required"`
 	// Address of the host where the chat server is running. This will be used in URLs in the email.
@@ -13,7 +22,7 @@ type ValidatorConfigEmail struct {
 	// Address of the SMPT server to use.
 	SmtpServer string `json:"smtp_server" mapstructure:"smtp_server"`
 	// SMTP port to use. "25" for basic email RFC 5321 (2821, 821), "587" for RFC 3207 (TLS).
-	SmtpPort int `json:"smtp_port" mapstructure:"smtp_port"`
+	SmtpPort string `json:"smtp_port" mapstructure:"smtp_port"`
 	// RFC 5322 email address to show in the From: field.
 	Sender string `json:"sender" mapstructure:"sender"`
 	// Optional login to use for authentication; if missing, the connection is not authenticated.

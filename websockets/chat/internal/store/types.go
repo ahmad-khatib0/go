@@ -17,14 +17,13 @@ type StoreArgs struct {
 }
 
 type Store struct {
-	logger *logger.Logger
-	// Logical auth handler names (supplied by config)
+	adp              dt.Adapter
+	logger           *logger.Logger
+	cfg              *config.Config
+	UidGen           *st.UidGenerator
 	authHandlerNames map[string]string
 	authHandlers     map[string]types.AuthHandler
-	adp              dt.Adapter
-	cfg              *config.Config
 	validators       map[string]validate.Validator
 	mediaHandlers    map[string]mt.Handler
 	mediaHandler     mt.Handler
-	UidGen           *st.UidGenerator
 }

@@ -155,6 +155,11 @@ func (s *Store) UsersGetUnreadCount(ids ...types.Uid) (map[types.Uid]int, error)
 // GetUnvalidated returns a list of stale user ids which have unvalidated credentials,
 //
 // their auth levels and a comma-separated list of these credential names.
-func (s *Store) GetUnvalidated(lastUpdatedBefore time.Time, limit int) ([]types.Uid, error) {
+func (s *Store) UsersGetUnvalidated(lastUpdatedBefore time.Time, limit int) ([]types.Uid, error) {
 	return s.adp.Users().GetUnvalidated(lastUpdatedBefore, limit)
+}
+
+// GetAllCreds returns credentials of the given user, all or validated only.
+func (s *Store) UsersGetAllCreds(id types.Uid, method string, validatedOnly bool) ([]types.Credential, error) {
+	return s.adp.Credentials().GetAll(id, method, validatedOnly)
 }

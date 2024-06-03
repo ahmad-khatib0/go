@@ -63,7 +63,7 @@ type Session struct {
 	lpTracker *list.Element
 
 	// gRPC handle. Set only for gRPC clients.
-	grpcCNode chat.Node_MessageLoopServer
+	grpcnode chat.Node_MessageLoopServer
 
 	// Reference to multiplexing session. Set only for proxy sessions.
 	multi        *Session

@@ -1035,10 +1035,13 @@ func (t *Topic) addSession(sess *Session, asUid types.Uid, isChanSub bool) {
 }
 
 // Disconnects session from topic if either one of the following is true:
+//
 // * 's' is an ordinary session AND ('asUid' is zero OR 'asUid' matches subscribed user).
+//
 // * 's' is a multiplexing session and it's being dropped all together ('asUid' is zero ).
-// If 's' is a multiplexing session and asUid is not zero, it's removed from the list of session
-// users 'muids'.
+//
+// If 's' is a multiplexing session and asUid is not zero, it's removed from the list of session users 'muids'.
+//
 // Returns perSessionData if it was found and true if session was actually detached from topic.
 func (t *Topic) remSession(sess *Session, asUid types.Uid) (*perSessionData, bool) {
 	s := sess

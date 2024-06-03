@@ -437,7 +437,7 @@ func rewriteTag(orig, countryCode string, withLogin bool) string {
 	// Check if token can be rewritten by any of the validators
 	param := map[string]any{"countryCode": countryCode}
 	for name, conf := range globals.validators {
-		if conf.addToTags {
+		if conf.AddToTags {
 			val := globals.store.GetValidator(name)
 			if tag, _ := val.PreCheck(orig, param); tag != "" {
 				return tag

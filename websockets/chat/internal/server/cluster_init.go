@@ -13,14 +13,14 @@ import (
 // NewCluster() returns snowflake worker id (pass nil if you don't want to use cluster)
 //
 // Cluster won't be started here yet.
-func NewCluster(ca ClusterArgs) (*Cluster, int, error) {
-	if ca.Cfg == nil {
-		return nil, 1, nil
+func NewCluster(ca ClusterArgs) (int, error) {
+	if globals.cluster != nil {
+		ca.Logger.Fatal("cluster is alread initialized")
 	}
 
-	if ca.Cfg.MainName == "" {
-		// c.Logger.Info("Cluster: running as a standalone server.")
-		return nil, 1, nil
+	if ca.Cfg != nil || ca.Cfg.MainName == "" {
+		ca.Logger.Info("Cluster: running as a standalone server.")
+		return 1, nil
 	}
 
 	// INFO: gob is like json, xml, protobuf, but But for a Go-specific environment, such as
@@ -28,9 +28,10 @@ func NewCluster(ca ClusterArgs) (*Cluster, int, error) {
 	gob.Register([]any{})
 	gob.Register(map[string]string{})
 	gob.Register(map[string]int{})
+	gob.Register(map[string]any{})
 	gob.Register(MsgAccessMode{})
 
-	res := Cluster{
+	globals.cluster = &Cluster{
 		thisNodeName:    ca.Cfg.MainName,
 		fingerprint:     time.Now().Unix(),
 		nodes:           make(map[string]*ClusterNode),
@@ -58,7 +59,7 @@ func NewCluster(ca ClusterArgs) (*Cluster, int, error) {
 	}
 
 	if len(res.nodes) == 0 {
-		return nil, 1, errors.New("invalid cluster size: Cluster needs at least two nodes")
+		return 1, errors.New("invalid cluster size: Cluster needs at least two nodes")
 	}
 
 	// TODO: add the failoverInit here

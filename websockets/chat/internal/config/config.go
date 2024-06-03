@@ -7,18 +7,14 @@ import (
 )
 
 type Config struct {
-	// Cache-Control value for static content.
-	CacheControl int `json:"cache_control" mapstructure:"cache_control"`
-	// Take IP address of the client from HTTP header 'X-Forwarded-For'.
-	// Useful when chat app is behind a proxy. If missing, fallback to default RemoteAddr.
-	UseXForwardedFor bool          `json:"use_x_forwarded_for" mapstructure:"use_x_forwarded_for"`
-	App              AppConfig     `json:"app" mapstructure:"app"`
-	Paths            PathsConfig   `json:"paths" mapstructure:"paths"`
-	WsConfig         WSConfig      `json:"ws_config" mapstructure:"ws_config"`
-	GrpcConfig       GrpcConfig    `json:"grpc_config" mapstructure:"grpc_config"`
-	Secrets          SecretsConfig `json:"secrets" mapstructure:"secrets"`
-	Media            *MediaConfig  `json:"media" mapstructure:"media"`
-	PProf            PprofConf     `json:"pprof" mapstructure:"pprof"`
+	App        AppConfig     `json:"app" mapstructure:"app"`
+	Http       HttpConfig    `mapstructure:"http"`
+	Paths      PathsConfig   `json:"paths" mapstructure:"paths"`
+	WsConfig   WSConfig      `json:"ws_config" mapstructure:"ws_config"`
+	GrpcConfig GrpcConfig    `json:"grpc_config" mapstructure:"grpc_config"`
+	Secrets    SecretsConfig `json:"secrets" mapstructure:"secrets"`
+	Media      *MediaConfig  `json:"media" mapstructure:"media"`
+	PProf      PprofConf     `json:"pprof" mapstructure:"pprof"`
 
 	// Configs for subsystems
 	Cluster   ClusterConfig    `json:"cluster" mapstructure:"cluster"`

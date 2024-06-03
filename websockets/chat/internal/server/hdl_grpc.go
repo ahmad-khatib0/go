@@ -5,6 +5,7 @@ import (
 	"io"
 	"time"
 
+	"github.com/ahmad-khatib0/go/websockets/chat-protobuf/chat"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials"
 	"google.golang.org/grpc/keepalive"
@@ -12,7 +13,7 @@ import (
 )
 
 type grpcNodeServer struct {
-	pbx.UnimplementedNodeServer
+	chat.UnimplementedNodeServer
 }
 
 func (sess *Session) closeGrpc() {
@@ -24,13 +25,13 @@ func (sess *Session) closeGrpc() {
 }
 
 // Equivalent of starting a new session and a read loop in one.
-func (*grpcNodeServer) MessageLoop(stream pbx.Node_MessageLoopServer) error {
+func (*grpcNodeServer) MessageLoop(stream chat.Node_MessageLoopServer) error {
 	sess, count := globals.sessionStore.NewSession(stream, "")
 	if p, ok := peer.FromContext(stream.Context()); ok {
 		sess.remoteAddr = p.Addr.String()
 	}
-	logs.Info.Println("grpc: session started", sess.sid, sess.remoteAddr, count)
 
+	globals.l.Sugar().Infof("grpc: session started", sess.sid, sess.remoteAddr, count)
 	defer func() {
 		sess.closeGrpc()
 		sess.cleanUp(false)
@@ -43,12 +44,14 @@ func (*grpcNodeServer) MessageLoop(stream pbx.Node_MessageLoopServer) error {
 		if err == io.EOF {
 			return nil
 		}
+
 		if err != nil {
-			logs.Err.Println("grpc: recv", sess.sid, err)
+			globals.l.Sugar().Errorf("grpc: recv", sess.sid, err)
 			return err
 		}
-		logs.Info.Println("grpc in:", truncateStringIfTooLong(in.String()), sess.sid)
-		statsInc("IncomingMessagesGrpcTotal", 1)
+
+		globals.l.Sugar().Infof("grpc in:", truncateStringIfTooLong(in.String()), sess.sid)
+		globals.stats.IntStatsInc("IncomingMessagesGrpcTotal", 1)
 		sess.dispatch(pbCliDeserialize(in))
 
 		sess.lock.Lock()
@@ -64,12 +67,13 @@ func (*grpcNodeServer) MessageLoop(stream pbx.Node_MessageLoopServer) error {
 
 func (sess *Session) sendMessageGrpc(msg any) bool {
 	if len(sess.send) > sendQueueLimit {
-		logs.Err.Println("grpc: outbound queue limit exceeded", sess.sid)
+		globals.l.Sugar().Errorf("grpc: outbound queue limit exceeded", sess.sid)
 		return false
 	}
-	statsInc("OutgoingMessagesGrpcTotal", 1)
+
+	globals.stats.IntStatsInc("OutgoingMessagesGrpcTotal", 1)
 	if err := grpcWrite(sess, msg); err != nil {
-		logs.Err.Println("grpc: write", sess.sid, err)
+		globals.l.Sugar().Errorf("grpc: write", sess.sid, err)
 		return false
 	}
 	return true
@@ -128,7 +132,7 @@ func (sess *Session) writeGrpcLoop() {
 func grpcWrite(sess *Session, msg any) error {
 	if out := sess.grpcnode; out != nil {
 		// Will panic if msg is not of *pbx.ServerMsg type. This is an intentional panic.
-		return out.Send(msg.(*pbx.ServerMsg))
+		return out.Send(msg.(*chat.ServerMsg))
 	}
 	return nil
 }
@@ -166,12 +170,12 @@ func serveGrpc(addr string, kaEnabled bool, tlsConf *tls.Config) (*grpc.Server, 
 	}
 
 	srv := grpc.NewServer(opts...)
-	pbx.RegisterNodeServer(srv, &grpcNodeServer{})
-	logs.Info.Printf("gRPC/%s%s server is registered at [%s]", grpc.Version, secure, addr)
+	chat.RegisterNodeServer(srv, &grpcNodeServer{})
+	globals.l.Sugar().Infof("gRPC/%s%s server is registered at [%s]", grpc.Version, secure, addr)
 
 	go func() {
 		if err := srv.Serve(lis); err != nil {
-			logs.Err.Println("gRPC server failed:", err)
+			globals.l.Sugar().Errorf("gRPC server failed:", err)
 		}
 	}()
 

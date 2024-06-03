@@ -61,7 +61,7 @@ func (ss *SessionStore) NewSession(conn any, sid string) (*Session, int) {
 		s.clnode = c
 	case chat.Node_MessageLoopServer:
 		s.proto = GRPC
-		s.grpcCNode = c
+		s.grpcnode = c
 	default:
 		ss.logger.Sugar().Panicf("session: unknown connection type %+v", conn)
 	}
@@ -111,7 +111,7 @@ func (ss *SessionStore) NewSession(conn any, sid string) (*Session, int) {
 	// Deleting long polling sessions.
 	for _, sess := range expired {
 		// This locks the session. Thus cleaning up outside of the sessionStore lock. Otherwise deadlock.
-		sess.cleanUp(true, ss)
+		sess.cleanUp(true)
 	}
 
 	s.sessStore = ss

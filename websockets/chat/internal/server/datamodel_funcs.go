@@ -1135,3 +1135,45 @@ func (src *MsgTopicSub) describe() string {
 func (src *MsgLastSeenInfo) describe() string {
 	return "'" + src.UserAgent + "' @ " + src.When.String()
 }
+
+func parseMsgClientMeta(params string) int {
+	var bits int
+	parts := strings.SplitN(params, " ", 8)
+	for _, p := range parts {
+		switch p {
+		case "desc":
+			bits |= constMsgMetaDesc
+		case "sub":
+			bits |= constMsgMetaSub
+		case "data":
+			bits |= constMsgMetaData
+		case "tags":
+			bits |= constMsgMetaTags
+		case "del":
+			bits |= constMsgMetaDel
+		case "cred":
+			bits |= constMsgMetaCred
+		default:
+			// ignore unknown
+		}
+	}
+	return bits
+}
+
+func parseMsgClientDel(params string) int {
+	switch params {
+	case "", "msg":
+		return constMsgDelMsg
+	case "topic":
+		return constMsgDelTopic
+	case "sub":
+		return constMsgDelSub
+	case "user":
+		return constMsgDelUser
+	case "cred":
+		return constMsgDelCred
+	default:
+		// ignore
+	}
+	return 0
+}

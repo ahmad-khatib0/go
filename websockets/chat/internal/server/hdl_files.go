@@ -155,8 +155,8 @@ func largeFileServe(wrt http.ResponseWriter, req *http.Request) {
 func largeFileReceive(wrt http.ResponseWriter, req *http.Request) {
 	now := types.TimeNow()
 	enc := json.NewEncoder(wrt)
-	mh := store.Store.GetMediaHandler()
-	statsInc("FileUploadsTotal", 1)
+	mh := globals.store.GetMediaHandler()
+	globals.stats.IntStatsInc("FileUploadsTotal", 1)
 
 	writeHttpResponse := func(msg *ServerComMessage, err error) {
 		// Gorilla CompressHandler requires Content-Type to be set.
@@ -201,7 +201,7 @@ func largeFileReceive(wrt http.ResponseWriter, req *http.Request) {
 	}
 
 	// Check for API key presence
-	if isValid, _ := checkAPIKey(getAPIKey(req)); !isValid {
+	if isValid, _ := globals.apiKey.CheckAPIKey(getAPIKey(req)); !isValid {
 		writeHttpResponse(ErrAPIKeyRequired(now), nil)
 		return
 	}
@@ -293,14 +293,12 @@ func largeFileReceive(wrt http.ResponseWriter, req *http.Request) {
 	}
 
 	fdef := &types.FileDef{
-		ObjHeader: types.ObjHeader{
-			Id: store.Store.GetUidString(),
-		},
-		User:     uid.String(),
-		MimeType: mimeType,
+		ObjHeader: types.ObjHeader{Id: globals.store.UidGen.GetUidString()},
+		User:      uid.String(),
+		MimeType:  mimeType,
 	}
-	fdef.InitTimes()
 
+	fdef.InitTimes()
 	if _, err = file.Seek(0, io.SeekStart); err != nil {
 		writeHttpResponse(ErrUnknown(msgID, "", now), err)
 		return
@@ -309,12 +307,12 @@ func largeFileReceive(wrt http.ResponseWriter, req *http.Request) {
 	url, size, err := mh.Upload(fdef, file)
 	if err != nil {
 		globals.l.Sugar().Infof("media upload: failed", file, "key", fdef.Location, err)
-		store.Files.FinishUpload(fdef, false, 0)
+		globals.store.FilesFinishUpload(fdef, false, 0)
 		writeHttpResponse(decodeStoreError(err, msgID, now, nil), err)
 		return
 	}
 
-	fdef, err = store.Files.FinishUpload(fdef, true, size)
+	fdef, err = globals.store.FilesFinishUpload(fdef, true, size)
 	if err != nil {
 		globals.l.Sugar().Infof("media upload: failed to finalize", file, "key", fdef.Location, err)
 		// Best effort cleanup.
@@ -346,8 +344,8 @@ func largeFileRunGarbageCollection(period time.Duration, blockSize int) chan<- b
 		for {
 			select {
 			case <-gcTicker:
-				if err := store.Files.DeleteUnused(time.Now().Add(-time.Hour), blockSize); err != nil {
-					logs.Warn.Println("media gc:", err)
+				if err := globals.store.FilesDeleteUnused(time.Now().Add(-time.Hour), blockSize); err != nil {
+					globals.l.Sugar().Warnf("media gc:", err)
 				}
 			case <-stop:
 				return

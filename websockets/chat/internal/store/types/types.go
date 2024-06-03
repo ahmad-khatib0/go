@@ -6,6 +6,9 @@ import (
 	"time"
 )
 
+// TimeFormatRFC3339 is a format string for writing timestamps as RFC3339.
+const TimeFormatRFC3339 = "2006-01-02T15:04:05.999"
+
 // StringSlice is defined so Scanner and Valuer can be attached to it.
 type StringSlice []string
 

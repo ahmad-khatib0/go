@@ -100,7 +100,7 @@ func (c *Credentials) Upsert(cred *types.Credential) (bool, error) {
 
 		// Assume that the record exists and try to update it: undelete, update timestamp and response value.
 		stmt = "UPDATE credentials SET updated_at = $1, deleted_at = NULL, response = $2, done = FALSE WHERE synthetic = $3"
-		res, err := tx.Exec(ctx, stmt, cred.UpdatedAt, cred.Response, synth)
+		res, err := tx.Exec(ctx, stmt, cred.UpdatedAt, cred.Resp, synth)
 		if err != nil {
 			return false, err
 		}
@@ -130,7 +130,7 @@ func (c *Credentials) Upsert(cred *types.Credential) (bool, error) {
 		cred.Value,
 		synth,
 		userId,
-		cred.Response,
+		cred.Resp,
 		cred.Done,
 	)
 
@@ -215,7 +215,7 @@ func (c *Credentials) GetAll(uid types.Uid, method string, validatedOnly bool) (
 			&cred.UpdatedAt,
 			&cred.Method,
 			&cred.Value,
-			&cred.Response,
+			&cred.Resp,
 			&cred.Done,
 			&cred.Retries,
 		); err != nil {
@@ -252,7 +252,7 @@ func (c *Credentials) GetActive(uid types.Uid, method string) (*types.Credential
 		&cred.UpdatedAt,
 		&cred.Method,
 		&cred.Value,
-		&cred.Response,
+		&cred.Resp,
 		&cred.Done,
 		&cred.Retries,
 	)

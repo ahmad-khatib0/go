@@ -1,8 +1,6 @@
 ---
-cache_control: 39600 # 11 hours
-use_x_forwarded_for: true
-
 app:
+  permanent_accounts: false # If account deletion is disabled.
   version: '0.0.1'
   default_country_code: ''
   #  Reported to clients in response to {hi} message.
@@ -17,6 +15,10 @@ app:
 
 secrets:
   api_key_salt: 'T713/rYYgW7g4m3vG6zGRh7+FM1t0T8j13koXScOAj4='
+
+http:
+  cache_control: 39600 # 11 hours
+  use_x_forwarded_for: true
 
 paths:
   listen: :6060
@@ -130,7 +132,7 @@ validator: # Account validators (email or SMS or captcha).
     required: ['auth']
     host_url: http://localhost:6060/
     smtp_server: smtp.example.com
-    smtp_port: 25
+    smtp_port: '25'
     sender: 'chat app <noreply@example.com>'
     login: 'john.doe@example.com'
     password: 'password'
@@ -145,6 +147,10 @@ validator: # Account validators (email or SMS or captcha).
     max_retries: 3
     domains: []
     debug_response: 123456
+    validation_templ_file: './templ/email-validation-{{.Language}}.templ'
+    reset_templ_file: './templ/email-password-reset-{{.Language}}.templ'
+    languages: ['en']
+    code_length: 6
 
 # Configuration for stale account garbage collector.
 account_gc:

@@ -1,10 +1,7 @@
 package main
 
 import (
-	"fmt"
 	"log"
-	"os"
-	"runtime"
 
 	"github.com/ahmad-khatib0/go/websockets/chat/internal/auth/types"
 	"github.com/ahmad-khatib0/go/websockets/chat/internal/config"
@@ -13,30 +10,28 @@ import (
 	"github.com/ahmad-khatib0/go/websockets/chat/internal/server"
 	"github.com/ahmad-khatib0/go/websockets/chat/internal/stats"
 	"github.com/ahmad-khatib0/go/websockets/chat/internal/store"
-	"github.com/ahmad-khatib0/go/websockets/chat/internal/users"
 	"github.com/ahmad-khatib0/go/websockets/chat/pkg/logger"
 	"github.com/ahmad-khatib0/go/websockets/chat/pkg/utils"
 	"go.uber.org/zap/zapcore"
 )
 
-type application struct {
-	Logger                *logger.Logger
-	Cfg                   *config.Config
-	Store                 *store.Store
-	StatsChan             *stats.Stats
-	Utils                 *utils.Utils
-	Cluster               *server.Cluster
-	Profile               *profile.Profile
-	AuthValidators        map[types.Level][]string       // Validators required for each auth level
-	Validators            map[string]users.CredValidator // Credential validators.
-	ValidatorClientConfig map[string][]string            // Credential validator config to pass to clients.
+type app struct {
+	logger    *logger.Logger
+	cfg       *config.Config
+	store     *store.Store
+	statsChan *stats.Stats
+	utils     *utils.Utils
+	cluster   *server.Cluster
+	profile   *profile.Profile
 
+	authValidators  map[types.Level][]string
+	validators      map[string]server.CredValidator
+	validatorCliCfg map[string][]string
 	// Tag namespaces (prefixes) which are immutable to the client.
-	ImmutableTagNS map[string]bool
+	immutableTagNS map[string]bool
 	// Tag namespaces which are immutable on User and partially mutable on Topic:
 	// user can only mutate tags he owns.
-	MaskedTagNS map[string]bool
-	users       users.Users
+	maskedTagNS map[string]bool
 }
 
 func main() {
@@ -46,50 +41,36 @@ func main() {
 	}
 	defer l.Sync()
 
-	a := application{
-		Logger: l,
-		Utils:  utils.NewUtils(),
+	a := app{
+		logger: l,
+		utils:  utils.NewUtils(),
 	}
 
-	a.Cfg, err = config.LoadConfig()
+	a.cfg, err = config.LoadConfig()
 	if err != nil {
 		log.Fatal(err)
 	}
 
-	a.StatsChan = stats.NewStats(l)
+	a.statsChan = stats.NewStats(l)
 	a.registerStatsVariables()
 
-	executable, _ := os.Executable()
-	a.Logger.Info(fmt.Sprintf(
-		"server: v%s%s%s pid: %d process(es): %d",
-		a.Cfg.App.Version,
-		executable,
-		a.Cfg.App.BuildStampCommand,
-		os.Getpid(),
-		runtime.GOMAXPROCS(runtime.NumCPU()),
-	))
-
-	c, workerID, err := server.NewCluster(server.ClusterArgs{
-		Cfg:    &a.Cfg.Cluster,
-		Logger: l,
-		Stats:  a.StatsChan,
+	server.Init(server.ServerArgs{
+		Cfg:   a.cfg,
+		Log:   a.logger,
+		Stats: a.statsChan,
+		Utils: a.utils,
 	})
 
-	if err != nil {
-		l.Sugar().Fatalf("failed to init cluster %w", err)
-	}
-	a.Cluster = c
-
-	if a.Cfg.PProf.FileName != "" {
-		if err := a.Profile.StartProfile(a.Cfg.PProf.FileName); err != nil {
+	if a.cfg.PProf.FileName != "" {
+		if err := a.profile.StartProfile(a.cfg.PProf.FileName); err != nil {
 			l.Sugar().Fatalf("failed to start profiling %w", err)
 		}
 	}
 
 	a.initDBAdapter()
 	defer func() {
-		a.Store.DBClose()
-		a.Logger.Info("Closed database connection(s)")
+		a.store.DBClose()
+		a.logger.Info("Closed database connection(s)")
 	}()
 
 	a.initAuth()
@@ -99,25 +80,25 @@ func main() {
 	if handChan := a.initMedia(); handChan != nil {
 		defer func() {
 			handChan <- true
-			a.Logger.Info("stopped files garbage collection")
+			a.logger.Info("stopped files garbage collection")
 		}()
 	}
 
 	if ch := a.initAccountGC(); ch != nil {
 		defer func() {
 			ch <- true
-			a.Logger.Info("stopped account garbage collector")
+			a.logger.Info("stopped account garbage collector")
 		}()
 	}
 
-	psh, err := push.NewPush(a.Cfg.Push)
+	psh, err := push.NewPush(a.cfg.Push)
 	if err != nil {
-		a.Logger.Fatal("failed to init push notifications", zapcore.Field{Interface: err})
+		a.logger.Fatal("failed to init push notifications", zapcore.Field{Interface: err})
 	}
 
 	defer func() {
 		psh.Stop()
-		a.Logger.Info("stopped pushing notifications")
+		a.logger.Info("stopped pushing notifications")
 	}()
 
 }

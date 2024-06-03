@@ -6,12 +6,17 @@ import (
 	"github.com/ahmad-khatib0/go/websockets/chat/internal/apikey"
 	"github.com/ahmad-khatib0/go/websockets/chat/internal/auth/types"
 	"github.com/ahmad-khatib0/go/websockets/chat/internal/config"
+	"github.com/ahmad-khatib0/go/websockets/chat/internal/constants"
 	pt "github.com/ahmad-khatib0/go/websockets/chat/internal/push"
 	"github.com/ahmad-khatib0/go/websockets/chat/internal/stats"
 	"github.com/ahmad-khatib0/go/websockets/chat/internal/store"
 	"github.com/ahmad-khatib0/go/websockets/chat/pkg/logger"
+	"github.com/ahmad-khatib0/go/websockets/chat/pkg/utils"
 	"google.golang.org/grpc"
 )
+
+// Delay before updating a User Agent
+const uaTimerDelay = time.Second * 5
 
 var globals struct {
 	// Topics cache and processing.
@@ -24,18 +29,13 @@ var globals struct {
 	cluster *Cluster
 	// gRPC server.
 	grpcServer *grpc.Server
-	// Plugins.
-	// plugins []Plugin
 
-	// Users cache communication channel.
-	// usersUpdate chan *UserCacheReq
-
+	// Credential validators.
+	validators map[string]CredValidator
 	// Credential validator config to pass to clients.
 	validatorClientConfig map[string][]string
 	// Validators required for each auth level.
 	authValidators map[types.Level][]string
-	// Credential validators.
-	validators map[string]credValidator
 
 	// Salt used for signing API key.
 	apiKeySalt []byte
@@ -88,31 +88,76 @@ var globals struct {
 
 	currentVersion string
 	buildstamp     string
-	store          *store.Store
 	plugins        []Plugin
+	store          *store.Store
+	utils          *utils.Utils
 	push           *pt.Push
 	l              *logger.Logger
 	stats          *stats.Stats
 	apiKey         *apikey.ApiKey
 }
 
-type Server struct{}
+// CredValidator holds additional config params for a credential validator.
+type CredValidator struct {
+	// AuthLevel(s) which require this validator.
+	RequiredAuthLvl []types.Level
+	AddToTags       bool
+}
 
 type ServerArgs struct {
-	log   *logger.Logger
-	stats *stats.Stats
+	Cfg             *config.Config
+	Log             *logger.Logger
+	Stats           *stats.Stats
+	Utils           *utils.Utils
+	validators      map[string]CredValidator
+	validatorCliCfg map[string][]string
+	authValidators  map[types.Level][]string
+	ImmutableTagNS  map[string]bool
+	MaskedTagNS     map[string]bool
 }
 
-// CredValidator holds additional config params for a credential validator.
-type credValidator struct {
-	// AuthLevel(s) which require this validator.
-	requiredAuthLvl []types.Level
-	addToTags       bool
+// Init() inits global config and logger, utils and ...
+func Init(sa ServerArgs) {
+	c := sa.Cfg
+	globals.l = sa.Log
+	globals.stats = sa.Stats
+	globals.utils = sa.Utils
+	globals.apiKeySalt = []byte(c.Secrets.ApiKeySalt)
+	globals.validators = sa.validators
+	globals.validatorClientConfig = sa.validatorCliCfg
+	globals.immutableTagNS = sa.ImmutableTagNS
+	globals.maskedTagNS = sa.MaskedTagNS
+	globals.maxMessageSize = int64(c.WsConfig.MaxMessageSize)
+	globals.maxSubscriberCount = c.WsConfig.MaxSubscriberCount
+	globals.maxTagCount = c.WsConfig.MaxTagCount
+	globals.permanentAccounts = c.App.PermanentAccount
+	globals.useXForwardedFor = c.Http.UseXForwardedFor
+	globals.defaultCountryCode = c.App.DefaultCountryCode
+	globals.wsCompression = c.WsConfig.WSCompressionEnabled
+
+	if globals.maxMessageSize <= 0 {
+		globals.maxMessageSize = constants.DefaultMaxMessageSize
+	}
+	if globals.maxSubscriberCount <= 0 {
+		globals.maxSubscriberCount = constants.DefaultMaxSubscriberCount
+	}
+	if globals.maxTagCount <= 0 {
+		globals.maxTagCount = constants.DefaultMaxTagCount
+	}
+	if globals.maxTagCount <= 0 {
+		globals.maxTagCount = constants.DefaultMaxTagCount
+	}
+	if globals.defaultCountryCode == "" {
+		globals.defaultCountryCode = constants.DefaultCountryCode
+	}
+
 }
+
+type Server struct{}
 
 func NewServer(sa ServerArgs) *Server {
-	globals.l = sa.log
-	globals.stats = sa.stats
+	globals.l = sa.Log
+	globals.stats = sa.Stats
 
 	return &Server{}
 }

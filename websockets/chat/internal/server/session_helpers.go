@@ -1146,7 +1146,7 @@ func (s *Session) expandTopicName(msg *ClientComMessage) (string, *ServerComMess
 func (s *Session) serializeAndUpdateStats(msg *ServerComMessage) any {
 	dataSize, data := s.serialize(msg)
 	if dataSize >= 0 {
-		statsAddHistSample("OutgoingMessageSize", float64(dataSize))
+		globals.stats.HistogramAddSample("OutgoingMessageSize", float64(dataSize))
 	}
 	return data
 }

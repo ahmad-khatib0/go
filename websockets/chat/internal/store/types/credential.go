@@ -10,7 +10,7 @@ type Credential struct {
 	// Credential value - `jdoe@example.com` or `+12345678901`
 	Value string
 	// Expected response
-	Response string
+	Resp string
 	// If credential was successfully confirmed
 	Done bool
 	// Retry count
