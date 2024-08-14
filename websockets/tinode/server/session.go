@@ -85,7 +85,7 @@ type Session struct {
 	// IP address of the client. For long polling this is the IP of the last poll.
 	remoteAddr string
 
-	// User agent, a string provived by an authenticated client in {login} packet.
+	// User agent, a string provided by an authenticated client in {login} packet.
 	userAgent string
 
 	// Protocol version of the client: ((major & 0xff) << 8) | (minor & 0xff).
@@ -132,7 +132,7 @@ type Session struct {
 	// Background session: subscription presence notifications and online status are delayed.
 	background bool
 
-	// Outbound mesages, buffered.
+	// Outbound messages, buffered.
 	// The content must be serialized in format suitable for the session.
 	send chan any
 

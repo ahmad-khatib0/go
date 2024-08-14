@@ -121,7 +121,7 @@ type ClusterSess struct {
 	// IP address of the client. For long polling this is the IP of the last poll
 	RemoteAddr string
 
-	// User agent, a string provived by an authenticated client in {login} packet
+	// User agent, a string provided by an authenticated client in {login} packet
 	UserAgent string
 
 	// ID of the current user or 0
@@ -169,7 +169,7 @@ type ClusterReq struct {
 
 	// Ring hash signature of the node sending this request
 	// Signature must match the signature of the receiver, otherwise the
-	// Cluster is desynchronized.
+	// Cluster is de-synchronized.
 	Signature string
 
 	// Fingerprint of the node sending this request.
@@ -239,8 +239,8 @@ type ClusterPing struct {
 }
 
 // Handle outbound node communication: read messages from the channel, forward to remote nodes.
-// FIXME(gene): this will drain the outbound queue in case of a failure: all unprocessed messages will be dropped.
-// Maybe it's a good thing, maybe not.
+// FIXME(gene): this will drain the outbound queue in case of a failure: all
+// unprocessed messages will be dropped. Maybe it's a good thing, maybe not.
 func (n *ClusterNode) reconnect() {
 	var reconnTicker *time.Ticker
 

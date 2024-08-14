@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  *  Description :
- *    Video call handling (establishment, metadata exhange and termination).
+ *    Video call handling (establishment, metadata exchange and termination).
  *
  *****************************************************************************/
 package main
@@ -37,7 +37,7 @@ const (
 	// Message headers representing call states.
 	// Call is established.
 	constCallMsgAccepted = "accepted"
-	// Previously establied call has successfully finished.
+	// Previously established call has successfully finished.
 	constCallMsgFinished = "finished"
 	// Call is dropped (e.g. because of an error).
 	constCallMsgDisconnected = "disconnected"
@@ -220,7 +220,7 @@ func (t *Topic) getCallOriginator() (types.Uid, *Session) {
 // Handles video call invite (initiation)
 // (in response to msg = {pub head=[mime: application/x-tiniode-webrtc]}).
 func (t *Topic) handleCallInvite(msg *ClientComMessage, asUid types.Uid) {
-	// Call being establshed.
+	// Call being established.
 	t.currentCall = &videoCall{
 		parties:     make(map[string]callPartyData),
 		seq:         t.lastID,
@@ -296,8 +296,14 @@ func (t *Topic) handleCallEvent(msg *ClientComMessage) {
 				origHead = msgCopy.Pub.Head
 			} // else fetch the original message from store and use its head.
 			head := t.currentCall.messageHead(origHead, replaceWith, 0)
-			if err := t.saveAndBroadcastMessage(&msgCopy, originatorUid, false, nil,
-				head, t.currentCall.content); err != nil {
+			if err := t.saveAndBroadcastMessage(
+				&msgCopy,
+				originatorUid,
+				false,
+				nil,
+				head,
+				t.currentCall.content,
+			); err != nil {
 				return
 			}
 			// Add callee data to t.currentCall.
@@ -316,7 +322,7 @@ func (t *Topic) handleCallEvent(msg *ClientComMessage) {
 
 	case constCallEventOffer, constCallEventAnswer, constCallEventIceCandidate:
 		// Invariants:
-		// 1. Call has been estabslied (2 participants).
+		// 1. Call has been established (2 participants).
 		if len(t.currentCall.parties) != 2 {
 			logs.Warn.Printf("topic[%s]: call participants expected 2 vs found %d", t.name, len(t.currentCall.parties))
 			return

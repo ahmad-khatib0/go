@@ -17,7 +17,7 @@ service Plugin {
 	// ServerCtrl.code equals to 0 instructs the server to continue with default processing of the client message.
 	rpc FireHose(ClientReq) returns (ServerResp) {}
 
-	// An alteranative user and topic discovery mechanism.
+	// An alternative user and topic discovery mechanism.
 	// A search request issued on a 'fnd' topic. This method is called to generate an alternative result set.
 	rpc Find(SearchQuery) returns (SearchFound) {}
 

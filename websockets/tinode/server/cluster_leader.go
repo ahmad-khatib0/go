@@ -11,7 +11,7 @@ import (
 
 // Cluster methods related to leader node election. Based on ideas from Raft protocol.
 // The leader node issues heartbeats to follower nodes. If the follower node fails enough
-// times, the leader node annouces it dead and initiates rehashing: it regenerates ring hash with
+// times, the leader node announce it dead and initiates rehashing: it regenerates ring hash with
 // only live nodes and communicates the new list of nodes to followers. They in turn do their
 // rehashing using the new list. When the dead node is revived, rehashing happens again.
 
