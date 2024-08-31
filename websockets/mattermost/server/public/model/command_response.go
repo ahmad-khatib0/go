@@ -8,7 +8,7 @@ import (
 	"io"
 	"strings"
 
-	"github.com/mattermost/mattermost/server/public/utils"
+	"github.com/ahmad-khatib0/go/websockets/mattermost/server/public/utils"
 )
 
 const (

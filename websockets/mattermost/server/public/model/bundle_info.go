@@ -1,6 +1,6 @@
 package model
 
-import "github.com/mattermost/mattermost/server/public/shared/mlog"
+import "github.com/ahmad-khatib0/go/websockets/mattermost/server/public/shared/mlog"
 
 type BundleInfo struct {
 	Path          string
