@@ -1,0 +1,6 @@
+
+-- go test -run "^TestAdd" ./chapter02/calculator -cover -v
+-- go test ./chapter02/calculator -coverprofile=calcCover.out
+-- go tool cover -html=calcCover.out  # open the generated cover file
+-- go test -bench. .                  # run all the benchmarks
+

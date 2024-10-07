@@ -131,4 +131,5 @@ use (
 	./idiomatic-approach-book/7-types-methods-interfaces
 	./idiomatic-approach-book/9-modules-packages-imports
 	./idiomatic-approach-book/9-modules-packages-imports/formatter
+	./test-driven-development/ch02-basics
 )

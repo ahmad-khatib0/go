@@ -112,3 +112,67 @@ a look at the testing.T type:
   This method makes it convenient to skip a test, then format and print an error line in one call.
 
 
+
+- Code coverage
+  In order to achieve a high coverage percentage, tests should cover the following:
+• The functions you implemented
+• The statements that your functions are composed of
+• The different execution paths of your functions
+• The different conditions of your Boolean variables
+• The different parameter values that can be passed to your functions
+
+
+-- Using the dedicated test package (like format_test in format dir) brings the following advantages:
+- Prevents brittle tests: Restricting access to only exported functionality does not give test code 
+  visibility into package internals, such as state variables, which would otherwise cause inconsistent results.
+- Separates test and core package dependencies: The test package allows the test to import any dependencies 
+  required, without adding those dependencies to the core package. In practice, test code will often have 
+  its own dedicated verifiers and functionality, which we would not want to be visible to production code. 
+  The test package is a seamless way to guarantee separation.
+- Allows developers to integrate with their own packages: We previously mentioned that packages allow 
+  developers to build their internal code as small APIs. Writing tests from a dedicated test package 
+  allows developers to see how easy it is to integrate with their designed external interfaces,
+  ensuring that their code is maintainable.
+
+
+-- Another common approach is to name the tests using a Behavior-Driven Development (BDD) style approach. 
+   Performing Integration Testing. In this naming approach, the name of the test follows the structure of 
+   TestUnitUnderTest_PreconditionsOrInputs_ExpectedOutput. For example, a test for the function will be 
+   named TestAdd_TwoNegativeNumbers_NegativeResults if it tests adding two negative numbers together.
+
+
+- The test runner supports two running modes:
+. When the command has no package specifications, it will build and run all tests in the current directory. 
+  This is known as local directory mode. This is how we ran the preceding command using go test –v.
+. When the command has package specifications, it will build and run all tests matching the specific 
+  package arguments. This is known as package list mode. Developers usually run their tests in this 
+  mode for large projects as it can be cumbersome to change between directories and run the tests in 
+  each of them using local directory mode.
+
+- We can easily specify what tests to run by providing these properties:
+. A specific package name: For example, go test engine_test will run the tests from
+  the engine_test package from anywhere in the project directory.
+. The expression as the package identifier: For example, go test ./... will run all the
+  tests in the project, regardless of where it’s being run from.
+. A subdirectory path: For example, go test ./chapter02 will run all the tests in the chapter02 
+  subdirectory of the current path, but will not traverse to further nested directories.
+. A regular expression, together with the –run flag: For example, go test –run "^engine" will run all packages 
+  that begin with the word engine. A subdirectory path can also be provided alongside the test name.
+. A test name, together with the –run flag: For example, go test –run TestAdd will
+  only the test specified. A subdirectory path can also be provided alongside the test name.
+
+-- The Go test runner can cache successful test results to avoid wasting resources by rerunning tests
+   on code that has not changed. Being able to cache successful test results is disabled by default when
+   running in local directory mode, but enabled in package list mode.
+
+-- One TestMain function per package:  As names need to be unique inside a package, you will only be 
+   able to define one TestMain function per package. You should be mindful that this method will control 
+   how ALL the tests inside the given package run, NOT just those in the given file.
+
+Multiple init functions per package
+  Unlike other names, multiple init functions are allowed per package. However, you should be mindful that 
+  they will all be called before the main runner. When multiple init functions are defined in the same file, 
+  they are run in DEFINITION ORDER. On the other hand, when they are defined in multiple files, 
+  they are run in the LEXICOGRAPHIC ORDER of their filenames.
+
+
