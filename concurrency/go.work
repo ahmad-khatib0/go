@@ -1,0 +1,14 @@
+go 1.22.3
+
+use (
+  ./01_basic
+  ./02_race_conditions_mutexes_channels/producer-consumer
+  ./02_race_conditions_mutexes_channels/bank-balance-calculator
+  ./03_the_dining_philosophers
+  ./04_channels/basics
+  ./04_channels/select
+  ./04_channels/buffered-channels
+  ./04_channels/sleeping-barber
+  ./05_subscription_service
+) 
+

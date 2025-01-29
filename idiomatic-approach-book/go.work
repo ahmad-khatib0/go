@@ -1,0 +1,22 @@
+go 1.22.3
+
+use  (
+	./01-basics
+	./10-concurrency
+	./12-context/context_values
+	./14-reflect-unsafe-cgo/cgo
+	./14-reflect-unsafe-cgo/reflect/filter
+	./14-reflect-unsafe-cgo/unsafe
+	./02-primitive-types-and-declarations
+	./03-composite-types
+	./04-block-shadows-control-strucures
+	./05-functions
+	./06-pointers
+	./07-types-methods-interfaces
+	./09-modules-packages-imports
+	./09-modules-packages-imports/formatter
+	./09-modules-packages-imports/modules
+	./12-context/context_cancel
+	./13-testing
+)
+

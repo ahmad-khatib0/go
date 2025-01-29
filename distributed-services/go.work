@@ -1,0 +1,12 @@
+go 1.22.3
+
+use (
+ ./proglog
+ ./gin/api
+ ./gin/caching
+ ./gin/parser
+ ./gin/consumer
+ ./gin/dashboard
+ ./gin/producer
+)
+

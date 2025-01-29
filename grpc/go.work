@@ -1,0 +1,20 @@
+go 1.22.3
+
+use  (
+ ./grpc-microservices-in-go/basic-server-client
+ ./grpc-microservices-in-go/microservices/e2e
+ ./grpc-microservices-in-go/microservices/order
+ ./grpc-microservices-in-go/microservices/payment
+ ./grpc-microservices-in-go/microservices-proto/golang/order/
+ ./grpc-microservices-in-go/microservices-proto/golang/payment/
+ ./grpc-microservices-in-go/microservices-proto/golang/shipping/
+ ./grpc-microservices-in-go/resilient/1-client-side-timeout-pattern
+ ./grpc-microservices-in-go/resilient/2-ctx-timeout-propagation
+ ./grpc-microservices-in-go/resilient/3-retry-pattern
+ ./grpc-microservices-in-go/resilient/4-circuit-breaker
+ ./grpc-microservices-in-go/resilient/5-client-circuit-breaker
+ ./grpc-microservices-in-go/resilient/6-circuit-breaker-interceptor
+ ./grpc-microservices-in-go/resilient/7-server-client-validation
+ ./grpc-microservices-in-go/resilient/8-tls-config
+)
+

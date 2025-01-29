@@ -1,0 +1,32 @@
+go 1.22.3
+
+use (
+  01-hello
+	02-variables
+	03-userinput
+	04-conversion
+	05-time
+	06-pointers
+	07-arrays
+	08-slices
+	09-maps
+	10-structs
+	11-ifelse
+	12-switch
+	13-loops
+	14-functions
+	15-methods
+	16-defer
+	17-files
+	18-web-requests
+	19-urls
+	20-web-server
+	21-json
+	22-mod
+	23-api
+	24-mongo
+	25-go-routines
+	26-mutex-and-await-groups
+	27-channels
+	28-math
+)
