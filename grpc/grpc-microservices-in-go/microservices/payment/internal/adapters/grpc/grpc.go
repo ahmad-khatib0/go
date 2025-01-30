@@ -3,8 +3,8 @@ package grpc
 import (
 	"context"
 	"fmt"
-	"github.com/ahmad-khatib0/go/grpc/microservices-proto/golang/payment"
-	"github.com/ahmad-khatib0/go/grpc/microservices/payment/internal/application/core/domain"
+	"github.com/ahmad-khatib0/go/grpc/grpc-microservices-in-go/microservices-proto/golang/payment"
+	"github.com/ahmad-khatib0/go/grpc/grpc-microservices-in-go/microservices/payment/internal/application/core/domain"
 	log "github.com/sirupsen/logrus"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"

@@ -1,6 +1,6 @@
 // Go to ${grpc-up-and-running}/samples/ch02/productinfo
 // Optional: Execute protoc -I proto proto/product_info.proto --go_out=plugins=grpc:go/product_info
-// Execute go get -v github.com/ahmad-khatib0/go/grpc-up-and-running/ch02/productinfo/go/product_info
+// Execute go get -v github.com/ahmad-khatib0/go/grpc/grpc-up-and-running/ch02/productinfo/go/product_info
 // Execute go run go/server/main.go
 
 package main
@@ -11,7 +11,7 @@ import (
 	"log"
 	"net"
 
-	pb "github.com/ahmad-khatib0/go/grpc-up-and-running/ch08/server-reflection/go/proto"
+	pb "github.com/ahmad-khatib0/go/grpc/grpc-up-and-running/ch08/server-reflection/go/proto"
 	wrapper "github.com/golang/protobuf/ptypes/wrappers"
 	"github.com/google/uuid"
 	"google.golang.org/grpc"

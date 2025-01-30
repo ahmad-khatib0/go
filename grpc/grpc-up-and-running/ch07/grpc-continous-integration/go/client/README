@@ -4,6 +4,6 @@ ProductInfoClient
 
 google.golang.org/grpc/examples/helloworld/helloworld
 
-github.com/ahmad-khatib0/go/grpc-up-and-running/ch07/grpc-docker/go/proto-gen
+github.com/ahmad-khatib0/go/grpc/grpc-up-and-running/ch07/grpc-docker/go/proto-gen
 
-mockgen github.com/ahmad-khatib0/go/grpc-up-and-running/ch07/grpc-docker/go/proto-gen ProductInfoClient > mock_prodinfo/prodinfo_mock.go
+mockgen github.com/ahmad-khatib0/go/grpc/grpc-up-and-running/ch07/grpc-docker/go/proto-gen ProductInfoClient > mock_prodinfo/prodinfo_mock.go

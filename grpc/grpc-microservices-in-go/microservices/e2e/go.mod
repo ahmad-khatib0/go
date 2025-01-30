@@ -1,9 +1,9 @@
-module github.com/ahmad-khatib0/go/grpc/microservices/e2e
+module github.com/ahmad-khatib0/go/grpc/grpc-microservices-in-go/microservices/e2e
 
 go 1.22
 
 require (
-	github.com/ahmad-khatib0/go/grpc/microservices-proto/golang/order v0.0.0-20240128141725-aa5ae3fe64ac
+	github.com/ahmad-khatib0/go/grpc/grpc-microservices-in-go/microservices-proto/golang/order v0.0.0-20240128141725-aa5ae3fe64ac
 	github.com/google/uuid v1.6.0
 	github.com/stretchr/testify v1.9.0
 	github.com/testcontainers/testcontainers-go v0.29.1

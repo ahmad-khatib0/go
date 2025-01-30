@@ -1,4 +1,4 @@
-module github.com/ahmad-khatib0/go/greenlight
+module github.com/ahmad-khatib0/go/project/greenlight
 
 go 1.22
 

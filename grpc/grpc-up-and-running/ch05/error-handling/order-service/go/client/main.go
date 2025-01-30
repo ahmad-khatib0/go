@@ -5,7 +5,7 @@ import (
 	"log"
 	"time"
 
-	pb "github.com/ahmad-khatib0/go/grpc-up-and-running/ch05/interceptors/order-service/go/order-service-gen"
+	pb "github.com/ahmad-khatib0/go/grpc/grpc-up-and-running/ch05/interceptors/order-service/go/order-service-gen"
 	epb "google.golang.org/genproto/googleapis/rpc/errdetails"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"

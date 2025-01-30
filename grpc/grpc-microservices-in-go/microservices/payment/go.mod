@@ -1,9 +1,9 @@
-module github.com/ahmad-khatib0/go/grpc/microservices/payment
+module github.com/ahmad-khatib0/go/grpc/grpc-microservices-in-go/microservices/payment
 
 go 1.22
 
 require (
-	github.com/ahmad-khatib0/go/grpc/microservices-proto/golang/payment v0.0.0-20240128141725-aa5ae3fe64ac
+	github.com/ahmad-khatib0/go/grpc/grpc-microservices-in-go/microservices-proto/golang/payment v0.0.0-20240128141725-aa5ae3fe64ac
 	github.com/sirupsen/logrus v1.9.3
 	github.com/uptrace/opentelemetry-go-extra/otelgorm v0.2.3
 	go.opentelemetry.io/contrib/instrumentation/google.golang.org/grpc/otelgrpc v0.49.0

@@ -1,6 +1,6 @@
 // Go to ${grpc-up-and-running}/samples/ch02/productinfo
 // Optional: Execute protoc --go_out=plugins=grpc:golang/product_info product_info.proto
-// Execute go get -v github.com/ahmad-khatib0/go/grpc-up-and-running/ch02/productinfo/golang/product_info
+// Execute go get -v github.com/ahmad-khatib0/go/grpc/grpc-up-and-running/ch02/productinfo/golang/product_info
 // Execute go run go/client/main.go
 
 package main
@@ -16,7 +16,7 @@ import (
 
 	"google.golang.org/grpc/credentials"
 
-	pb "github.com/ahmad-khatib0/go/grpc-up-and-running/ch02/productinfo/go/proto"
+	pb "github.com/ahmad-khatib0/go/grpc/grpc-up-and-running/ch02/productinfo/go/proto"
 	wrapper "github.com/golang/protobuf/ptypes/wrappers"
 	"google.golang.org/grpc"
 )

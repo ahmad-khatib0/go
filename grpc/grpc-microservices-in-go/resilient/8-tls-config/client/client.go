@@ -9,7 +9,7 @@ import (
 	"log"
 	"os"
 
-	order "github.com/ahmad-khatib0/go/grpc/resilient/8-tls-config"
+	order "github.com/ahmad-khatib0/go/grpc/grpc-microservices-in-go/resilient/8-tls-config"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials"
 )

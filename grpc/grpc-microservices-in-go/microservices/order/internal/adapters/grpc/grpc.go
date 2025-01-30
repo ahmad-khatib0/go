@@ -2,8 +2,8 @@ package grpc
 
 import (
 	"context"
-	"github.com/ahmad-khatib0/go/grpc/microservices-proto/golang/order"
-	"github.com/ahmad-khatib0/go/grpc/microservices/order/internal/application/core/domain"
+	"github.com/ahmad-khatib0/go/grpc/grpc-microservices-in-go/microservices-proto/golang/order"
+	"github.com/ahmad-khatib0/go/grpc/grpc-microservices-in-go/microservices/order/internal/application/core/domain"
 	log "github.com/sirupsen/logrus"
 )
 

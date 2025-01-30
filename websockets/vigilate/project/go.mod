@@ -1,4 +1,4 @@
-module github.com/ahmad-khatib0/go/websockets/vigilate
+module github.com/ahmad-khatib0/go/websockets/vigilate/project
 
 go 1.22
 

@@ -6,7 +6,7 @@ import (
 	"os"
 	"testing"
 
-	"github.com/ahmad-khatib0/go/simple-bank/util"
+	"github.com/ahmad-khatib0/go/simple-bank/project/util"
 	_ "github.com/lib/pq"
 )
 

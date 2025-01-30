@@ -35,7 +35,7 @@ shell command,
 ### Update after changing the service definition
 
 ```shell script 
-go get -u github.com/ahmad-khatib0/go/grpc-up-and-running/ch07/grpc-prometheus/go/proto
+go get -u github.com/ahmad-khatib0/go/grpc/grpc-up-and-running/ch07/grpc-prometheus/go/proto
 ```
 
 

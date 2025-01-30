@@ -16,7 +16,7 @@ import (
 	"net"
 	"strings"
 
-	pb "github.com/ahmad-khatib0/go/grpc-up-and-running/ordermgt/service/ecommerce"
+	pb "github.com/ahmad-khatib0/go/grpc/grpc-up-and-running/ordermgt/service/ecommerce"
 	wrapper "github.com/golang/protobuf/ptypes/wrappers"
 )
 

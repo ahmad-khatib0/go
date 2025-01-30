@@ -6,7 +6,7 @@ import (
 	"testing"
 	"time"
 
-	pb "github.com/ahmad-khatib0/go/grpc-up-and-running/ch07/grpc-docker/go/proto-gen"
+	pb "github.com/ahmad-khatib0/go/grpc/grpc-up-and-running/ch07/grpc-docker/go/proto-gen"
 	"github.com/golang/mock/gomock"
 	"github.com/golang/protobuf/proto"
 	wrapper "github.com/golang/protobuf/ptypes/wrappers"

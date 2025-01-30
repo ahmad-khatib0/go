@@ -1,8 +1,8 @@
 package gapi
 
 import (
-	db "github.com/ahmad-khatib0/go/simple-bank/db/sqlc"
-	"github.com/ahmad-khatib0/go/simple-bank/pb"
+	db "github.com/ahmad-khatib0/go/simple-bank/project/db/sqlc"
+	"github.com/ahmad-khatib0/go/simple-bank/project/pb"
 	"google.golang.org/protobuf/types/known/timestamppb"
 )
 

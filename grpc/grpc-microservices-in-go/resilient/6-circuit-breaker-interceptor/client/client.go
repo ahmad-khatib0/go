@@ -2,8 +2,8 @@ package main
 
 import (
 	"context"
-	order "github.com/ahmad-khatib0/go/grpc/resilient/6-circuit-breaker-interceptor"
-	"github.com/ahmad-khatib0/go/grpc/resilient/6-circuit-breaker-interceptor/middleware"
+	order "github.com/ahmad-khatib0/go/grpc/grpc-microservices-in-go/resilient/6-circuit-breaker-interceptor"
+	"github.com/ahmad-khatib0/go/grpc/grpc-microservices-in-go/resilient/6-circuit-breaker-interceptor/middleware"
 	"github.com/sony/gobreaker"
 	"google.golang.org/grpc"
 	"log"

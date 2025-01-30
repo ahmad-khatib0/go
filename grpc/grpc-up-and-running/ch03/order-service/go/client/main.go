@@ -5,7 +5,7 @@ import (
 	"log"
 	"time"
 
-	pb "github.com/ahmad-khatib0/go/grpc-up-and-running/ordermgt/client/ecommerce"
+	pb "github.com/ahmad-khatib0/go/grpc/grpc-up-and-running/ordermgt/client/ecommerce"
 
 	"google.golang.org/grpc"
 )

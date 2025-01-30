@@ -9,7 +9,7 @@ import (
 	"net/url"
 	"strings"
 
-	"github.com/ahmad-khatib0/go/websockets/vigilate/internal/config"
+	"github.com/ahmad-khatib0/go/websockets/vigilate/project/internal/config"
 )
 
 func SendTextTwilio(to, msg string, app *config.AppConfig) error {

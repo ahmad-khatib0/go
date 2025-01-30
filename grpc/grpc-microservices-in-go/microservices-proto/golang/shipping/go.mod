@@ -1,4 +1,4 @@
-module github.com/ahmad-khatib0/go/grpc/microservices-proto/golang/shipping
+module github.com/ahmad-khatib0/go/grpc/grpc-microservices-in-go/microservices-proto/golang/shipping
 
 go 1.22
 

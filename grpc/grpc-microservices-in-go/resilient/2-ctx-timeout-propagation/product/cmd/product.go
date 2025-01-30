@@ -3,7 +3,7 @@ package main
 import (
 	"context"
 	"fmt"
-	"github.com/ahmad-khatib0/go/grpc/resilient/2-ctx-timeout-propagation/product"
+	"github.com/ahmad-khatib0/go/grpc/grpc-microservices-in-go/resilient/2-ctx-timeout-propagation/product"
 	"google.golang.org/grpc"
 	"log"
 	"net"

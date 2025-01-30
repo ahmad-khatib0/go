@@ -3,7 +3,7 @@ package api
 import (
 	"context"
 	"errors"
-	"github.com/ahmad-khatib0/go/grpc/microservices/order/internal/application/core/domain"
+	"github.com/ahmad-khatib0/go/grpc/grpc-microservices-in-go/microservices/order/internal/application/core/domain"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
 	"google.golang.org/genproto/googleapis/rpc/errdetails"

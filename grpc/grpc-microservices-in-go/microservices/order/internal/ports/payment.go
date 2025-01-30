@@ -2,7 +2,7 @@ package ports
 
 import (
 	"context"
-	"github.com/ahmad-khatib0/go/grpc/microservices/order/internal/application/core/domain"
+	"github.com/ahmad-khatib0/go/grpc/grpc-microservices-in-go/microservices/order/internal/application/core/domain"
 )
 
 // The payment port has only one functionality: charge . Simply pass the actual order

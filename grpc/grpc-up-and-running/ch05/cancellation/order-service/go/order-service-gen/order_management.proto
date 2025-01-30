@@ -2,8 +2,8 @@ syntax = "proto3";
 
 import "google/protobuf/wrappers.proto";
 
-package = "github.com/ahmad-khatib0/go/grpc-up-and-running/ch05/cancellation/order-service/go/order-service-gen";
-go_package = "github.com/ahmad-khatib0/go/grpc-up-and-running/ch05/cancellation/order-service/go/order-service-gen";
+package = "github.com/ahmad-khatib0/go/grpc/grpc-up-and-running/ch05/cancellation/order-service/go/order-service-gen";
+go_package = "github.com/ahmad-khatib0/go/grpc/grpc-up-and-running/ch05/cancellation/order-service/go/order-service-gen";
 
 service OrderManagement {
     rpc addOrder(Order) returns (google.protobuf.StringValue);

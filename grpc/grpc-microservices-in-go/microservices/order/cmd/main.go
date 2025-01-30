@@ -3,11 +3,11 @@ package main
 import (
 	"os"
 
-	"github.com/ahmad-khatib0/go/grpc/microservices/order/config"
-	"github.com/ahmad-khatib0/go/grpc/microservices/order/internal/adapters/db"
-	"github.com/ahmad-khatib0/go/grpc/microservices/order/internal/adapters/grpc"
-	"github.com/ahmad-khatib0/go/grpc/microservices/order/internal/adapters/payment"
-	"github.com/ahmad-khatib0/go/grpc/microservices/order/internal/application/core/api"
+	"github.com/ahmad-khatib0/go/grpc/grpc-microservices-in-go/microservices/order/config"
+	"github.com/ahmad-khatib0/go/grpc/grpc-microservices-in-go/microservices/order/internal/adapters/db"
+	"github.com/ahmad-khatib0/go/grpc/grpc-microservices-in-go/microservices/order/internal/adapters/grpc"
+	"github.com/ahmad-khatib0/go/grpc/grpc-microservices-in-go/microservices/order/internal/adapters/payment"
+	"github.com/ahmad-khatib0/go/grpc/grpc-microservices-in-go/microservices/order/internal/application/core/api"
 	log "github.com/sirupsen/logrus"
 	"go.opentelemetry.io/otel"
 	"go.opentelemetry.io/otel/attribute"

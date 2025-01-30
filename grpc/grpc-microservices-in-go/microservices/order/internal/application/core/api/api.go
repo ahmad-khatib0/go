@@ -2,8 +2,8 @@ package api
 
 import (
 	"context"
-	"github.com/ahmad-khatib0/go/grpc/microservices/order/internal/application/core/domain"
-	"github.com/ahmad-khatib0/go/grpc/microservices/order/internal/ports"
+	"github.com/ahmad-khatib0/go/grpc/grpc-microservices-in-go/microservices/order/internal/application/core/domain"
+	"github.com/ahmad-khatib0/go/grpc/grpc-microservices-in-go/microservices/order/internal/ports"
 	"google.golang.org/genproto/googleapis/rpc/errdetails"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"

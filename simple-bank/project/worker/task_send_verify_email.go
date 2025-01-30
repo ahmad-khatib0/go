@@ -5,8 +5,8 @@ import (
 	"encoding/json"
 	"fmt"
 
-	db "github.com/ahmad-khatib0/go/simple-bank/db/sqlc"
-	"github.com/ahmad-khatib0/go/simple-bank/util"
+	db "github.com/ahmad-khatib0/go/simple-bank/project/db/sqlc"
+	"github.com/ahmad-khatib0/go/simple-bank/project/util"
 	"github.com/hibiken/asynq"
 	"github.com/rs/zerolog/log"
 )

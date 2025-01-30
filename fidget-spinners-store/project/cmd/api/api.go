@@ -8,8 +8,8 @@ import (
 	"os"
 	"time"
 
-	"github.com/ahmad-khatib0/go/fidget-spinners-store/internal/driver"
-	"github.com/ahmad-khatib0/go/fidget-spinners-store/internal/models"
+	"github.com/ahmad-khatib0/go/project/fidget-spinners-store/internal/driver"
+	"github.com/ahmad-khatib0/go/project/fidget-spinners-store/internal/models"
 )
 
 const version = "1.0.0"

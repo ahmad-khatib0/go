@@ -2,7 +2,7 @@ package main
 
 import (
 	"context"
-	order "github.com/ahmad-khatib0/go/grpc/resilient/7-server-client-validation"
+	order "github.com/ahmad-khatib0/go/grpc/grpc-microservices-in-go/resilient/7-server-client-validation"
 	"google.golang.org/genproto/googleapis/rpc/errdetails"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/status"

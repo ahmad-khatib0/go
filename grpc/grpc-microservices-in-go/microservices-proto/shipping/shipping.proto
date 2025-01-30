@@ -1,6 +1,6 @@
 syntax = "proto3";
 
-option go_package = "github.com/ahmad-khatib0/go/grpc/microservices-proto/shipping";
+option go_package = "github.com/ahmad-khatib0/go/grpc/grpc-microservices-in-go/microservices-proto/shipping";
 
 message CreateShippingRequest {
     string address = 1;

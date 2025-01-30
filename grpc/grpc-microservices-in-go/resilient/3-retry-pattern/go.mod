@@ -1,4 +1,4 @@
-module github.com/ahmad-khatib0/go/grpc/resilient/3-retry-pattern
+module github.com/ahmad-khatib0/go/grpc/grpc-microservices-in-go/resilient/3-retry-pattern
 
 go 1.22
 

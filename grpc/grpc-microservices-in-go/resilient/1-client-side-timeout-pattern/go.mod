@@ -1,4 +1,4 @@
-module github.com/ahmad-khatib0/go/grpc/resilient/1-client-side-timeout-pattern
+module github.com/ahmad-khatib0/go/grpc/grpc-microservices-in-go/resilient/1-client-side-timeout-pattern
 
 go 1.22
 

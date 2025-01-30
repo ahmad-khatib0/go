@@ -1,10 +1,10 @@
-module github.com/ahmad-khatib0/go/grpc/microservices/order
+module github.com/ahmad-khatib0/go/grpc/grpc-microservices-in-go/microservices/order
 
 go 1.22
 
 require (
-	github.com/ahmad-khatib0/go/grpc/microservices-proto/golang/order v0.0.0-20240212132118-5e8c0c5e6fd9
-	github.com/ahmad-khatib0/go/grpc/microservices-proto/golang/payment v0.0.0-20240212132118-5e8c0c5e6fd9
+	github.com/ahmad-khatib0/go/grpc/grpc-microservices-in-go/microservices-proto/golang/order v0.0.0-20240212132118-5e8c0c5e6fd9
+	github.com/ahmad-khatib0/go/grpc/grpc-microservices-in-go/microservices-proto/golang/payment v0.0.0-20240212132118-5e8c0c5e6fd9
 	github.com/docker/go-connections v0.5.0
 	github.com/sirupsen/logrus v1.9.3
 	github.com/stretchr/testify v1.9.0

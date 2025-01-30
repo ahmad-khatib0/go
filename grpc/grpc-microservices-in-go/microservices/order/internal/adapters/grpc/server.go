@@ -2,9 +2,9 @@ package grpc
 
 import (
 	"fmt"
-	"github.com/ahmad-khatib0/go/grpc/microservices-proto/golang/order"
-	"github.com/ahmad-khatib0/go/grpc/microservices/order/config"
-	"github.com/ahmad-khatib0/go/grpc/microservices/order/internal/ports"
+	"github.com/ahmad-khatib0/go/grpc/grpc-microservices-in-go/microservices-proto/golang/order"
+	"github.com/ahmad-khatib0/go/grpc/grpc-microservices-in-go/microservices/order/config"
+	"github.com/ahmad-khatib0/go/grpc/grpc-microservices-in-go/microservices/order/internal/ports"
 	log "github.com/sirupsen/logrus"
 	"go.opentelemetry.io/contrib/instrumentation/google.golang.org/grpc/otelgrpc"
 	"google.golang.org/grpc/reflection"

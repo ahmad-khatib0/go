@@ -1,5 +1,5 @@
 syntax = "proto3";
-option go_package="github.com/ahmad-khatib0/go/grpc/resilient/2-ctx-timeout-propagation/order";
+option go_package="github.com/ahmad-khatib0/go/grpc/grpc-microservices-in-go/resilient/2-ctx-timeout-propagation/order";
 
 message CreateOrderRequest {
   int32 user_id = 1;

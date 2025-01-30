@@ -1,4 +1,4 @@
-module github.com/ahmad-khatib0/go/grpc/basic-server-client
+module github.com/ahmad-khatib0/go/grpc/grpc-microservices-in-go/basic-server-client
 
 go 1.22
 

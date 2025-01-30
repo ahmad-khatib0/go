@@ -5,8 +5,8 @@ import (
 	"net/http"
 	"time"
 
-	db "github.com/ahmad-khatib0/go/simple-bank/db/sqlc"
-	"github.com/ahmad-khatib0/go/simple-bank/util"
+	db "github.com/ahmad-khatib0/go/simple-bank/project/db/sqlc"
+	"github.com/ahmad-khatib0/go/simple-bank/project/util"
 	"github.com/gin-gonic/gin"
 	"github.com/google/uuid"
 	"github.com/lib/pq"

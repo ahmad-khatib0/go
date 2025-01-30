@@ -9,9 +9,9 @@ import (
 	"time"
 
 	"github.com/CloudyKit/jet/v6"
-	"github.com/ahmad-khatib0/go/websockets/vigilate/internal/config"
-	"github.com/ahmad-khatib0/go/websockets/vigilate/internal/models"
-	"github.com/ahmad-khatib0/go/websockets/vigilate/internal/templates"
+	"github.com/ahmad-khatib0/go/websockets/vigilate/project/internal/config"
+	"github.com/ahmad-khatib0/go/websockets/vigilate/project/internal/models"
+	"github.com/ahmad-khatib0/go/websockets/vigilate/project/internal/templates"
 	"github.com/justinas/nosurf"
 )
 

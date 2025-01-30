@@ -3,9 +3,9 @@ package api
 import (
 	"fmt"
 
-	db "github.com/ahmad-khatib0/go/simple-bank/db/sqlc"
-	"github.com/ahmad-khatib0/go/simple-bank/token"
-	"github.com/ahmad-khatib0/go/simple-bank/util"
+	db "github.com/ahmad-khatib0/go/simple-bank/project/db/sqlc"
+	"github.com/ahmad-khatib0/go/simple-bank/project/token"
+	"github.com/ahmad-khatib0/go/simple-bank/project/util"
 	"github.com/gin-gonic/gin"
 	"github.com/gin-gonic/gin/binding"
 	"github.com/go-playground/validator/v10"

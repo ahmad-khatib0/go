@@ -2,7 +2,7 @@ package main
 
 import (
 	"context"
-	order "github.com/ahmad-khatib0/go/grpc/resilient/5-client-circuit-breaker"
+	order "github.com/ahmad-khatib0/go/grpc/grpc-microservices-in-go/resilient/5-client-circuit-breaker"
 	"github.com/sony/gobreaker"
 	"google.golang.org/grpc"
 	"log"

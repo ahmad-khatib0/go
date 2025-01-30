@@ -2,7 +2,7 @@ package main
 
 import (
 	"context"
-	shipping "github.com/ahmad-khatib0/go/grpc/resilient/1-client-side-timeout-pattern"
+	shipping "github.com/ahmad-khatib0/go/grpc/grpc-microservices-in-go/resilient/1-client-side-timeout-pattern"
 	"google.golang.org/grpc"
 	"log"
 	"time"

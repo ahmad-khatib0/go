@@ -1,5 +1,5 @@
 syntax = "proto3";
-option go_package="github.com/ahmad-khatib0/go/grpc/resilient/2-ctx-timeout-propagation/product";
+option go_package="github.com/ahmad-khatib0/go/grpc/grpc-microservices-in-go/resilient/2-ctx-timeout-propagation/product";
 
 message GetProductRequest {
   int32 product_id = 1;

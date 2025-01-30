@@ -5,7 +5,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/ahmad-khatib0/go/snippetbox/pkg/models"
+	"github.com/ahmad-khatib0/go/snippetbox/project/pkg/models"
 )
 
 func TestUserModelGet(t *testing.T) {

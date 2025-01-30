@@ -8,7 +8,7 @@ import (
 	"encoding/base64"
 	"time"
 
-	"github.com/ahmad-khatib0/go/greenlight/internal/validator"
+	"github.com/ahmad-khatib0/go/project/greenlight/internal/validator"
 )
 
 const (

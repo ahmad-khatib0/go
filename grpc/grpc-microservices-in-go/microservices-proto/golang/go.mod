@@ -1,3 +1,3 @@
-module github.com/ahmad-khatib0/go/grpc/microservices-proto/golang
+module github.com/ahmad-khatib0/go/grpc/grpc-microservices-in-go/microservices-proto/golang
 
 go 1.22

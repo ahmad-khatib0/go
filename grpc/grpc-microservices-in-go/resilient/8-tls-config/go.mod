@@ -1,4 +1,4 @@
-module github.com/ahmad-khatib0/go/grpc/resilient/8-tls-config
+module github.com/ahmad-khatib0/go/grpc/grpc-microservices-in-go/resilient/8-tls-config
 
 go 1.22
 

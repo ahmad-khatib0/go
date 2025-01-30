@@ -5,7 +5,7 @@ import (
 	"net/http"
 
 	"github.com/CloudyKit/jet/v6"
-	"github.com/ahmad-khatib0/go/websockets/vigilate/internal/helpers"
+	"github.com/ahmad-khatib0/go/websockets/vigilate/project/internal/helpers"
 )
 
 // AllHealthyServices lists all healthy services

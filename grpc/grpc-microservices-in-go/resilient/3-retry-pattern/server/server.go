@@ -3,7 +3,7 @@ package main
 import (
 	"context"
 	"fmt"
-	shipping "github.com/ahmad-khatib0/go/grpc/resilient/3-retry-pattern"
+	shipping "github.com/ahmad-khatib0/go/grpc/grpc-microservices-in-go/resilient/3-retry-pattern"
 	"google.golang.org/grpc"
 	"log"
 	"net"

@@ -4,7 +4,7 @@ import (
 	"context"
 	"log"
 
-	payment "github.com/ahmad-khatib0/go/grpc/basic-server-client/proto/payment"
+	payment "github.com/ahmad-khatib0/go/grpc/grpc-microservices-in-go/basic-server-client/proto/payment"
 
 	"google.golang.org/grpc"
 )

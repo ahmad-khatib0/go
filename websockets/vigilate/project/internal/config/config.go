@@ -3,8 +3,8 @@ package config
 import (
 	"html/template"
 
-	"github.com/ahmad-khatib0/go/websockets/vigilate/internal/channeldata"
-	"github.com/ahmad-khatib0/go/websockets/vigilate/internal/driver"
+	"github.com/ahmad-khatib0/go/websockets/vigilate/project/internal/channeldata"
+	"github.com/ahmad-khatib0/go/websockets/vigilate/project/internal/driver"
 	"github.com/alexedwards/scs/v2"
 	"github.com/pusher/pusher-http-go"
 	"github.com/robfig/cron/v3"

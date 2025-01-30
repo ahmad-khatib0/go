@@ -5,7 +5,7 @@ package mocks
 import (
 	context "context"
 
-	domain "github.com/ahmad-khatib0/go/grpc/microservices/order/internal/application/core/domain"
+	domain "github.com/ahmad-khatib0/go/grpc/grpc-microservices-in-go/microservices/order/internal/application/core/domain"
 	mock "github.com/stretchr/testify/mock"
 )
 

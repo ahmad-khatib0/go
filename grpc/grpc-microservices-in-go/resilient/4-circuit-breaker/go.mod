@@ -1,4 +1,4 @@
-module github.com/ahmad-khatib0/go/grpc/resilient/4-circuit-breaker
+module github.com/ahmad-khatib0/go/grpc/grpc-microservices-in-go/resilient/4-circuit-breaker
 
 go 1.22
 

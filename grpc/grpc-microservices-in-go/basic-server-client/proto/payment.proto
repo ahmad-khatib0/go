@@ -1,6 +1,6 @@
 syntax = "proto3";
 
-option go_package="github.com/ahmad-khatib0/go/grpc/basic-server-client/proto/payment";
+option go_package="github.com/ahmad-khatib0/go/grpc/grpc-microservices-in-go/basic-server-client/proto/payment";
 
 message CreatePaymentRequest {
 	float price = 1;

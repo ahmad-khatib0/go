@@ -20,7 +20,7 @@ protoc --go_out=./golang --go_opt=paths=source_relative \
 
 cd golang/${SERVICE_NAME}
 
-go mod init github.com/ahmad-khatib0/go/grpc/microservices-proto/golang/${SERVICE_NAME} || true
+go mod init github.com/ahmad-khatib0/go/grpc/grpc-microservices-in-go/microservices-proto/golang/${SERVICE_NAME} || true
 
 go mod tidy
 

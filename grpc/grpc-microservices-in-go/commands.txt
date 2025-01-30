@@ -11,8 +11,8 @@ git tag -a golang/payment/v1.2.8 -m "golang/payment/v1.2.8"
 git tag -a golang/shipping/v1.2.6 -m "golang/shipping/v1.2.6"
 git push --tags
 
-go get -u github.com/ahmad-khatib0/go/grpc/microservices-proto/golang/order@latest
-go get -u github.com/ahmad-khatib0/go/grpc/microservices-proto/golang/order@v1.2.3
+go get -u github.com/ahmad-khatib0/go/grpc/grpc-microservices-in-go/microservices-proto/golang/order@latest
+go get -u github.com/ahmad-khatib0/go/grpc/grpc-microservices-in-go/microservices-proto/golang/order@v1.2.3
 
 
 $ docker run -p 3306:3306 -e MYSQL_ROOT_PASSWORD=verysecretpass -e MYSQL_DATABASE=order mysql

@@ -1,6 +1,6 @@
 syntax = "proto3";
 
-option go_package="github.com/ahmad-khatib0/go/grpc/resilient/6-circuit-breaker-interceptor/order";
+option go_package="github.com/ahmad-khatib0/go/grpc/grpc-microservices-in-go/resilient/6-circuit-breaker-interceptor/order";
 
 message CreateOrderRequest {
   int32 user_id = 1;

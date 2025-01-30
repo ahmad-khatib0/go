@@ -7,10 +7,10 @@ github.com/Azure/go-ansiterm v0.0.0-20230124172434-306776ec8161 h1:L/gRVlceqvL25
 github.com/Microsoft/go-winio v0.6.1 h1:9/kr64B9VUZrLm5YYwbGtUJnMgqWVOdUAXu6Migciow=
 github.com/Microsoft/go-winio v0.6.1/go.mod h1:LRdKpFKfdobln8UmuiYcKPot9D2v6svN5+sAH+4kjUM=
 github.com/Microsoft/hcsshim v0.12.0 h1:rbICA+XZFwrBef2Odk++0LjFvClNCJGRK+fsrP254Ts=
-github.com/ahmad-khatib0/go/grpc/microservices-proto/golang/order v0.0.0-20240212132118-5e8c0c5e6fd9 h1:E6vLmeKaytWT2Zd2BvKnb1Vxt/KJR1Lq+VW64aQDNUs=
-github.com/ahmad-khatib0/go/grpc/microservices-proto/golang/order v0.0.0-20240212132118-5e8c0c5e6fd9/go.mod h1:6lB73T8vetu148Hyer4+OI8BnG4DiHrAP6h98Mi/74A=
-github.com/ahmad-khatib0/go/grpc/microservices-proto/golang/payment v0.0.0-20240212132118-5e8c0c5e6fd9 h1:L9ZDmT27GbyIH8VDiuB9W0YOxa68/xsKaB6S5JPixIw=
-github.com/ahmad-khatib0/go/grpc/microservices-proto/golang/payment v0.0.0-20240212132118-5e8c0c5e6fd9/go.mod h1:r9dJSf4+EOx6NkfcboPEbXPwZnabojIhMJEjptmgeFU=
+github.com/ahmad-khatib0/go/grpc/grpc-microservices-in-go/microservices-proto/golang/order v0.0.0-20240212132118-5e8c0c5e6fd9 h1:E6vLmeKaytWT2Zd2BvKnb1Vxt/KJR1Lq+VW64aQDNUs=
+github.com/ahmad-khatib0/go/grpc/grpc-microservices-in-go/microservices-proto/golang/order v0.0.0-20240212132118-5e8c0c5e6fd9/go.mod h1:6lB73T8vetu148Hyer4+OI8BnG4DiHrAP6h98Mi/74A=
+github.com/ahmad-khatib0/go/grpc/grpc-microservices-in-go/microservices-proto/golang/payment v0.0.0-20240212132118-5e8c0c5e6fd9 h1:L9ZDmT27GbyIH8VDiuB9W0YOxa68/xsKaB6S5JPixIw=
+github.com/ahmad-khatib0/go/grpc/grpc-microservices-in-go/microservices-proto/golang/payment v0.0.0-20240212132118-5e8c0c5e6fd9/go.mod h1:r9dJSf4+EOx6NkfcboPEbXPwZnabojIhMJEjptmgeFU=
 github.com/cenkalti/backoff/v4 v4.2.1 h1:y4OZtCnogmCPw98Zjyt5a6+QwPLGkiQsYW5oUqylYbM=
 github.com/cenkalti/backoff/v4 v4.2.1/go.mod h1:Y3VNntkOUPxTVeUxJ/G5vcM//AlwfmyYozVcomhLiZE=
 github.com/containerd/containerd v1.7.14 h1:H/XLzbnGuenZEGK+v0RkwTdv2u1QFAruMe5N0GNPJwA=

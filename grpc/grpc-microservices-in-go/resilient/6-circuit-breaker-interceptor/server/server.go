@@ -4,7 +4,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	order "github.com/ahmad-khatib0/go/grpc/resilient/6-circuit-breaker-interceptor"
+	order "github.com/ahmad-khatib0/go/grpc/grpc-microservices-in-go/resilient/6-circuit-breaker-interceptor"
 	"google.golang.org/grpc"
 	"log"
 	"math/rand"

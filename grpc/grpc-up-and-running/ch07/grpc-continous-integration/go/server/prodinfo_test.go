@@ -7,7 +7,7 @@ import (
 	"testing"
 	"time"
 
-	pb "github.com/ahmad-khatib0/go/grpc-up-and-running/ch07/grpc-docker/go/proto-gen"
+	pb "github.com/ahmad-khatib0/go/grpc/grpc-up-and-running/ch07/grpc-docker/go/proto-gen"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/reflection"
 	"google.golang.org/grpc/test/bufconn"

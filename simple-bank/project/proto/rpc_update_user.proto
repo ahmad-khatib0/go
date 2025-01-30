@@ -4,7 +4,7 @@ package pb;
 
 import "user.proto";
 
-option go_package = "github.com/ahmad-khatib0/go/simple-bank/pb";
+option go_package = "github.com/ahmad-khatib0/go/simple-bank/project/pb";
 
 message UpdateUserRequest {
     string username = 1;

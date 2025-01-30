@@ -1,4 +1,4 @@
-module github.com/ahmad-khatib0/go/grpc/resilient/7-server-client-validation
+module github.com/ahmad-khatib0/go/grpc/grpc-microservices-in-go/resilient/7-server-client-validation
 
 go 1.22
 

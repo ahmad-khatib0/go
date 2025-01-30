@@ -1,4 +1,4 @@
-module github.com/ahmad-khatib0/go/simple-bank
+module github.com/ahmad-khatib0/go/simple-bank/project
 
 go 1.22
 

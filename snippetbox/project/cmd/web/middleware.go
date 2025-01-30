@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"net/http"
 
-	"github.com/ahmad-khatib0/go/snippetbox/pkg/models"
+	"github.com/ahmad-khatib0/go/snippetbox/project/pkg/models"
 	"github.com/justinas/nosurf"
 )
 

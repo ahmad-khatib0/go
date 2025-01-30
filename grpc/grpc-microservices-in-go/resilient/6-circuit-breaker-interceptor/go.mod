@@ -1,4 +1,4 @@
-module github.com/ahmad-khatib0/go/grpc/resilient/6-circuit-breaker-interceptor
+module github.com/ahmad-khatib0/go/grpc/grpc-microservices-in-go/resilient/6-circuit-breaker-interceptor
 
 go 1.22
 

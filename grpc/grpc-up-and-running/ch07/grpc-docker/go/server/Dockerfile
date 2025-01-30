@@ -5,7 +5,7 @@
 FROM golang AS build
 
 
-ENV location /go/src/github.com/ahmad-khatib0/go/grpc-up-and-running/ch07/grpc-docker/go
+ENV location /go/src/github.com/ahmad-khatib0/go/grpc/grpc-up-and-running/ch07/grpc-docker/go
 
 WORKDIR ${location}/server
 

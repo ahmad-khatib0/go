@@ -1,4 +1,4 @@
-module github.com/ahmad-khatib0/go/grpc/microservices-proto/golang/payment
+module github.com/ahmad-khatib0/go/grpc/grpc-microservices-in-go/microservices-proto/golang/payment
 
 go 1.22
 

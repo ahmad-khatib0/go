@@ -2,8 +2,8 @@ package payment
 
 import (
 	"context"
-	"github.com/ahmad-khatib0/go/grpc/microservices-proto/golang/payment"
-	"github.com/ahmad-khatib0/go/grpc/microservices/order/internal/application/core/domain"
+	"github.com/ahmad-khatib0/go/grpc/grpc-microservices-in-go/microservices-proto/golang/payment"
+	"github.com/ahmad-khatib0/go/grpc/grpc-microservices-in-go/microservices/order/internal/application/core/domain"
 	"go.opentelemetry.io/contrib/instrumentation/google.golang.org/grpc/otelgrpc"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials/insecure"

@@ -1,4 +1,4 @@
-module github.com/ahmad-khatib0/go/snippetbox
+module github.com/ahmad-khatib0/go/snippetbox/project
 
 go 1.22
 

@@ -7,7 +7,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/ahmad-khatib0/go/simple-bank/token"
+	"github.com/ahmad-khatib0/go/simple-bank/project/token"
 	"github.com/gin-gonic/gin"
 	"github.com/stretchr/testify/require"
 )

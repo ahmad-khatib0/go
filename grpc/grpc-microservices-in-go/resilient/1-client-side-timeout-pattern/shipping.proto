@@ -1,5 +1,5 @@
 syntax = "proto3";
-option go_package="github.com/ahmad-khatib0/go/grpc/resilient/1-client-side-timeout-pattern/shipping";
+option go_package="github.com/ahmad-khatib0/go/grpc/grpc-microservices-in-go/resilient/1-client-side-timeout-pattern/shipping";
 
 message CreateShippingRequest {
   int32 user_id = 1;

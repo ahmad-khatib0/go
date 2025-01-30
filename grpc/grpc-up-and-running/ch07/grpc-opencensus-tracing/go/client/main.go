@@ -1,6 +1,6 @@
 // Go to ${grpc-up-and-running}/samples/ch02/productinfo
 // Optional: Execute protoc -I proto proto/product_info.proto --go_out=plugins=grpc:go/product_info
-// Execute go get -v github.com/ahmad-khatib0/go/grpc-up-and-running/ch02/productinfo/golang/product_info
+// Execute go get -v github.com/ahmad-khatib0/go/grpc/grpc-up-and-running/ch02/productinfo/golang/product_info
 // Execute go run go/client/main.go
 
 package main
@@ -11,7 +11,7 @@ import (
 	"time"
 
 	"contrib.go.opencensus.io/exporter/jaeger"
-	pb "github.com/ahmad-khatib0/go/grpc-up-and-running/ch07/grpc-prometheus/go/proto"
+	pb "github.com/ahmad-khatib0/go/grpc/grpc-up-and-running/ch07/grpc-prometheus/go/proto"
 	wrapper "github.com/golang/protobuf/ptypes/wrappers"
 	"go.opencensus.io/trace"
 	"google.golang.org/grpc"

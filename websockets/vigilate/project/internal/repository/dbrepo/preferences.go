@@ -5,7 +5,7 @@ import (
 	"log"
 	"time"
 
-	"github.com/ahmad-khatib0/go/websockets/vigilate/internal/models"
+	"github.com/ahmad-khatib0/go/websockets/vigilate/project/internal/models"
 )
 
 // AllPreferences returns a slice of preferences

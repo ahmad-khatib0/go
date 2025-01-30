@@ -1,10 +1,10 @@
 package main
 
 import (
-	"github.com/ahmad-khatib0/go/grpc/microservices/payment/config"
-	"github.com/ahmad-khatib0/go/grpc/microservices/payment/internal/adapters/db"
-	"github.com/ahmad-khatib0/go/grpc/microservices/payment/internal/adapters/grpc"
-	"github.com/ahmad-khatib0/go/grpc/microservices/payment/internal/application/core/api"
+	"github.com/ahmad-khatib0/go/grpc/grpc-microservices-in-go/microservices/payment/config"
+	"github.com/ahmad-khatib0/go/grpc/grpc-microservices-in-go/microservices/payment/internal/adapters/db"
+	"github.com/ahmad-khatib0/go/grpc/grpc-microservices-in-go/microservices/payment/internal/adapters/grpc"
+	"github.com/ahmad-khatib0/go/grpc/grpc-microservices-in-go/microservices/payment/internal/application/core/api"
 	log "github.com/sirupsen/logrus"
 	"go.opentelemetry.io/otel"
 	"go.opentelemetry.io/otel/attribute"

@@ -81,5 +81,5 @@ protoc -I proto/ proto/product_info.proto --go_out=plugins=grpc:go/proto
 
 ### Update after changing the service definition
 ``` 
-go get -u github.com/ahmad-khatib0/go/grpc-up-and-running/ch08/server-reflection/go/proto
+go get -u github.com/ahmad-khatib0/go/grpc/grpc-up-and-running/ch08/server-reflection/go/proto
 ```

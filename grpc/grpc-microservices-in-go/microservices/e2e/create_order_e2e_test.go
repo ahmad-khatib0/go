@@ -2,7 +2,7 @@ package e2e
 
 import (
 	"context"
-	"github.com/ahmad-khatib0/go/grpc/microservices-proto/golang/order"
+	"github.com/ahmad-khatib0/go/grpc/grpc-microservices-in-go/microservices-proto/golang/order"
 	"github.com/google/uuid"
 	"github.com/stretchr/testify/suite"
 	"github.com/testcontainers/testcontainers-go"

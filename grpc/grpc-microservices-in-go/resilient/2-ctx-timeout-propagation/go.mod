@@ -1,4 +1,4 @@
-module github.com/ahmad-khatib0/go/grpc/resilient/2-ctx-timeout-propagation
+module github.com/ahmad-khatib0/go/grpc/grpc-microservices-in-go/resilient/2-ctx-timeout-propagation
 
 go 1.22
 

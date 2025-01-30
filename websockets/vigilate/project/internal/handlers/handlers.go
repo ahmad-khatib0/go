@@ -9,12 +9,12 @@ import (
 	"strconv"
 
 	"github.com/CloudyKit/jet/v6"
-	"github.com/ahmad-khatib0/go/websockets/vigilate/internal/config"
-	"github.com/ahmad-khatib0/go/websockets/vigilate/internal/driver"
-	"github.com/ahmad-khatib0/go/websockets/vigilate/internal/helpers"
-	"github.com/ahmad-khatib0/go/websockets/vigilate/internal/models"
-	"github.com/ahmad-khatib0/go/websockets/vigilate/internal/repository"
-	"github.com/ahmad-khatib0/go/websockets/vigilate/internal/repository/dbrepo"
+	"github.com/ahmad-khatib0/go/websockets/vigilate/project/internal/config"
+	"github.com/ahmad-khatib0/go/websockets/vigilate/project/internal/driver"
+	"github.com/ahmad-khatib0/go/websockets/vigilate/project/internal/helpers"
+	"github.com/ahmad-khatib0/go/websockets/vigilate/project/internal/models"
+	"github.com/ahmad-khatib0/go/websockets/vigilate/project/internal/repository"
+	"github.com/ahmad-khatib0/go/websockets/vigilate/project/internal/repository/dbrepo"
 	"github.com/go-chi/chi/v5"
 )
 

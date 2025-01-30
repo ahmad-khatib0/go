@@ -1,6 +1,6 @@
 package helpers
 
-import "github.com/ahmad-khatib0/go/websockets/vigilate/internal/channeldata"
+import "github.com/ahmad-khatib0/go/websockets/vigilate/project/internal/channeldata"
 
 // SendEmail sends an email
 func SendEmail(mailMessage channeldata.MailData) {

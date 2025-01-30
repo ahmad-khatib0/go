@@ -1,4 +1,4 @@
-module github.com/ahmad-khatib0/go/grpc/microservices-proto/golang/order
+module github.com/ahmad-khatib0/go/grpc/grpc-microservices-in-go/microservices-proto/golang/order
 
 go 1.22
 

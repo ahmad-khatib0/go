@@ -8,7 +8,7 @@ import (
 	"net"
 	"strings"
 
-	pb "github.com/ahmad-khatib0/go/grpc-up-and-running/ch05/interceptors/order-service/go/order-service-gen"
+	pb "github.com/ahmad-khatib0/go/grpc/grpc-up-and-running/ch05/interceptors/order-service/go/order-service-gen"
 	"github.com/golang/protobuf/ptypes/wrappers"
 	wrapper "github.com/golang/protobuf/ptypes/wrappers"
 	epb "google.golang.org/genproto/googleapis/rpc/errdetails"

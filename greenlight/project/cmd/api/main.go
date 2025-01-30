@@ -13,9 +13,9 @@ import (
 	"sync"
 	"time"
 
-	"github.com/ahmad-khatib0/go/greenlight/internal/data"
-	"github.com/ahmad-khatib0/go/greenlight/internal/jsonlog"
-	"github.com/ahmad-khatib0/go/greenlight/internal/mailer"
+	"github.com/ahmad-khatib0/go/project/greenlight/internal/data"
+	"github.com/ahmad-khatib0/go/project/greenlight/internal/jsonlog"
+	"github.com/ahmad-khatib0/go/project/greenlight/internal/mailer"
 	"github.com/joho/godotenv"
 	_ "github.com/lib/pq"
 )
