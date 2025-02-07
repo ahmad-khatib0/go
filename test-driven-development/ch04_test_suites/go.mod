@@ -2,7 +2,11 @@ module github.com/ahmad-khatib0/go/test-driven-development/ch04_test_suites
 
 go 1.23.6
 
-require github.com/stretchr/testify v1.10.0
+require (
+	github.com/google/uuid v1.6.0
+	github.com/gorilla/mux v1.8.1
+	github.com/stretchr/testify v1.10.0
+)
 
 require (
 	github.com/davecgh/go-spew v1.1.1 // indirect

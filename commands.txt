@@ -1,10 +1,12 @@
-go mod init project-name                             # init the packages manager  
-GOOS="linux" go build                                # build for variety of OSs
-go mod verify                                        # verify the health of packages 
-go mod tidy                                          # recompile packages 
 go build .                                           # build 
+GOOS="linux" go build                                # build for variety of OSs
+
 go list -m all                                       # list dependencies 
 go list -m -versions github.com/gorilla/mux          # list available versions of the mux library  
+
+go mod init project-name                             # init the packages manager  
+go mod verify                                        # verify the health of packages 
+go mod tidy                                          # recompile packages 
 go mod why github.com/gorilla/mux                    # list which modules are depending on mux library
 go mod graph                                         # list which dependencies are depending on each other
 go mod edit -go 1.7                                  # change variety of things in the mod file, in a terminal manner
@@ -17,6 +19,13 @@ go list -m -versions github.com/ahmad-khatib0/go/idiomatic-approach-book/simplet
 #  see what versions of the module are available
 
 go test -v -cover -coverprofile=c.out                # output test coverage to a file
-go tool cover -html=c.out                            # opens browser with coverage details 
 go test -bench=.                                     # run all benchmarks in a directory 
 go test -race                                        # runs the test with race checker
+go test -run TestDivide ./ch04_test_suites/table -v
+go tool cover -html=c.out                            # opens browser with coverage details 
+
+# fix the error: go get -> module found but dose not contain package
+go clean -cache 
+go clean -modcache 
+export GOPROXY=direct
+
