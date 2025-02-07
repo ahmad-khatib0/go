@@ -1,6 +1,7 @@
-go 1.22.3
+go 1.23.6
 
 use (
 	./ch02-basics
 	./ch03-mock-and-assert
+	./ch04_test_suites
 )

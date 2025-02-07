@@ -1,0 +1,64 @@
+- The two types of tests are as follows:
+• Positive tests, which use valid input for the UUT and verify that the expected result is returned
+  from the UUT. This type of test ensures that the application behaves correctly according to the
+  functional requirements. Positive tests cover the following:
+  . How the UUT handles valid input
+  . How the UUT behaves in expected scenarios
+  . How the UUT satisfies system requirements
+
+• Negative tests, which use invalid input for the UUT and verify that an error is returned from
+  the UUT. This type of test ensures that the application can gracefully handle invalid input, with
+  meaningful errors and avoiding crashes. Negative tests cover the following:
+  • How the UUT handles invalid input
+  • How the UUT behaves in unexpected scenarios
+  • How the UUT behaves outside of system requirements
+
+- A good testing strategy should cover the following four major types of test cases of a 
+  given input variable:
+  . Base cases occur at the expected values of an operating parameter. For example, given an input
+    parameter representing a name, a base case for it would be a short valid string value. These cases are
+    often defined in the system requirements and make up the scenarios of the happy path testing strategy.
+  . Edge cases occur at the extreme of an operating parameter. For example, given a string input 
+    parameter, some edge cases for it would be an empty string value, a multiline string, or a string 
+    with special characters.
+  . Boundary cases occur on either side of an edge case, approaching the extreme values of an operating
+    parameter. These cases are particularly important for asserting values that must have a particular 
+    value. For example, given a numeric input parameter representing temperature for a water temperature 
+    measurement application, we could boundary-test its values around the water freezing point and water
+    boiling point.
+
+- The difference between edge and corner cases
+  The terms edge case and corner case are often used interchangeably. One easy way to remember the 
+  difference is that an edge case pushes the extremes of a parameter, while a corner case combines 
+  these extremes by pushing the user to a corner configuration.
+
+- func Divide(x, y int8) (*string, error)
+  • Base cases:
+      Two positive values for x and y
+      Two negative values for x and y
+  • Edge cases:
+      Equal values for x and y
+      Maximum value for x and positive value for y
+      Minimum value for x and positive value for y
+      A zero value of x and a nonzero value for y
+      A positive value of x and a zero value for y
+  • Corner cases:
+      Zero values for x and y
+      Maximum values for x and y
+      Minimum values for x and y
+
+- Advantages and disadvantages of table-driven testing: 
+  - Advantages:
+    • Provide a concise way to define and run multiple test cases, which reduces boilerplate code
+    • Easy to add and remove new tests by simply modifying the collection of test cases
+    • As all of the test cases are run using the same surrounding code, we can easily refactor the test
+    setup and assertion code
+  - Disadvantages
+    • As all the test cases are run identically, it may be difficult to create even small variations 
+      of the test setup and assertion code.
+    • Table-driven tests are not suitable for test cases that require different test setup and teardown
+      logic. They also make it difficult to use mocks, which must behave differently.
+    • Some developers argue that table-driven tests are difficult to read. While the name of the test
+      case allows us to name each test, the code is not readable, especially when compared to the
+      behavior-driven development (BDD) style of writing tests.
+
