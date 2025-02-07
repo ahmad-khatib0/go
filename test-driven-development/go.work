@@ -1,6 +1,6 @@
 go 1.22.3
 
-use  (
+use (
 	./ch02-basics
+	./ch03-mock-and-assert
 )
-

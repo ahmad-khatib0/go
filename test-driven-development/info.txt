@@ -175,39 +175,4 @@ Multiple init functions per package
   they are run in DEFINITION ORDER. On the other hand, when they are defined in multiple files, 
   they are run in the LEXICOGRAPHIC ORDER of their filenames.
 
-$ From The viewpoint of the UUT, the four main types of dependencies are as follows:
-- Direct internal dependencies: These contain internal functionality that your UUT imports. These dependencies 
-  could be defined in the same package or module as UUT, but are required to deliver its functionality.
-- Transitive internal dependencies: These contain internal functionality that the Direct internal dependency 
-  parts of your UUT import. These dependencies could also be defined in the same package or module.
-- Direct external dependencies: These contain third-party functionality that your UUT imports. These could 
-  be libraries or service APIs that you might rely on, but which are not contained in your current module.
-- Transitive external dependencies: These contain external functionality that your Direct external 
-  dependencies rely on, but which are in a separate module. Due to the way that Go builds the source code 
-  and required libraries into runnable executables, these transitive dependencies will also be contained 
-  alongside your code during application release.
-
-$ Fundamentally, there are two ways we can go about injecting dependencies:
-- Constructor injection: This consists of passing all the required dependencies to a special constructor 
-  function, which will then return an instance of the UUT struct. This is an intuitive way to construct 
-  instances, but it does require that all dependencies be created before the invocation of the function.  
-- Property/method injection: This consists of creating the UUT struct and then setting the fields of the 
-  dependencies as you require them. This can either be done by directly setting them as fields on the UUT 
-  instance, or by invoking setter methods that set them on the fields. The dependencies are not immutable, so 
-  they do not require the UUT instance to be recreated as they are set. This way of creating the UUT and its 
-  dependencies does not require that all dependencies be created before initializing and beginning to use the 
-  UUT, but it also does not guarantee that all the dependencies will be set by a certain time, nor does it 
-  guarantee they won’t be changed later. This could require more application code for nil value checks, as 
-  well as other subtle bugs if dependencies change.
-
-Then, each method can be used in two ways:
-- Manual invocation: This means that we call and create the UUT struct and its dependencies manually. 
-  In this process, you have full control over the creation and invocation of dependencies, but they can 
-  become difficult to manage for larger codebases.
-- Dependency injection frameworks: This means that you import another dependency into your project that can 
-  automate this process using advanced techniques such as reflection or code generation, which then leverage 
-  the dependency graph to create the dependencies in the correct sequence. This method is much more 
-  sustainable for large codebases.
-
-
 

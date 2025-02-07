@@ -1,0 +1,103 @@
+$ From The viewpoint of the UUT, the four main types of dependencies are as follows:
+. Direct internal dependencies: These contain internal functionality that your UUT imports. These dependencies
+  could be defined in the same package or module as UUT, but are required to deliver its functionality.
+. Transitive internal dependencies: These contain internal functionality that the Direct internal dependency
+  parts of your UUT import. These dependencies could also be defined in the same package or module.
+. Direct external dependencies: These contain third-party functionality that your UUT imports. These could
+  be libraries or service APIs that you might rely on, but which are not contained in your current module.
+. Transitive external dependencies: These contain external functionality that your Direct external
+  dependencies rely on, but which are in a separate module. Due to the way that Go builds the source code
+  and required libraries into runnable executables, these transitive dependencies will also be contained
+  alongside your code during application release.
+
+$ Fundamentally, there are two ways we can go about injecting dependencies:
+. Constructor injection: This consists of passing all the required dependencies to a special constructor
+  function, which will then return an instance of the UUT struct. This is an intuitive way to construct
+  instances, but it does require that all dependencies be created before the invocation of the function.
+. Property/method injection: This consists of creating the UUT struct and then setting the fields of the
+  dependencies as you require them. This can either be done by directly setting them as fields on the UUT
+  instance, or by invoking setter methods that set them on the fields. The dependencies are not immutable, so
+  they do not require the UUT instance to be recreated as they are set. This way of creating the UUT and its
+  dependencies does not require that all dependencies be created before initializing and beginning to use the
+  UUT, but it also does not guarantee that all the dependencies will be set by a certain time, nor does it
+  guarantee they won’t be changed later. This could require more application code for nil value checks, as
+  well as other subtle bugs if dependencies change.
+
+Then, each method can be used in two ways:
+. Manual invocation: This means that we call and create the UUT struct and its dependencies manually.
+  In this process, you have full control over the creation and invocation of dependencies, but they can
+  become difficult to manage for larger codebases.
+. Dependency injection frameworks: This means that you import another dependency into your project that can
+  automate this process using advanced techniques such as reflection or code generation, which then leverage
+  the dependency graph to create the dependencies in the correct sequence. This method is much more
+  sustainable for large codebases.
+
+- In Go, we have the following different mocking options:
+  . Function substitution: This means sending replacement fake functions to the UUT. This is easy to do in
+    Go, which has native support for higher-order functions. We can override function variables and parameters,
+    replacing the behavior of the UUT.
+  . Interface substitution: This means injecting fake versions of the interfaces that the UUT depends on.
+    These are fake stubbed implementations that satisfy the interfaces of the real implementation. They can
+    then be used to replace the full implementations, without the UUT even being aware of it.
+
+- Higher-order function
+  A higher-order function is a function that either takes in another function as a parameter or
+  returns a function. Go functions are just like any other type.
+
+- How our tests will look like using the generated mocks is as follows:
+  1- Create mocks: We create the mock structs in the Arrange step of our test. The mock will be separated 
+     from any transitive dependencies, so it will be easy to initialize. At this point, we should have as
+     many mocks as there are direct dependencies of the UUT.
+  2- Inject mocks in the UUT: We inject the mock while creating the UUT in the Arrange step of our test.
+     Since the mocks satisfy the interfaces of the real dependencies, the UUT is not aware of whether it
+     is receiving a real dependency or a mock.
+  3- Set expectations using the On method: We invoke the On method on the mock to set up any expectations 
+     of the mock behavior. We also set up any expected parameter invocations and return values. This 
+     concludes the Arrange step of your test.
+  4- Invoke the methods on the UUT: We write the Act section of our test as normal. The UUT is unaware 
+     that it will be using a mock during its operation, so any method invocations will function as normal.
+  5- Invoke the AssertExpectations method: Finally, in the Assert section of our test, invoke the 
+     AssertExpectations method on all of the mocks to ensure that all the previously declared expectations
+     are verified.
+
+- 
+. The function name is specified during the call of the On method itself. The first parameter of the On
+  method is the name of the function that should be mocked.
+. The function parameters are also specified as parameters to the On method. The arguments can be specific
+  values or we can assert their type using the mock.AnythingOfType function. We can also use mock.Anything
+  if we don’t care about making any validation of the given argument, but this should be used sparingly 
+  because the intention behind the test might be hard to understand later.
+. The return values are specified with the chained Return method, which is invoked after the On method. 
+  It allows you to return specific values if the specified method is invoked with the configured function
+  parameters.
+. The invocation count is also specified using chained methods after the On method. There are shorthand 
+  methods for Once and Twice; otherwise, the Times method can be used to specify a custom invocation 
+  count. The Unset method can be used to specify that a mock handler should not be called.
+
+- Recap the SOLID principles and what they mean for test writing:
+  1- Single Responsibility Principle (SRP): For this, entities should have a single job and a single
+     reason to change. This principle will keep testing code simple since the scope of the functionality
+     provided by the class is small. We can then focus our efforts on covering edge cases, as opposed
+     to covering a large number of methods.
+  2- Open-Closed Principle (OCP): For this, entities should be open for extension, but closed for
+     modification. This principle translates to ensuring that code changes extend but don’t break
+     existing behavior. Code that is backward-compatible by design will not require numerous test
+     changes. Instead, the new/extended functionality can be covered by new test cases, ensuring
+     that the test suite continues to be stable.
+  3- Liskov Substitution Principle (LSP): For this, every subclass or derived class should satisfy the
+     behavior of its parent or base class. Since Go does not have inheritance, you might be tempted
+     to conclude that it does not apply. However, we achieve polymorphism using interfaces, so we
+     can express this principle in terms of the contracts they set. Code that maintains substitutable
+     interfaces will be easy to test, as it will again not require many test changes to the existing suite.
+  4- Interface Segregation Principle (ISP): For this, client code should not be forced to implement
+     methods or interfaces that it does not use. This principle encourages the usage of small interfaces,
+     which only wrap around a single responsibility. Interfaces should be defined on the side of the
+     client/calling code, which should only define interface methods for the functionality they are
+     interested in using. Small interfaces lead to small mocks, which, in turn, lead to simple test
+     setups and assertions.
+  5- Dependency Inversion Principle (DIP): For this, entities should depend on abstractions, not 
+     concretions. This principle encourages using interfaces to represent dependencies. We discussed 
+     this principle in the Dependency injection section of this chapter. We saw that using this 
+     technique in combination with the power of interfaces will produce loosely coupled code that 
+     is easier to test, due to fewer out-of-package dependencies that need to be set up.
+
