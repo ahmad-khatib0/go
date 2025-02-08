@@ -22,7 +22,19 @@ go test -v -cover -coverprofile=c.out                # output test coverage to a
 go test -bench=.                                     # run all benchmarks in a directory 
 go test -race                                        # runs the test with race checker
 go test -run TestDivide ./ch04_test_suites/table -v
-go tool cover -html=c.out                            # opens browser with coverage details 
+go test -run "^TestAdd" ./chapter02/calculator -cover -v
+go test -run TestIndexIntegration ./chapter05/handlers -v -short
+go test ./chapter02/calculator -coverprofile=calcCover.out
+go test -v -run Integration ./...
+# using an env var to target Integration tests (golang test dose not have -long as it has -short flag)
+LONG=true go test -run TestIndexIntegration ./chapter05/handlers -v
+# run the BDD tests 
+ginkgo -v ./chapter05/handlers    # or using ./... oprator 
+
+go tool cover -html=calcCover.out  # open the generated cover file
+
+# Generating ginkgo test suite (Behavior-driven development BDD)
+ginkgo bootstrap
 
 # fix the error: go get -> module found but dose not contain package
 go clean -cache 

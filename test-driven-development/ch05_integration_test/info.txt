@@ -1,0 +1,119 @@
+
+- Advantages of unit tests:
+. Support refactoring: Unit tests make it easier to refactor code because they provide fast verification
+  of existing functionality. They decrease the risk associated with changing code, which can lead to 
+  breaking existing functionality.
+. Early bug detection: Unit tests verify the implementation at the development phase before it has been
+  integrated with the existing product and can be tested end-to-end. This also ensures that bugs don’t
+  propagate to other teams or are accidentally released. Early bug detection can also lead to shorter 
+  development times and reduced project costs.
+. Easier debugging: Detecting and fixing errors is easier when the tests have a limited scope. As the 
+  UUT is tested in isolation from its dependencies, we know that any failing tests are caused either by
+  the test setup or the implementation of the UUT.
+. Better code design: Poorly designed code is hard to test code and can highlight to developers where 
+  their code must be rewritten or refactored. In practice, unit tests promote better code design because
+  they bring the testing concerns to the development phase.
+. Documentation alongside implementation: Unit tests serve as detailed documentation for the functionality
+  and behavior of a component. As tests live alongside the code in Go, they give developers access to it 
+  without the use of another documentation system.
+
+- The disadvantages: 
+. Increase the amount of code: Unit tests increase the code that developers must write early on.
+  This is problematic for tasks that require prototyping or don’t have well-established requirements.
+  Developers don’t want to write large amounts of code that then need to be changed alongside
+  the implementation.
+. Increased refactor effort: While unit tests ensure that refactoring has not broken any existing
+  functionality, causing regressions, the tests themselves must be refactored in the case of changes
+  in requirements. This can increase the cost of refactoring efforts.
+. Difficult to identify realistic scenarios: As the codebase grows and functionality becomes more
+  complex, it will be difficult, if not impossible, to test all the execution paths of a component.
+  However, as unit tests are written based on code and not user requirements, it can be difficult
+  for developers to identify which scenarios are realistic and should be covered.
+. Difficulties testing user interfaces (UIs): It is difficult to test UIs with unit tests. Usually, they
+  verify business logic, as they traditionally do not have libraries available for UI verification.
+
+- The difference in speed between integration and end-to-end tests is due to the functionality that
+  they cover:
+. Integration tests cover one or multiple components, ensuring that the individual components work 
+  well as a combined entity. While the logic of the particular component is verified by its unit 
+  tests, the purpose of the integration test is to exercise the conditions at the seams between
+  the components.
+. End-to-end tests replicate the usage of the system by the user. They require starting up all services
+  and dependencies of the system under test. Then, tests that mimic user behavior are written using helper
+  frameworks. These tests verify that the system is performing correctly under real-world conditions.
+
+- The various parts of the integration tests that need to be configured are as follows:
+. The Component under test part is initialized. The component under test is larger than the UUT, but 
+  it is still self-contained and defined within a single module. The scope of the integration test is
+  to ensure multiple units work as expected, but they are always contained within the single module 
+  under test.
+. If required, we initialize the Database component with a given seed/start position of test data
+  contained inside it. As they are complex, databases are rarely mocked and will most often be started
+  and populated before the component under test is started. Database start positions are often specified
+  as SQL files or JSON files.
+. Docker makes it easier to configure Real components together and is often used for system 
+  configuration. We will look at how to leverage the power of Docker later in this chapter in the
+  Spinning up and tearing down environments with Docker section.
+. Most often, the component under test will require dependencies for it to start and function correctly.
+  These dependencies could be internal to the project or external dependencies to the organization, 
+  such as a third-party service. These external dependencies will be mocked, allowing us to test our
+  component with a variety of inputs and conditions.
+
+- Tests are usually written in the Given-When-Then structure, using business language and the shared
+  vocabulary previously established by the business. A BDD formulation of the integration test for the
+  GET / endpoint we have previously implemented looks like this:
+    • Story: View the list of books
+    • Given a user
+    • When the user accesses the GET / root endpoint
+    • Then the list of available books is returned to the user
+- The test specification reads like plain English and establishes the main aspects of the test case:
+    • Who the main actor of the test case is
+    • What their expected behavior is
+    • What the user will get from the performed action
+  Note that the test case does not specify any implementation details of the application and instead
+  focuses on the behavior of the application. Test cases treat the application as a black box. This 
+  simplicity is the power of BDD, where test specifications are not something that only engineers 
+  and testing professionals can write.
+
+- The following are the advantages of BDD
+. Single source of truth: The biggest advantage of BDD is that it allows teams to have a single source
+  of truth for the intended behavior of the application. Furthermore, we have a unified vocabulary to
+  express this behavior across the business.
+. Tests as documentation: While unit tests can also serve as documentation for the application, BDD 
+  tests are easier to read and understand, since they focus on readability. 
+. Specific behaviors: With their Given-When-Then structure, BDD tests encourage writing test cases for
+  specific behavior. This often helps narrow down larger and potentially vague user requirements that
+  have been established at the beginning of the project.
+. Wider involvement: Anyone in the team or the business can contribute to the specification of
+  these tests, making it easier to detect any bugs or functional oversights early on.
+
+- Here are the disadvantages:
+. Time-consuming: It can be time-consuming to get multiple stakeholders together to establish test 
+  cases at the beginning of the project. Furthermore, it can also be time-consuming to maintain these 
+  tests during the lifetime of the project.
+. Requires commitment: The different stakeholders need to commit to taking on the work of specifying 
+  and discussing these test cases upfront.
+. Dependent on good BDD practices: Unless correctly specified together with the correct stakeholders, 
+  BDD tests can become ambiguous and difficult to implement. The successful specification of tests 
+  is therefore dependent on good BDD practices in the business.
+  
+- Implementing BDD tests with Ginkgo
+  The ginkgo (https://github.com/onsi/ginkgo) project was started in 2013 to fill this need. It is a 
+  testing framework built on top of Go’s testing package and it is designed to help us write expressive
+  BDD tests. It is used together with the gomega (https://github.com/onsi/gomega) matcher library, which
+  exposes assertion matchers that we can use in our tests. This framework received mixed support from 
+  the community, as it brought the Ruby way of writing tests to Go. However, it is currently the default
+  way to write BDD-style tests and it is an important part of our TDD journey.
+ 
+
+- We should write tests that cover the following aspects of our database systems:
+. Startup and availability: The application should wait for the database to become available and
+  should do so in an efficient manner.
+. Persistence and querying: Once data is stored in the database, it should be correctly stored and
+  fetched. This is done by the business logic and should be verified to be implemented correctly.
+. Performance testing: This type of non-functional testing is important for the database, which 
+  typically powers all the requests in the application. Typical verifications include load testing
+  using large files or results counts, running tests using multiple remote users, and any edge cases
+  regarding the values of the column/field values of the database payloads.
+
+

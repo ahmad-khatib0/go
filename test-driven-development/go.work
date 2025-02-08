@@ -4,4 +4,5 @@ use (
 	./ch02-basics
 	./ch03-mock-and-assert
 	./ch04_test_suites
+	./ch05_integration_test
 )
