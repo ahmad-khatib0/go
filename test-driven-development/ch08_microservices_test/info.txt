@@ -1,0 +1,155 @@
+$$ We rerun our benchmark
+   go test -bench BenchmarkGetIndex -cpuprofile cpu-books.out
+run. We can then download the results to a local file 
+   curl --output book-swap-app "http://localhost$BOOKSWAP_PORT/debug/pprof/profile?seconds=10"
+   go tool pprof book-swap-app
+
+
+- The types of tests for the non-functional testing are divided between performance tests and 
+  usability tests. They verify the following aspects of our systems:
+  
+1- Load testing simulates user demand on our system. These tests simulate expected demand and
+   overload conditions to identify bottlenecks or performance issues.
+2- Stress testing simulates user demand under extreme conditions on our system. These tests are
+   used to identify the scalability limit of our system and verify that it handles errors gracefully
+   when components become overloaded.
+3- Volume testing simulates large volumes of data coming into our system. This is similar to stress 
+   testing but with a few tests, each involving relatively large amounts of data, instead of many tests
+   involving smaller amounts of data simulating user demand. These tests are used to identify the data 
+   limits that our system can process, which is particularly useful for services with a database/persistent
+   storage solution.
+4- Scalability testing verifies our system’s ability to scale its components when subjected to sudden 
+   load. The load can be applied gradually, or it can be applied suddenly, which is known as a spike test.
+5- Failover testing verifies our system’s ability to recover after a failure. This type of negative 
+   testing is a useful simulation for how quickly the system can recover following incidents.
+6- Configuration testing verifies our system’s behavior with different types of settings. They can be
+   user-controlled settings or system settings. The system setup can change the expected behavior of 
+   the system, as well as its performance.
+7- Usability testing verifies how intuitive the user-facing functionality is to use. The focus of this
+   type of testing varies according to the functionality that the system exposes, but it typically
+   covers the following:
+       1- How intuitive the system is to use for new users
+       2- How easily users can perform their tasks
+       3- Whether error messages are well formulated and guide the user
+
+- The runtime/pprof package provides the following predefined profiling options:
+  • cpu shows us where our program is using CPU cycles
+  • heap shows us where our program is making memory allocations
+  • threadcreate shows us where the program is requiring new threads
+  • goroutine shows us stack traces of all the program’s goroutines
+  • block shows us where goroutines are waiting on locking primitives
+  • mutex reports lock contention
+
+- While benchmarking allows us to create simple tests and simulate a variety of load-testing scenarios,
+  it can be quite verbose to define testing scenarios across many different microservices. There are two
+  popular open source libraries that are often used for performance testing:
+. JMeter (https://jmeter.apache.org/) is an open source Java testing tool maintained by Apache. Test 
+  plans are recorded using a simple UI, removing the need to write boilerplate code with Go’s testing 
+  package. Different types of load can be configured. JMeter also has the capability of generating 
+  result graphs and dashboards once the tests are run.
+. K6 (https://k6.io/) is an open source Go project maintained by Grafana. Test plans are written in a 
+  scripting language similar to JavaScript, reducing a lot of the code needed to write test scenarios. 
+  K6 offers different types of load configurations and also has the capability of outputting test 
+  results to dashboards.
+. Gatling (https://gatling.io/open-source/) is an open source Scala load testing tool maintained by 
+  Gatling Corp. Similarly to K6, tests are written in a Domain-Specific Language, but it is based on 
+  Scala. This library provides load testing and insights on dashboards.
+
+- There are two options when it comes to testing the integration between two services:
+. Option A: Integration test with real services involves writing an integration test between the
+  real services in a testing environment. This approach allows us to verify that both services are
+  functioning as expected and that their integration is successful. However, as the system grows,
+  setting up each service and its dependencies becomes more complicated. Individual test runs will
+  also slow down, as data and requests need to travel across multiple microservices or data stores.
+  
+. Option B: Integration test with mocks involves writing separate integration tests against mocks
+  for the dependency. This approach allows us to reduce the scope of the test and ensure that each
+  service is working as expected. However, as it tests each service in isolation, it does not actually
+  verify that the services are working together as expected. If either service does not conform to
+  its defined mock, then the test would pass even though we could be creating an outage. This is
+  the same issue we identified with our mocks in Chapter 3, Mocking and Assertion Frameworks.
+
+- Fundamentals of contract testing
+  Due to the downsides of the existing solutions and the difficulties that come with testing microservice
+  architectures, developers began using another type of testing practice. Contract testing offers a simpler
+  way to ensure that microservices continue to integrate well. It is not a new concept, but it has gained
+  traction because it is well suited for distributed architectures. Developers write virtual contracts 
+  that define how two microservices should interact. This contract provides the source of truth and 
+  represents the expected values for test assertions. There are two sides to every contract:
+  . The consumer begins the interaction between the two microservices. The consumer issues the HTTP 
+    request or requests data from a message queue. In the example in Figure 8.5, BookService is the 
+    consumer as it sends the request.
+  . The provider completes the interaction between two microservices. The provider responds to the 
+    consumer’s HTTP request or creates the message for the consumer to read. In the example in 
+    Figure 8.5, PostingService is the provider as it sends the response.
+
+- The simple procedure consists of the following steps:
+1. Establish the consumer and provider: We begin by identifying which services we want to test. In a 
+   microservice architecture, this isn’t always straightforward. After all, there is no code coverage 
+   metric for distributed systems that we can rely on to see which microservice integrations haven’t 
+   been tested.
+2- Identify the interaction(s) under test: This step is equivalent to identifying which user journey
+   we’d like to test or writing our feature test. This should include the HTTP method, the HTTP request
+   body, and any URL parameters we might require. At this point, we should also establish what the 
+   expected response of the provider should be.
+4- Consumer unit tests: As part of the development process, the team will write unit tests for the 
+   consumer service. This will be done against a provider mock that is under the consumer team’s ownership.
+5- Provider unit tests: In the same way as on the consumer service side, the team will write unit tests 
+   for the provider during the development process, we use a consumer mock that is under the provider 
+     team’s ownership.
+6- Record consumer interaction: Based on the identified parameters and interactions of the unit test, 
+   we can begin to formulate the contract between the consumer and provider. The consumer team captures
+   the required interaction between services, which is made up of the consumer request(s) and the 
+   expected provider response.
+7- Contract: The consumer request and provider response are recorded together in one file, known as 
+   the contract. It crosses team boundaries and is the source of truth for the two teams, allowing them
+   to easily collaborate using a common language. As we mentioned previously, microservice architectures
+   add organizational complexity so the contract can help teams communicate more effectively.
+8- Verify contract against provider: The consumer requests recorded in the contract are run against 
+   the provider microservice. The expected provider response is verified against the response received
+   from the real provider microservice.
+
+- The consumer viewpoint
+  Contract testing is written starting with the consumer, which dictates the request and expectations.
+  This helps us to ensure that the API is stable for the services that are using its functionality,
+  encouraging stable APIs that do not promote breaking changes.
+
+- Using Pact 
+  Pact (https://github.com/pact-foundation) is a popular open source contract testing tool that allows 
+  us to easily write contract tests. It has been running since 2013, and it has quickly become the 
+  number-one choice for implementing contract tests. Some of the main features of Pact are as follows:
+. Synchronous and asynchronous support: Pact allows contract testing for HTTP endpoints, as well as 
+  asynchronous non-HTTP messaging systems. It supports a variety of technologies, such as Kafka, 
+  GraphQL, and publish-subscribe messaging patterns.
+. Libraries in over ten languages: Pact offers support for a wide variety of languages for both frontend
+  and backend technologies. The Pact Go library (https://github.com/pact-foundation/pact-go) provides 
+  us with the functionality required for testing our Go microservices.
+. Unit testing integration: The consumer code base imports the Pact Go library and uses it to write unit
+  tests. This allows developers to use the same workflow and techniques for contract tests as was used 
+  for writing unit tests.
+. Contract testing Domain-Specific Language (DSL): The Pact library gives projects a common DSL for 
+  writing contract tests. This allows developers to define interactions and expected responses in a 
+  uniform way.
+. Test playback and verification: Based on the test specifications, Pact generates and records the test
+  runs. Contract tests are called pacts, and they are replayed and verified against the provider service.
+. Broker service: Pact provides a self-hosted broker solution that allows the easy sharing and 
+  verification of contracts and test results. This solution is suitable for production systems and 
+  integrating contract testing into the release pipelines.
+
+- go install github.com/pact-foundation/pact-go/v2@latest provides a variety of CLI tools: 
+. pact-mock-service provides mocking and stubbing functionality. It can help us easily
+  create mocks for our providers during contract testing.
+. pact-broker provides functionality for starting up the previously mentioned broker service, which 
+  makes it easy to share contracts and verification results. It also allows you to deploy it independently,
+  including using Docker.
+. pact-provider-verifier provides verification of two versions of pacts, regardless of whether the 
+  values are coming from the Pact Broker or another source. The verifier is often added to the release
+  pipelines, saving the development effort of implementing their own.
+
+- Observability versus monitoring
+  Observability and monitoring are often used interchangeably, but they have two different intended 
+  purposes: observability aims to give teams access to data they need to debug problems, while monitoring
+  aims to track performance and identify service anomalies. This means that monitoring is contained 
+  within observability. Observations need to be viewed in terms of meaningful value to the business in
+  order to deliver reliable monitoring of properties, such as availability, performance, and capacity.
+

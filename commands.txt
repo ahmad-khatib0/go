@@ -20,6 +20,7 @@ go list -m -versions github.com/ahmad-khatib0/go/idiomatic-approach-book/simplet
 
 go test -v -cover -coverprofile=c.out                # output test coverage to a file
 go test -bench=.                                     # run all benchmarks in a directory 
+go test -bench BenchmarkGetIndex -cpuprofile cpu-books.out ./chapter08/performance
 go test -race                                        # runs the test with race checker
 go test -run TestDivide ./ch04_test_suites/table -v
 go test -run "^TestAdd" ./chapter02/calculator -cover -v
@@ -31,6 +32,8 @@ LONG=true go test -run TestIndexIntegration ./chapter05/handlers -v
 # run the BDD tests 
 ginkgo -v ./chapter05/handlers    # or using ./... oprator 
 
+# View the file using the pprof command tool
+go tool pprof performance.test cpu-books.out
 go tool cover -html=calcCover.out  # open the generated cover file
 
 # Generating ginkgo test suite (Behavior-driven development BDD)
