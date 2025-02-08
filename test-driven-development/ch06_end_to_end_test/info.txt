@@ -1,0 +1,21 @@
+- What is a stub?
+  A stub is a concrete implementation of another component. Stubs don’t make use of mocking frameworks,
+  as they are used by implementation code. They make testing easier and allow us to build code as if 
+  the external component were built and implemented. Due to the flexibility of interfaces in Go, 
+  stubbed implementations can be easily swapped out for real implementations.
+
+- The feature file describes a part of the functionality required for new users of the 
+  BookSwap application:
+  • The feature describes the scenario of signing up as a new user of an application.
+  • As a background step, the BookSwap application should be up and running. This allows us
+    to write an E2E test as we run the entire application and run the test on the side.
+  • When the feature is completed, the following functionality will be available:
+    . New customers will be able to create user profiles.
+    . When their profile is created, the user will see their user summary and receive 
+      their user ID, which will allow them to further interact with the application.
+    . Once signed up, customers will be able to view their profile by using their user ID.
+    . Any further interactions with the application are outside the scope of this feature.
+
+
+
+

@@ -5,4 +5,5 @@ use (
 	./ch03-mock-and-assert
 	./ch04_test_suites
 	./ch05_integration_test
+	./ch06_end_to_end_test
 )
