@@ -1,0 +1,44 @@
+- overview of five popular code refactoring techniques:
+. Red-green-refactor is the technique we are already familiar with. The implementation is written 
+  alongside its corresponding tests, starting with a failing test, making it pass, and then refactoring 
+  the written code as required. This approach ensures that all functionality is covered by tests and that
+  the refactoring is undertaken as part of the initial implementation. As tests are written alongside the
+  code, this technique will most likely require test changes as part of the code refactoring process.
+
+. Extract is the technique that involves extracting an existing code fragment from a potentially large
+  function into its own function. This function name should describe the functionality that the extracted
+  fragment implements, improving the readability of the previous large function containing multiple pieces 
+  of functionality. As code is only extracted, not rewritten, test changes will not likely be required.
+
+. Simplify is the technique that improves the complexity of large functions. This can be done by
+  refactoring conditional expressions or adjusting method calls by refactoring function parameters
+  or adjusting interface signatures. As this technique involves changing function signatures, test
+  changes will most likely be required.
+  
+. Inline is the opposite technique to Extract. It involves removing redundant functions by taking 
+  their contents and putting them in place of the existing function call. This reduces the indirection
+  of the code, reducing the cognitive burden of the developer reading the code. Unless the method being 
+  tested is removed, this technique will not likely require test changes.
+  
+. Abstraction is the technique most likely suited for larger-scope code refactoring. This technique
+  involves introducing new levels of abstraction, such as interfaces, to remove repetition and allow 
+  the reuse of behaviors across multiple packages. Since new interfaces will require the use of mocks
+  and larger scope refactoring, this technique will most likely require test changes.
+
+
+- The sprint backlog is a combination of feature work and technical debt:
+  . The development team and product team each maintain their own backlogs. Typically, these are 
+    represented by Jira tickets or GitHub issues with details of the work to be done. The technical debt
+    work will typically involve refactoring existing code, while the feature work will consist of adding 
+    new functionality. The sprint backlog attempts to find a balance between these two types of work.
+  . During sprint planning, representative stakeholders prioritize the work. It is considered good
+    practice to involve the development team during planning to ensure that the entire team has a good
+    understanding of the goals of the upcoming sprint. The engineering team consists of experts who can
+    scope what refactoring work should be taken on. They often have an understanding of which parts of
+    the system require attention.
+  . The outcome of the sprint planning meeting is a prioritized list of work that makes up the sprint
+    backlog. Based on their expertise, the technical team typically provides time estimates for the
+    work to be done. These estimates are then used to determine what work can be undertaken to match 
+    the capacity of the team. Refactoring and feature work are treated as equal, with time being given
+    to each piece of work based on provided estimates.
+
