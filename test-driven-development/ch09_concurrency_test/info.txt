@@ -1,0 +1,101 @@
+- Parallelism is often confused with concurrency, but it is a program’s ability to execute tasks simultaneously.
+  Unlike concurrency, which does not guarantee task ordering, we know that the task execution in this 
+  pattern will be happening in parallel. Tasks should also be independent of each other, as they cannot
+  wait for each other.
+
+- The parallel execution flow of two tasks happens simultaneously:
+ 1- The tasks begin executing once Input A and Input B are received.
+ 2- The tasks are executed simultaneously and independently, without interruption or interleaving.
+ 3- The tasks are completed at the same time, within a margin of error. There will always be deviations 
+    in resource usage and performance regardless of how much we attempt to specify them to be identical.
+
+- In order to achieve true parallelism, separate computing resources are required. This increases the
+  cost of our system infrastructure, which is undesirable, if not a dealbreaker, for some engineering
+  teams. Therefore, concurrency is often the preferred way to achieve multitasking in programs. As the
+  system becomes successful, properly implemented concurrency can facilitate a smooth transition to
+  parallelism when the system can handle such increased costs.
+
+
+- Understanding how channels will behave in our code
+  1- Nil channels are channels that have not been correctly initialized using the make function. They 
+     cannot be used to send information but are useful for passing to goroutines when those goroutines 
+     are started. The nil channel will be initialized for use at a future time:
+    1- Send operations will block until the channel is initialized, after which the rules for
+       initialized channels apply.
+    2- Receive operations behave identically to send operations.
+    3- Close operations panic on nil channels. As nil channels are not ready to send information through,
+       it would not make sense to close them. It is therefore considered a fatal error if we attempt to 
+       close nil channels.
+  2- Initialized channels are created using the make function and are ready to be used. They are
+     ready for sending information through:
+    1- Send operations will block until a receiver arrives. The sending goroutine will not be
+       able to execute past this point until the operation completes.
+    2- Receive operations will block until a value arrives from the sender. As sends and receives are 
+       synchronous operations, both goroutines must be ready to complete the operation for the two parts 
+       of the transaction to be completed. So, if the sender starts up but the receiver is not yet ready, 
+       this will mean the sender halts until the receiver is ready, which can be a helpful property.
+    3- Close operations complete immediately. Once the first operation completes, the channel
+       will move into the Closed Channel state.
+  3- Closed channels are initialized channels that have been successfully closed. Channels in this
+     state signal that they will no longer be able to transport information: 
+    1- Send operations will panic. There is no easy way to know whether a channel is closed, so the 
+       panic lets senders know that they should stop sending values to it, but you should code carefully
+       in order to avoid encountering a panic.
+    2- Receive operations will immediately complete with the zero value of the channel’s data type. As 
+       we have seen in our greeter example, we can use the receive operation on closed channels as a 
+       synchronization mechanism.
+    3- Close operations will panic, as channels can only move into the closed state once. Again, defensive
+       coding (for example, the single responsibility principle where only one part of your code is 
+       responsible for closing the channel) can help to control this.
+
+- The Go standard library also includes concurrency primitives in its sync package
+. sync.Map is a map implementation that is safe for concurrent use. We will explore how to
+  create other thread-safe data structures in the next section.
+. sync.Mutex is an exclusion lock. It allows us to gatekeep resources for usage by one goroutine at a 
+  time. It is also possible to take a read-only or a read-write mutex depending on the problem being solved.
+. sync.Once is a specialized lock that can only be acquired once. This is useful for wrapping around 
+  statements, such as cleanup code, which should only run once.
+. sync.Pool is a temporary set of objects that are individually saved and retrieved. It can be seen as 
+  a cache of objects, making it easy to create thread-safe lists.
+. sync.WaitGroup waits for a collection of goroutines to finish. This primitive has a counter and a 
+  lock under the hood, allowing it to keep track of how many goroutines it will need to wait for before
+  completing. This can greatly simplify a main goroutine.
+
+- The timing of operations is the key difference between the channels:
+ . On unbuffered channels, both the send and receive operations happen at the same time. The channel does
+   not store any values and can only complete the operation once both the sender
+  and receiver are available.
+ . On buffered channels, the channel has a limited capacity buffer that can save values, if it has the
+   capacity to do so. The send and receive operations complete at different times, as the channel saves 
+   the sender’s value in its buffer. Once the receiver is ready, it can read the available value from 
+   its buffer and pass it on to the receiver.
+ . When the buffer is at capacity, buffered channels will block send operations, behaving like an
+   unbuffered channel until the buffer starts to be emptied by the receiver.
+
+- According to the official Go documentation (https://go.dev/blog/race-detector), race-enabled 
+  applications use 10 times the CPU and memory, so we should avoid running them in production.
+  Instead, we should run our load tests and integration tests with the race detector enabled, 
+  since these tests usually exercise the most important parts of the program.
+
+- Due to the dependency on timing, there are four essentially untestable concurrency problems:
+1- Race conditions: Unstable or inconsistent behavior due to multiple goroutines that read and modify 
+   a shared resource without the correct usage of synchronization mechanisms. For example, goroutines 
+   reading and incrementing a common counter.
+2- Deadlocks: Goroutines becoming blocked waiting for resources that never become available, either 
+   because they never reach the required state or because another goroutine has locked the resources 
+   and never released them. For example, a goroutine is waiting to receive from a nil channel, which 
+   never becomes initialized.
+3- Livelocks: Similar to deadlocks, goroutines become livelocked when they continue to attempt to 
+   acquire resources that never become available, either because they never reach the required state 
+   or because another resource has locked the resources and never released them. In this case, goroutines
+   will waste CPU continuing to retry impossible operations. For example, a goroutine periodically polls
+   to write to a variable that has been locked by another goroutine, which is waiting for a resource that
+   the first goroutine has locked and never received. 
+4- Starvation: Similar to livelocks, goroutines cannot get all the resources needed to continue processing.
+   One or more goroutines are prevented from doing meaningful work by greedy goroutines that do not release
+   resources. For example, a goroutine locks a resource and then proceeds to execute a very long-running 
+   operation, preventing other goroutines from gaining access to the resource in the meantime.
+   
+   
+
+
