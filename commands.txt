@@ -22,6 +22,8 @@ go test -v -cover -coverprofile=c.out                # output test coverage to a
 go test -bench=.                                     # run all benchmarks in a directory 
 go test -bench BenchmarkGetIndex -cpuprofile cpu-books.out ./chapter08/performance
 go test -race                                        # runs the test with race checker
+# run the fuzz test for 5 seconds 
+go test -fuzz FuzzGetSortedValues_ASC -fuzztime 5s ./chapter10/fragile-revised -v
 go test -run TestDivide ./ch04_test_suites/table -v
 go test -run "^TestAdd" ./chapter02/calculator -cover -v
 go test -run TestIndexIntegration ./chapter05/handlers -v -short
