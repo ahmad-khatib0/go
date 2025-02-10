@@ -1,0 +1,31 @@
+
+- While both generics and interfaces provide code flexibility and polymorphism to our code, 
+  they have the following main differences:
+1. Generics are a way to specify the type, while interfaces specify behavior. As we have seen, interfaces 
+   are collections of methods that must be defined by structs in order to satisfy them. On the other hand, 
+   generics give us the ability to specify the types of parameters that can be used.
+2. Generics are built into the language, while interfaces are defined by the application. Interfaces are
+   defined by engineers as part of their code bases, which makes it easier to define them to include any
+   behavior required by the application. The specifications of generics are built into the language and 
+   can be shared across code bases.
+3. Generics have limited scope, while interfaces have a wide scope. As they are built into the language, 
+   they are simple enough to implement solutions to a wide variety of problems. On the other hand,
+   interfaces are expressive and can define complex behavior.
+
+- There are three main components for specifying generic code:
+1. Type parameters are the placeholder type specifications that will be used with generic code. They 
+   are typically denoted with one single letter, for example, T, and allow us to reference the 
+   placeholder type in our implementation. A generic function or type is defined by this placeholder
+   as part of its specification.
+2. Type constraints help us define rules or subtypes for the type parameters. Constraints are not full
+   specifications like interfaces, but they allow us to restrict type parameters to certain properties.
+3. Type arguments are the type that is passed to the generic function or type upon invocation, which 
+   specifies the type of data we will be using. Type arguments are used in place of the type parameter 
+   placeholders declared by the function or type signature.
+4. Type inference is the process that takes place under the hood to determine the type of a variable,
+   without its explicit type specification. This also allows us to write less verbose generic code.
+
+
+
+
+

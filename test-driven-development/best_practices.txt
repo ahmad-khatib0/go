@@ -1,0 +1,52 @@
+- We have discussed 14 best practices throughout this book, which have been divided into 3 
+  categories – development, testing, and culture.
+
+- Development best practices
+1. Use TDD to write tests during the development process: The best way to ensure that the code we write
+   is tested is to include it in the development process. Code is never delivered untested
+   and developers write testable, well-designed code.
+2. Use interfaces to wrap dependencies: Our code will often have dependencies on other components. It 
+   is a good practice to have dependencies external to our package wrapped by interfaces so that they 
+   can be easily replaced, either by test code or with another dependency.
+3. Refactor code to tackle technical debt: Code should be refactored alongside new feature
+   development to ensure that it stays performant, readable, and easy to maintain. Tests will ensure 
+   that no functionality is broken by the refactoring process.
+4. Write robust code that is able to handle a variety of inputs:  It should be able to handle a wide 
+   variety of inputs and respond with well-formulated errors.
+5. Adopt generics for easier code reuse: generics allow us to write code that is able to handle different 
+   data inputs. This allows us to use reusable code, which works for a variety of type parameters.
+
+- Testing best practices
+1. Write simple, isolated tests: Tests should be simple and isolated from their dependencies. This allows 
+   us to avoid setting up a large number of services, which can be cumbersome and are likely to change. 
+  Instead, we should write focused tests that make use of mocks to test the UUT in isolation. 
+2. Use table-driven tests to cover a variety of scenarios: The popular technique of writing table-
+   driven testing is to easily create a list of test cases and run through them. Test cases should be
+   run in their own subtests to create a well-structured test output.
+3. Write tests at every level of the application: Unit tests are fast, but they only assert that
+   the functionality of a given package is correct, not that it is able to function correctly with
+   other units. As depicted by the testing pyramid, we should write automated tests that assert that 
+   the individual units of the application integrate and function correctly together.
+4. Use Go’s testing package: While it might appear overly simple at first, the testing package
+   offers a wide variety of functionality that allows us to write functional and non-functional tests.
+   We have explored the capabilities of this package throughout this book.
+5. Use third-party testing libraries: We explored multiple third-party testing libraries (testify,
+   ginkgo, and godog) that complement the standard testing package and make it easier
+   for us to write test assertions and create mocks.
+
+- Culture best practices
+1. Document customer requirements: User journeys and customer requirements should be at the heart of 
+   all the tests we write. As it is nearly impossible to write tests that cover every single code path 
+   and interaction, engineers should ensure that the things that matter to customers are prioritized 
+   and covered by tests.
+2. Mitigate for errors and unexpected outages: In microservices architectures, it is nearly impossible 
+   to ensure that there are zero outages. We should contract-test our services, as well as design our 
+   microservices architectures according to the best practices
+3. Value and prioritize code quality: As an organization, you should value and prioritize code quality, 
+   allowing the engineering teams time to refactor their services to ensure they can be easily extended 
+   and maintained for the future needs of the business.
+4. Document non-functional requirements: While one important use of tests is to ensure that our system 
+   is able to satisfy functional requirements, another important aspect is to verify the performance 
+   of our system according to the needs of the customers.
+
+

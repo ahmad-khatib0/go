@@ -9,7 +9,7 @@ COPY go.sum ./
 COPY . .
 
 RUN go mod download
-RUN go build ./cmd
+RUN go build ./chapter09/cmd
 RUN apk --no-cache add curl
 EXPOSE ${BOOKSWAP_PORT}
 

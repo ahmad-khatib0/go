@@ -10,4 +10,5 @@ use (
 	./ch08_microservices_test
 	./ch09_concurrency_test
 	./ch10_testing_edge_case
+	./ch11_generics
 )
