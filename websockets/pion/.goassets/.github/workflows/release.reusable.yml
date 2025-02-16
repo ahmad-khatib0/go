@@ -1,0 +1,32 @@
+name: Release (reusable)
+
+on:
+  workflow_call:
+    inputs:
+      go-version:
+        required: true
+        type: string
+
+jobs:
+  release:
+    name: Release
+    permissions:
+      contents: write
+
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - uses: actions/setup-go@v5
+        with:
+          go-version: ${{ inputs.go-version }}
+
+      - name: Build and release
+        uses: goreleaser/goreleaser-action@v6
+        with:
+          version: latest
+          args: release --clean
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

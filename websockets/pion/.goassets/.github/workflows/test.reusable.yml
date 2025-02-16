@@ -1,0 +1,78 @@
+name: Test
+on:
+  workflow_call:
+    inputs:
+      go-version:
+        required: true
+        type: string
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - uses: actions/cache@v4
+        with:
+          path: |
+            ~/go/pkg/mod
+            ~/go/bin
+            ~/.cache
+          key: ${{ runner.os }}-amd64-go-${{ hashFiles('**/go.sum') }}
+          restore-keys: ${{ runner.os }}-amd64-go-
+
+      - name: Setup Go
+        uses: actions/setup-go@v5
+        with:
+          go-version: ${{ inputs.go-version }}
+
+      # A tool for reporting accurate Code Coverage in Golang.
+      - name: Setup go-acc
+        run: go install github.com/ory/go-acc@latest
+
+      # your tests will now show up in a beautifully formatted fashion
+      - name: Setup gotestfmt
+        uses: haveyoudebuggedit/gotestfmt-action@v2
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }} # Avoid getting rate limited
+
+      - name: Run pre test hook
+        run: |
+          if [ -f .github/.ci.conf ]; then . .github/.ci.conf; fi
+          if [ -n "${PRE_TEST_HOOK}" ]; then ${PRE_TEST_HOOK}; fi
+
+      - name: Runt test
+        run: |
+          TEST_BENCH_OPTION="-bench=."
+          if [ -f .github/.ci.conf ]; then . .github/.ci.conf; fi
+
+          set -euo pipefail 
+          # grep -v selects non-matching lines (exclude)
+          go-acc -o cover.out ./... -- ${TEST_BENCH_OPTION} -json \ 
+            -v -race 2>&1 | grep -v '^go: downloading' | tee /tmp/gotest.log | gotestfmt
+
+      - name: Run post test hook
+        run: |
+          if [ -f .github/.ci.conf ]; then . .github/.ci.conf; fi
+          if [ -n "${POST_TEST_HOOK}" ]; then ${POST_TEST_HOOK}; fi
+
+      - name: Upload test log
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: test-log-${{ inputs.go-version }}
+          path: /tmp/gotest.log
+          if-no-files-found: error
+
+      # Easily upload coverage reports to Codecov
+      - uses: codecov/codecov-action@v4
+        with:
+          fail_ci_if_error: true
+          flags: go
+          name: codecov-umbrella
+          token: ${{ secrets.CODECOV_TOKEN }}

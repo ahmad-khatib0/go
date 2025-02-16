@@ -1,0 +1,20 @@
+name: Lint
+on:
+  pull_request:
+
+jobs:
+  commit-lint:
+    runs-on: ubuntu-24.04
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Copy scripts
+        run: |
+          mkdir -p .github/.goassets/
+          cp -r scripts/lint-commit-message.sh .github/.goassets/
+
+      - name: Lint commit message
+        run: .github/.goassets/lint-commit-message.sh

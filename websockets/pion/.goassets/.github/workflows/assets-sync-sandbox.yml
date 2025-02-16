@@ -1,0 +1,30 @@
+name: Sync Assets to ci-sandbox
+on:
+  push:
+    branches:
+      - master
+
+jobs:
+  sync:
+    runs-on: ubuntu-24.04
+    steps:
+      - name: checkout
+        uses: actions/checkout@v4
+        # GitHub Action to deploy asset files to multiple repositories.
+      - name: sync ci configs
+        uses: at-wat/assets-sync-action@v0
+        with:
+          repos: pion/ci-sandbox
+          rm: |
+            .github/hooks/*
+            .github/workflows/renovate-go-mod-fix.yaml
+            .github/lint-*.sh
+
+          git_user: Pion Bot
+          git_email: 59523206+pionbot@users.noreply.github.com
+          github_token: ${{ secrets.PIONBOT_ASSETS_SYNC_TOKEN }}
+          force_push: true
+          commit_message: |
+            Update CI configs to %v
+
+            Update lint scripts and CI configs.

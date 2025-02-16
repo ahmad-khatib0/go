@@ -1,0 +1,29 @@
+name: CodeQL (reusable)
+
+on:
+  workflow_call:
+
+jobs:
+  analyze:
+    name: CodeQL
+    runs-on: ubuntu-24.04
+    permissions:
+      actions: read
+      contents: read
+      security-events: write
+
+    steps:
+      - uses: actions/checkout@v4
+        # The code in examples/ might intentionally do things like log credentials
+        # in order to show how the library is used, aid in debugging etc. We should
+        # ignore those for CodeQL scanning, and only focus on the package itself.
+      - name: Remove example code
+        run: rm -rf examples/
+
+      - name: Initialize CodeQL
+        uses: github/codeql-action/init@v3
+        with:
+          languages: "go"
+
+      - name: CodeQL Analysis
+        uses: github/codeql-action/analyze@v3
