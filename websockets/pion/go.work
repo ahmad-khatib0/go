@@ -1,3 +1,6 @@
-go 1.23
+go 1.23.6
 
-use ./logging
+use (
+	./logging
+	./transport
+)
