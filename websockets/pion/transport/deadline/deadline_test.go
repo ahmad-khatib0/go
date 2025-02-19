@@ -173,5 +173,16 @@ func collectCh(ch <-chan byte, n int, timeout time.Duration) []byte {
 			return calls
 		}
 	}
+
 	return calls
+}
+
+func BenchmarkDeadline(b *testing.B) {
+	b.Run("Set", func(b *testing.B) {
+		d := New()
+		t := time.Now().Add(time.Minute)
+		for i := 0; i < b.N; i++ {
+			d.Set(t)
+		}
+	})
 }
