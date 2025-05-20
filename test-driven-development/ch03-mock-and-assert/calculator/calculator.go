@@ -20,7 +20,7 @@ type Engine struct {
 	validOperations map[string]func(x, y float64) float64
 }
 
-// NewEngine initialises an engine instance and returns it.
+// NewEngine initializes an engine instance and returns it.
 func NewEngine() *Engine {
 	e := Engine{
 		expectedLength:  2,
