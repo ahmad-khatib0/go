@@ -9,13 +9,10 @@ import (
 	"google.golang.org/protobuf/proto"
 )
 
-//  ╒═══════════════════════════════════════════════════════════════════════════════════════════════════════╕
-//  │ The segment wraps the index and store types to coordinate operations across the two. For example,     │
-//  │ when the log appends a record to the active segment, the segment needs to write the data to its store │
-//  │ and add a new entry in the index. Similarly for reads, the segment needs to look up the entry from the│
-//  │ index and then fetch the data from the store                                                          │
-//  ╘═══════════════════════════════════════════════════════════════════════════════════════════════════════╛
-
+// The segment wraps the index and store types to coordinate operations across the two.
+// For example, when the log appends a record to the active segment, the segment needs
+// to write the data to its store and add a new entry in the index. Similarly for reads,
+// the segment needs to look up the entry from the index and then fetch the data from the store
 type segment struct {
 	store                  *store
 	index                  *index
@@ -28,12 +25,13 @@ func newSegment(dir string, baseOffset uint64, c Config) (*segment, error) {
 		baseOffset: baseOffset,
 		config:     c,
 	}
+
 	var err error
 	// to create the files if they don’t exist yet
 	storeFile, err := os.OpenFile(
 		path.Join(dir, fmt.Sprintf("%d%s", baseOffset, ".store")),
 		os.O_RDWR|os.O_CREATE|os.O_APPEND,
-		0644,
+		0o644,
 	)
 	if err != nil {
 		return nil, err
@@ -44,7 +42,7 @@ func newSegment(dir string, baseOffset uint64, c Config) (*segment, error) {
 	indexFile, err := os.OpenFile(
 		path.Join(dir, fmt.Sprintf("%d%s", baseOffset, ".index")),
 		os.O_RDWR|os.O_CREATE,
-		0644,
+		0o644,
 	)
 	if err != nil {
 		return nil, err
@@ -128,12 +126,12 @@ func (s *segment) Remove() error {
 	return nil
 }
 
-// nearestMultiple(j uint64, k uint64) returns the nearest and lesser multiple of k in j, for example
-// nearestMultiple(9, 4) == 8. We take the lesser multiple to make sure we stay under the user’s disk capacity
+// nearestMultiple(j uint64, k uint64) returns the nearest and lesser multiple of k in j,
+// for example nearestMultiple(9, 4) == 8. We take the lesser multiple to make sure we
+// stay under the user’s disk capacity
 func nearestMultiple(j, k uint64) uint64 {
 	if j >= 0 {
 		return (j / k) * k
 	}
 	return ((j - k + 1) / k) * k
-
 }

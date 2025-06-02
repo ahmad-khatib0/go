@@ -2,7 +2,6 @@ package log
 
 import (
 	"io"
-	"io/ioutil"
 	"os"
 	"testing"
 
@@ -10,7 +9,7 @@ import (
 )
 
 func TestIndex(t *testing.T) {
-	f, err := ioutil.TempFile(os.TempDir(), "index_test")
+	f, err := os.CreateTemp(os.TempDir(), "index_test")
 	require.NoError(t, err)
 	defer os.Remove(f.Name())
 
@@ -45,7 +44,7 @@ func TestIndex(t *testing.T) {
 	_ = idx.Close()
 
 	// index should build its state from the existing file
-	f, _ = os.OpenFile(f.Name(), os.O_RDWR, 0600)
+	f, _ = os.OpenFile(f.Name(), os.O_RDWR, 0o600)
 	idx, err = newIndex(f, c)
 	require.NoError(t, err)
 	off, pos, err := idx.Read(-1)

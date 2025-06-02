@@ -5,7 +5,6 @@ import (
 	"encoding/json"
 	"encoding/xml"
 	"fmt"
-	"io/ioutil"
 	"log"
 	"net/http"
 	"os"
@@ -48,7 +47,7 @@ func GetFeedEntries(url string) ([]Entry, error) {
 	}
 	defer resp.Body.Close()
 
-	byteValue, _ := ioutil.ReadAll(resp.Body)
+	byteValue, _ := os.ReadAll(resp.Body)
 	var feed Feed
 	xml.Unmarshal(byteValue, &feed)
 

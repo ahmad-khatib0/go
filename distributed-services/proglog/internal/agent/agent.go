@@ -87,7 +87,6 @@ func (a *Agent) setupLogger() error {
 }
 
 func (a *Agent) setupLog() error {
-
 	raftLn := a.mux.Match(func(reader io.Reader) bool {
 		b := make([]byte, 1)
 		if _, err := reader.Read(b); err != nil {
@@ -143,9 +142,9 @@ func (a *Agent) setupServer() error {
 		return err
 	}
 
-	// Because we’ve multiplexed two connection types (Raft and gRPC) and we added a matcher for the
-	// Raft connections, we know all other connections must be gRPC connections. We use cmux.Any()
-	// because it matches any connections
+	// Because we’ve multiplexed two connection types (Raft and gRPC) and we added a matcher
+	// for the Raft connections, we know all other connections must be gRPC connections. We
+	// use cmux.Any() because it matches any connections
 	grpcLn := a.mux.Match(cmux.Any())
 	go func() {
 		// we tell our gRPC server to serve on the multiplexed listener.
@@ -186,16 +185,16 @@ func (a *Agent) Shutdown() error {
 	close(a.shutdowns)
 
 	shutdown := []func() error{
-		// Leaving the membership so that other servers will see that this server has left the cluster
-		// and so that this server doesn’t receive discovery events anymore;
+		// Leaving the membership so that other servers will see that this server has left
+		// the cluster and so that this server doesn’t receive discovery events anymore;
 		a.membership.Leave,
 
 		// Closing the replicator so it doesn’t continue to replicate;
 		// a.replicator.Close,
 
 		func() error {
-			// Gracefully stopping the server, which stops the server from accepting new connections and
-			// blocks until all the pending RPCs have finished;
+			// Gracefully stopping the server, which stops the server from accepting new
+			// connections and blocks until all the pending RPCs have finished;
 			a.server.GracefulStop()
 			return nil
 		},
@@ -219,7 +218,6 @@ func (a *Agent) Shutdown() error {
 func (a *Agent) setupMux() error {
 	rpcAddr := fmt.Sprintf(":%d", a.Config.RPCPort)
 	ln, err := net.Listen("tcp", rpcAddr)
-
 	if err != nil {
 		return err
 	}

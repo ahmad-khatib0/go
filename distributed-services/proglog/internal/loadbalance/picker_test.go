@@ -31,7 +31,8 @@ func TestPickerNoSubConnAvailable(t *testing.T) {
 	}
 }
 
-// TestPickerProducesToLeader() tests that the picker picks the leader subconnection for append calls.
+// TestPickerProducesToLeader() tests that the picker picks the leader
+// subconnection for append calls.
 func TestPickerProducesToLeader(t *testing.T) {
 	picker, subConns := setupTest()
 	info := balancer.PickInfo{FullMethodName: "/log.vX.Log/Produce"}

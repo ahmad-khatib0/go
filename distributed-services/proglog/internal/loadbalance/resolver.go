@@ -20,11 +20,15 @@ import (
 //  | one simple method—Build()—we’ll implement both interfaces with one type.       |
 //  +--------------------------------------------------------------------------------+
 
-// Resolver is the type we’ll implement into gRPC’s resolver.Builder and resolver.Resolver interfaces
+// Resolver is the type we’ll implement into gRPC’s resolver.Builder and
+// resolver.Resolver interfaces
 type Resolver struct {
-	mu            sync.Mutex
-	clientConn    resolver.ClientConn // resolverConn is the resolver’s own client connection to the server
-	resolverConn  *grpc.ClientConn    // clientConn connection is the user’s client connection and gRPC passes it to the resolver for the resolver to update with the servers it discovers.
+	mu sync.Mutex
+	// clientConn connection is the user’s client connection and gRPC passes it to the
+	// resolver for the resolver to update with the servers it discovers.
+	clientConn resolver.ClientConn
+	// resolverConn is the resolver’s own client connection to the server
+	resolverConn  *grpc.ClientConn
 	serviceConfig *serviceconfig.ParseResult
 	logger        *zap.Logger
 }
@@ -42,7 +46,6 @@ func (r *Resolver) Build(
 	cc resolver.ClientConn,
 	opts resolver.BuildOptions,
 ) (resolver.Resolver, error) {
-
 	r.logger = zap.L().Named("resolver")
 	r.clientConn = cc
 
@@ -72,7 +75,7 @@ var _ resolver.Resolver = (*Resolver)(nil)
 
 // ResolveNow() gRPC calls it to resolve the target, discover the servers,
 //
-// and update the client  connection with the servers.
+// and update the client connection with the servers.
 func (r *Resolver) ResolveNow(resolver.ResolveNowOptions) {
 	// gRPC may call ResolveNow() concurrently, so we use a mutex to protect access across goroutines.
 	r.mu.Lock()
@@ -80,8 +83,8 @@ func (r *Resolver) ResolveNow(resolver.ResolveNowOptions) {
 
 	client := api.NewLogClient(r.resolverConn) // get cluster and then set on cc attributes
 	ctx := context.Background()
-	res, err := client.GetServers(ctx, &api.GetServersRequest{})
 
+	res, err := client.GetServers(ctx, &api.GetServersRequest{})
 	if err != nil {
 		r.logger.Error("failed to resolve server", zap.Error(err))
 		return
@@ -100,7 +103,6 @@ func (r *Resolver) ResolveNow(resolver.ResolveNowOptions) {
 
 // Close() closes the resolver. In our resolver, we close the connection to our server created in Build()
 func (r *Resolver) Close() {
-
 	if err := r.resolverConn.Close(); err != nil {
 		r.logger.Error("failed to close conn", zap.Error(err))
 	}

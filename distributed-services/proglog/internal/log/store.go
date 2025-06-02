@@ -19,10 +19,9 @@ type store struct {
 
 func newStore(f *os.File) (*store, error) {
 	fi, err := os.Stat(f.Name())
-	// ╒═════════════════════════════════════════════════════════════════════════════════════════════════╕
-	//   os.Stat(name string) to get the file’s current size, in case we’re re-creating the store from a
-	//   file that has existing data, which would happen if, for example, our service had restarted
-	// ╘═════════════════════════════════════════════════════════════════════════════════════════════════╛
+	// os.Stat(name string) to get the file’s current size, in case we’re re-creating the
+	// store from a file that has existing data, which would happen if, for example,
+	// our service had restarted
 	if err != nil {
 		return nil, err
 	}
@@ -42,18 +41,15 @@ func (s *store) Append(p []byte) (n uint64, pos uint64, err error) {
 		return 0, 0, err
 	}
 
-	//  ╒═══════════════════════════════════════════════════════════════════════════════╕
-	//    We write to the buffered writer instead of directly to the file to reduce the
-	//    number of system calls and improve performance.
-	//  ╘═══════════════════════════════════════════════════════════════════════════════╛
-	w, err := s.buf.Write(p) // returns the written bytes number
+	// We write to the buffered writer instead of directly to the file to reduce the
+	// number of system calls and improve performance.
+	w, err := s.buf.Write(p)
 	if err != nil {
 		return 0, 0, err
 	}
 
-	//  ╒════════════════════════════════════════════════════════════════════════════════════════════════════╕
-	//    We write the length of the record so that, when we read the record, we know how many bytes to read
-	//  ╘════════════════════════════════════════════════════════════════════════════════════════════════════╛
+	// We write the length of the record so that, when we read the record,
+	// we know how many bytes to read
 	w += lenWidth
 	s.size += uint64(w)
 	return uint64(w), pos, nil

@@ -19,9 +19,9 @@ import (
 	"google.golang.org/grpc/credentials"
 )
 
-// TestAgent(t *testing.T) sets up a three-node cluster. The second and third nodes join the first node’s cluster
+// TestAgent(t *testing.T) sets up a three-node cluster. The second and third
+// nodes join the first node’s cluster
 func TestAgent(t *testing.T) {
-
 	// The serverTLSConfig defines the configuration of the certificate that’s served to clients
 	serverTLSConfig, err := config.SetupTLSConfig(config.TLSConfig{
 		CertFile:      config.ServerCertFile,
@@ -101,9 +101,9 @@ func TestAgent(t *testing.T) {
 	)
 	require.NoError(t, err)
 
-	// wait until replication has finished
-	// 	Because our replication works asynchronously across servers, the logs pro-
-	// duced to one server won’t be immediately available on the replica servers.
+	// Wait until replication has finished Because our replication works asynchronously
+	// across servers, the logs produced to one server won’t be immediately available on
+	// the replica servers.
 	time.Sleep(3 * time.Second)
 
 	consumeResponse, err := leaderClient.Consume(

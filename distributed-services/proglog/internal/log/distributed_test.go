@@ -2,7 +2,6 @@ package log_test
 
 import (
 	"fmt"
-	"io/ioutil"
 	"net"
 	"os"
 	"reflect"
@@ -21,8 +20,8 @@ func TestMultipleNodes(t *testing.T) {
 	nodeCount := 3
 	ports := dynaport.Get(nodeCount)
 
-	for i := 0; i < nodeCount; i++ {
-		dataDir, err := ioutil.TempDir("", "distributed-log-test")
+	for i := range nodeCount {
+		dataDir, err := os.MkdirTemp("", "distributed-log-test")
 		require.NoError(t, err)
 		defer func(dir string) {
 			_ = os.RemoveAll(dir)
@@ -76,9 +75,8 @@ func TestMultipleNodes(t *testing.T) {
 		require.Eventually(t, func() bool {
 			// The Raft followers will apply the append message after a short latency, so we use
 			// testify’s  Eventually() // method to give Raft enough time to finish replicating
-			for j := 0; j < nodeCount; j++ {
+			for j := range nodeCount {
 				got, err := logs[j].Read(off)
-
 				if err != nil {
 					return false
 				}

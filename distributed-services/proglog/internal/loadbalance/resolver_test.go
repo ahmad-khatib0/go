@@ -19,8 +19,8 @@ import (
 
 func TestResolver(t *testing.T) {
 	l, err := net.Listen("tcp", "127.0.0.1:0")
-	// when listening on port 0, port number is automatically chosen. The Addr method of
-	// Listener can be used to discover the chosen port.
+	// when listening on port 0, port number is automatically chosen.
+	// The Addr method of Listener can be used to discover the chosen port.
 	require.NoError(t, err)
 
 	tlsConfig, err := config.SetupTLSConfig(config.TLSConfig{
@@ -90,8 +90,9 @@ func (s *getServers) GetServers() ([]*api.Server, error) {
 	}}, nil
 }
 
-// clientConn implements resolver.ClientConn, and its job is to keep a reference to the state the resolver
-// updated it with so that we can verify that the resolver updates the client connection with the correct data
+// clientConn implements resolver.ClientConn, and its job is to keep a reference to
+// the state the resolver updated it with so that we can verify that the resolver
+// updates the client connection with the correct data
 type clientConn struct {
 	resolver.ClientConn
 	state resolver.State

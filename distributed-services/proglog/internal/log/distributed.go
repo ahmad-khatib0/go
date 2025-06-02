@@ -39,7 +39,7 @@ func NewDistributedLog(dataDir string, config Config) (*DistributedLog, error) {
 
 func (l *DistributedLog) setupLog(dataDir string) error {
 	logDir := filepath.Join(dataDir, "log")
-	if err := os.MkdirAll(logDir, 0755); err != nil {
+	if err := os.MkdirAll(logDir, 0o755); err != nil {
 		return err
 	}
 
@@ -53,19 +53,19 @@ func (l *DistributedLog) setupRaft(dataDir string) error {
 	fsm := &fsm{log: l.log} // creating finite-state-machine (FSM)
 
 	logDir := filepath.Join(dataDir, "raft", "log")
-	if err := os.MkdirAll(logDir, 0755); err != nil {
+	if err := os.MkdirAll(logDir, 0o755); err != nil {
 		return err
 	}
 
 	logConfig := l.config
-	logConfig.Segment.InitialOffset = 1 //  initial offset to 1, as required by Raft
+	logConfig.Segment.InitialOffset = 1 // initial offset to 1, as required by Raft
 
 	logStore, err := newLogStore(logDir, logConfig)
 	if err != nil {
 		return err
 	}
 
-	// 	The stable store is a key-value store where Raft stores important metadata,
+	// The stable store is a key-value store where Raft stores important metadata,
 	// like the server’s current term or the candidate the server voted for.
 	// Bolt is an embedded and persisted key-value database for Go we’ve used as our stable store.
 	stableStore, err := raftboltdb.NewBoltStore(filepath.Join(dataDir, "raft", "stable"))
@@ -74,13 +74,13 @@ func (l *DistributedLog) setupRaft(dataDir string) error {
 	}
 	retain := 1 //  we’ll keep one snapshot
 
-	// Raft snapshots to recover and restore data efficiently, when necessary, like if your server’s EC2 instance
-	// failed and an autoscaling group brought up another instance for the Raft server.
-	// Rather than streaming all the data from the Raft leader, the new server would restore from the snapshot
-	// and then get the latest changes from the leader. This is more efficient and less taxing on the leader
-	// YOU wanna to snapshot frequently to minimize the difference between the data in snapshots and on the leader
+	// Raft snapshots to recover and restore data efficiently, when necessary, like if your
+	// server’s EC2 instance failed and an autoscaling group brought up another instance for
+	// the Raft server. Rather than streaming all the data from the Raft leader, the new server
+	// would restore from the snapshot and then get the latest changes from the leader. This
+	// is more efficient and less taxing on the leader YOU wanna to snapshot frequently to
+	// minimize the difference between the data in snapshots and on the leader
 	snapshotStore, err := raft.NewFileSnapshotStore(filepath.Join(dataDir, "raft"), retain, os.Stderr)
-
 	if err != nil {
 		return err
 	}
@@ -90,7 +90,8 @@ func (l *DistributedLog) setupRaft(dataDir string) error {
 
 	config := raft.DefaultConfig()
 	config.LocalID = l.config.Raft.LocalID
-	// LocalID is the unique ID for this server and it’s the only config field we must set; rest are optional,
+	// LocalID is the unique ID for this server and it’s the only config field we
+	// must set; rest are optional,
 
 	if l.config.Raft.HeartbeatTimeout != 0 {
 		config.HeartbeatTimeout = l.config.Raft.HeartbeatTimeout
@@ -152,8 +153,9 @@ func (l *DistributedLog) Append(record *api.Record) (uint64, error) {
 	return res.(*api.ProduceResponse).Offset, nil
 }
 
-// apply(reqType RequestType, req proto.Marshaler) wraps Raft’s API to apply requests and return their responses.
-func (l *DistributedLog) apply(reqType RequestType, req proto.Message) (interface{}, error) {
+// apply(reqType RequestType, req proto.Marshaler) wraps Raft’s API
+// to apply requests and return their responses.
+func (l *DistributedLog) apply(reqType RequestType, req proto.Message) (any, error) {
 	var buf bytes.Buffer
 
 	_, err := buf.Write([]byte{byte(reqType)})
@@ -265,7 +267,7 @@ func (l *logStore) DeleteRange(min, max uint64) error {
 	return l.Truncate(max) // removes all segments whose highest offset is lower than lowest.
 }
 
-func (l *fsm) Apply(record *raft.Log) interface{} {
+func (l *fsm) Apply(record *raft.Log) any {
 	buf := record.Data
 	reqType := RequestType(buf[0])
 
@@ -277,7 +279,7 @@ func (l *fsm) Apply(record *raft.Log) interface{} {
 	return nil
 }
 
-func (l *fsm) applyAppend(b []byte) interface{} {
+func (l *fsm) applyAppend(b []byte) any {
 	var req api.ProduceRequest
 
 	err := proto.Unmarshal(b, &req)
@@ -389,28 +391,27 @@ type StreamLayer struct {
 // so we need to take in the TLS configs used to accept incoming connections
 // (the serverTLSConfig) and create outgoing connections (the peerTLSConfig).
 func NewStreamLayer(ln net.Listener, serverTLSConfig, peerTLSConfig *tls.Config) *StreamLayer {
-
 	return &StreamLayer{
 		ln:              ln,
 		serverTLSConfig: serverTLSConfig,
 		peerTLSConfig:   peerTLSConfig,
 	}
-
 }
 
 const RaftRPC = 1
 
 func (s *StreamLayer) Dial(addr raft.ServerAddress, timeout time.Duration) (net.Conn, error) {
-	dialer := &net.Dialer{Timeout: timeout} // makes outgoing connections to other servers in the Raft cluster
+	// makes outgoing connections to other servers in the Raft cluster
+	dialer := &net.Dialer{Timeout: timeout}
 
-	var conn, err = dialer.Dial("tcp", string(addr))
+	conn, err := dialer.Dial("tcp", string(addr))
 	if err != nil {
 		return nil, err
 	}
 
 	// IDENTIFY TO MUX THIS IS A RAFT RPC
-	//  When we connect to a server, we write the RaftRPC byte to identify the connection type so we can
-	// multiplex Raft on the same port as our Log gRPC requests
+	// When we connect to a server, we write the RaftRPC byte to identify the connection
+	// type so we can multiplex Raft on the same port as our Log gRPC requests
 	_, err = conn.Write([]byte{byte(RaftRPC)})
 	if err != nil {
 		return nil, err
@@ -425,7 +426,8 @@ func (s *StreamLayer) Dial(addr raft.ServerAddress, timeout time.Duration) (net.
 }
 
 func (s *StreamLayer) Accept() (net.Conn, error) {
-	conn, err := s.ln.Accept() // Accept() is the mirror of Dial(). We accept the incoming connection
+	// Accept() is the mirror of Dial(). We accept the incoming connection
+	conn, err := s.ln.Accept()
 	if err != nil {
 		return nil, err
 	}
@@ -436,7 +438,7 @@ func (s *StreamLayer) Accept() (net.Conn, error) {
 		return nil, err
 	}
 
-	if bytes.Compare([]byte{byte(RaftRPC)}, b) != 0 {
+	if !bytes.Equal([]byte{byte(RaftRPC)}, b) {
 		// 0 if a == b, -1 if a \< b, and +1 if a > b.
 		return nil, fmt.Errorf("not a raft rpc")
 	}
@@ -457,28 +459,24 @@ func (s *StreamLayer) Addr() net.Addr {
 	return s.ln.Addr()
 }
 
-//+-------------------------------------------------------------------------------------------------------------+
-//|  ┌───────────────────────┐                                                                                  |
-//|    Discovery Integration                                                                                    |
-//|  └───────────────────────┘                                                                                  |
-//| integrate our Serf-driven discovery layer with Raft to make the corresponding change in our Raft            |
-//| cluster when the Serf membership changes. Each time you add a server to the cluster, Serf will publish      |
-//| an event saying a member joined, and our discovery.Membership will call its handler’s Join(id, addr string) |
-//| method. When a server leaves the cluster, Serf will publish an event saying a member left, and our          |
-//| discovery.Membership will call its handler’s Leave(id string) method. Our distributed                       |
-//| log will act as our Membership ’s handler                                                                   |
-//+-------------------------------------------------------------------------------------------------------------+
+//   ┌───────────────────────┐                                                                                  |
+//     Discovery Integration                                                                                    |
+//   └───────────────────────┘                                                                                  |
+//  integrate our Serf-driven discovery layer with Raft to make the corresponding change
+//  in our Raft cluster when the Serf membership changes. Each time you add a server to the
+//  cluster, Serf will publish an event saying a member joined, and our discovery.Membership
+//  will call its handler’s Join(id, addr string) method. When a server leaves the cluster,
+//  Serf will publish an event saying a member left, and our discovery.Membership will call
+//  its handler’s Leave(id string) method. Our distributed log will act as our Membership’s
+//  handler
 
-// ┌─────────────────────────────────────────────────────────────────────────────────────────────────────┐
-//
-//	Join(id, addr string) adds the server to the Raft cluster. We add every server as a voter, but Raft
-//	supports adding servers as non-voters with the AddNonVoter() API. You’d find non-voter servers useful
-//	if you wanted to replicate state to many servers to serve read only eventually consistent state.
-//	non-voter are useful because Each time you add more voter servers, you increase the
-//	probability that replications and elections will take longer because the leader has more servers
-//	it needs to communicate with to reach a majority.
-//
-// └─────────────────────────────────────────────────────────────────────────────────────────────────────┘
+// Join(id, addr string) adds the server to the Raft cluster. We add every server as a
+// voter, but Raft supports adding servers as non-voters with the AddNonVoter() API.
+// You’d find non-voter servers useful if you wanted to replicate state to many servers
+// to serve read only eventually consistent state. non-voter are useful because Each time
+// you add more voter servers, you increase the probability that replications and elections
+// will take longer because the leader has more servers it needs to communicate with to
+// reach a majority.
 func (l *DistributedLog) Join(id, addr string) error {
 	configFuture := l.raft.GetConfiguration()
 	if err := configFuture.Error(); err != nil {
@@ -511,7 +509,8 @@ func (l *DistributedLog) Join(id, addr string) error {
 	return nil
 }
 
-// Leave(id string) removes the server from the cluster. Removing the leader will trigger a new election.
+// Leave(id string) removes the server from the cluster.
+// Removing the leader will trigger a new election.
 func (l *DistributedLog) Leave(id string) error {
 	removeFuture := l.raft.RemoveServer(raft.ServerID(id), 0, 0)
 	return removeFuture.Error()

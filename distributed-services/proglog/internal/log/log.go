@@ -2,7 +2,6 @@ package log
 
 import (
 	"io"
-	"io/ioutil"
 	"os"
 	"path"
 	"sort"
@@ -38,10 +37,11 @@ func NewLog(dir string, c Config) (*Log, error) {
 }
 
 func (l *Log) setup() error {
-	files, err := ioutil.ReadDir(l.Dir)
+	files, err := os.ReadDir(l.Dir)
 	if err != nil {
 		return err
 	}
+
 	var baseOffsets []uint64
 	for _, file := range files {
 		offStr := strings.TrimSuffix(
@@ -51,9 +51,11 @@ func (l *Log) setup() error {
 		off, _ := strconv.ParseUint(offStr, 10, 0)
 		baseOffsets = append(baseOffsets, off)
 	}
+
 	sort.Slice(baseOffsets, func(i, j int) bool {
 		return baseOffsets[i] < baseOffsets[j]
 	})
+
 	for i := 0; i < len(baseOffsets); i++ {
 		if err = l.newSegment(baseOffsets[i]); err != nil {
 			return err

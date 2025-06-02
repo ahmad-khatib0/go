@@ -55,10 +55,9 @@ func (i *index) Close() error {
 		return err
 	}
 
-	//╒════════════════════════════════════════════════════════════════════════════════════════════════════════════╕
-	// 	truncating the index files to remove the empty space and put the last entry at the end of the file once
-	// 	again. This graceful shutdown returns the service to a state where it can restart properly and efficiently
-	//╘════════════════════════════════════════════════════════════════════════════════════════════════════════════╛
+	// truncating the index files to remove the empty space and put the last entry at the
+	// end of the file once again. This graceful shutdown returns the service to a state
+	// where it can restart properly and efficiently
 	if err := i.file.Truncate(int64(i.size)); err != nil {
 		return err
 	}
