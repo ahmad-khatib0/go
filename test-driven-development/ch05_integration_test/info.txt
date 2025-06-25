@@ -1,4 +1,3 @@
-
 - Advantages of unit tests:
 . Support refactoring: Unit tests make it easier to refactor code because they provide fast verification
   of existing functionality. They decrease the risk associated with changing code, which can lead to 
@@ -105,7 +104,6 @@
   the community, as it brought the Ruby way of writing tests to Go. However, it is currently the default
   way to write BDD-style tests and it is an important part of our TDD journey.
  
-
 - We should write tests that cover the following aspects of our database systems:
 . Startup and availability: The application should wait for the database to become available and
   should do so in an efficient manner.
@@ -115,5 +113,4 @@
   typically powers all the requests in the application. Typical verifications include load testing
   using large files or results counts, running tests using multiple remote users, and any edge cases
   regarding the values of the column/field values of the database payloads.
-
 

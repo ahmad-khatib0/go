@@ -1,4 +1,3 @@
-
 - While both generics and interfaces provide code flexibility and polymorphism to our code, 
   they have the following main differences:
 1. Generics are a way to specify the type, while interfaces specify behavior. As we have seen, interfaces 
@@ -24,8 +23,4 @@
    placeholders declared by the function or type signature.
 4. Type inference is the process that takes place under the hood to determine the type of a variable,
    without its explicit type specification. This also allows us to write less verbose generic code.
-
-
-
-
 
